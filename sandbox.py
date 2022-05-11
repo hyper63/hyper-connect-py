@@ -1,3 +1,5 @@
+from typing import Any
+
 from dotenv import dotenv_values
 from promisio import Promise
 from ramda import has, join, pick_by
@@ -7,10 +9,11 @@ from hyper_connect.types import Hyper, ListOptions
 
 config = dotenv_values(".env")
 
-# >>> from sandbox import data_add, data_get, data_list
+# >>> from sandbox import data_add, data_get, data_list, data_update
 # >>> import asyncio
 # >>> asyncio.run(data_add('{ "_id":"book-102","type":"book", "name":"Horton hears a who 2","author":"Dr. Suess","published":"1953" }'))
 # >>> asyncio.run(data_list())
+# >>> asyncio.run(data_update('book-2', '{ "_id":"book-2","type":"book", "name":"The Great Gatsby","author":"Dr. Suess","published":"1922" }'))
 
 hyper: Hyper = connect(config["HYPER"])
 
@@ -33,6 +36,13 @@ async def data_add(doc: str):
 async def data_get(id: str):
 
     result = await hyper.data.get(id)
+
+    return result
+
+
+async def data_update(id: str, doc: Any):
+
+    result = await hyper.data.update(id, doc)
 
     return result
 

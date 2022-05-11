@@ -1,7 +1,7 @@
 from typing import Any
 
 # from ._cache import addCacheDoc
-from hyper_connect.services import addData, getDataById, getDataList
+from hyper_connect.services import addData, getDataById, getDataList, updateData
 from hyper_connect.types import Hyper, HyperData, ListOptions
 from hyper_connect.utils import handle_response
 
@@ -19,8 +19,8 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
 
         return print_this
 
-    def addDataDoc(body: Any):
-        return addData(body, CONNECTION_STRING, domain).then(handle_response)
+    def addDataDoc(doc: Any):
+        return addData(doc, CONNECTION_STRING, domain).then(handle_response)
 
     def getDataDoc(id: str):
         return getDataById(id, CONNECTION_STRING, domain).then(handle_response)
@@ -28,8 +28,14 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     def listDataDocs(options: ListOptions):
         return getDataList(options, CONNECTION_STRING, domain).then(handle_response)
 
+    def updateDataDoc(id: str, doc: Any):
+        return updateData(id, doc, CONNECTION_STRING, domain).then(handle_response)
+
     hyperData: HyperData = HyperData(
-        addDataDocFn=addDataDoc, getDataDocFn=getDataDoc, listDataDocsFn=listDataDocs
+        addDataDocFn=addDataDoc,
+        getDataDocFn=getDataDoc,
+        listDataDocsFn=listDataDocs,
+        updateDataDocFn=updateDataDoc,
     )
 
     hyper: Hyper = Hyper(data=hyperData)

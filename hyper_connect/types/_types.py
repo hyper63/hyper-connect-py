@@ -56,20 +56,25 @@ class HyperRequestParams(TypedDict):
     options: RequestOptions
 
 
-# HyperData Class
+# HyperData Classes
 class WriteHyperDataError(Exception):
     pass
 
 
 class HyperData:
     def __init__(
-        self, addDataDocFn: Callable, getDataDocFn: Callable, listDataDocsFn: Callable
+        self,
+        addDataDocFn: Callable,
+        getDataDocFn: Callable,
+        listDataDocsFn: Callable,
+        updateDataDocFn: Callable,
     ):
         self._addDataDoc = addDataDocFn
         self._getDataDoc = getDataDocFn
         self._listDataDocs = listDataDocsFn
+        self._updateDataDoc = updateDataDocFn
 
-    def add(self, doc):
+    def add(self, doc: Any):
         return self._addDataDoc(doc)
 
     def get(self, id: str):
@@ -78,8 +83,11 @@ class HyperData:
     def list(self, options: ListOptions):
         return self._listDataDocs(options)
 
+    def update(self, id: str, doc: Any):
+        return self._updateDataDoc(id, doc)
 
-# Hyper Class
+
+# Hyper Classes
 class WriteHyperError(Exception):
     pass
 

@@ -112,3 +112,24 @@ def getDataList(options: ListOptions, connection_string: str, domain: str = "def
     headers = hyperRequestParams["options"]["headers"]
 
     return requests.get(url, headers=headers)
+
+
+@promisify
+def updateData(id: str, doc: Any, connection_string: str, domain: str = "default"):
+
+    hyperRequest: HyperRequest = {
+        "service": "data",
+        "method": "PUT",
+        "body": doc,
+        "resource": id,
+        "params": None,
+        "action": None,
+    }
+    hyperRequestParams: HyperRequestParams = create_hyper_request_params(
+        connection_string, domain, hyperRequest
+    )
+
+    url: str = hyperRequestParams["url"]
+    headers = hyperRequestParams["options"]["headers"]
+
+    return requests.put(url, headers=headers, data=doc)
