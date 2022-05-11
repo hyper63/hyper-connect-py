@@ -130,11 +130,9 @@ signature of the job payload. We created a function on `hyper_connect` to make
 it easier to implement your own middleware to validate these incoming jobs in a
 secure way.
 
-
-
 ## Contributing
 
-###Developer Setup
+### Developer Setup
 
 We prefer you use Gitpod.  Gitpod provides a fully initialized, perfectly set-up developer environmments the hyper connect SDK.
 
@@ -162,6 +160,18 @@ $ pyton
 >>> from sandbox import data_add, data_get
 >>> import asyncio
 >>> asyncio.run(data_add('{ "_id":"book-102","type":"book", "name":"Horton hears a who 2","author":"Dr. Suess","published":"1953" }'))
+```
+
+#### Environment Variables
+
+**sandbox.py** expects an environment variable named `HYPER`.
+
+- Create a **.env** file in the project root.
+- Within **.env**, create an environment variable named `HYPER` with a value of your hyper app's [connection string](https://docs.hyper.io/app-keys#nq-connection-string).
+
+
+```bash
+HYPER=cloud://your app key:your app secret--gI1MkcrUqFPMR@cloud.hyper.io/express-quickstart
 ```
 
 ### License
