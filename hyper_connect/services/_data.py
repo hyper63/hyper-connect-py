@@ -3,8 +3,14 @@ from typing import Any, Dict, Optional, TypedDict
 import requests
 from promisio import promisify
 
-from hyper_connect.types import HyperRequest, HyperRequestParams, ListOptions
-from hyper_connect.utils import check_json, create_hyper_request_params
+from hyper_connect.types import (
+    Action,
+    HyperRequest,
+    HyperRequestParams,
+    ListOptions,
+    QueryOptions,
+)
+from hyper_connect.utils import check_json, create_hyper_request_params, to_data_query
 
 
 @promisify
@@ -140,3 +146,38 @@ def removeDataById(id: str, connection_string: str, domain: str = "default"):
     headers = hyperRequestParams["options"]["headers"]
 
     return requests.delete(url, headers=headers)
+
+
+@promisify
+def postQuery(
+    selector: Any,
+    options: QueryOptions,
+    connection_string: str,
+    domain: str = "default",
+):
+
+    print("_data.py postQuery selector: ", selector)
+    print("_data.py postQuery options: ", options)
+
+    data_query = to_data_query(selector, options)
+
+    print("_data.py postQuery data_query: ", data_query)
+
+    hyperRequest: HyperRequest = {
+        "service": "data",
+        "method": "POST",
+        "body": data_query,
+        "resource": None,
+        "params": options,
+        "action": "_query",
+    }
+    hyperRequestParams: HyperRequestParams = create_hyper_request_params(
+        connection_string, domain, hyperRequest
+    )
+
+    url: str = hyperRequestParams["url"]
+    headers = hyperRequestParams["options"]["headers"]
+
+    print("_data.py postQuery", url)
+
+    return requests.get(url, headers=headers)

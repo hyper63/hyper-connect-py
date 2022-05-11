@@ -1,15 +1,15 @@
-from typing import Any
+from typing import Any, Optional
 
 from dotenv import dotenv_values
 from promisio import Promise
 from ramda import has, join, pick_by
 
 from hyper_connect import connect
-from hyper_connect.types import Hyper, ListOptions
+from hyper_connect.types import Hyper, ListOptions, QueryOptions
 
 config = dotenv_values(".env")
 
-# >>> from sandbox import data_add, data_get, data_list, data_update, data_remove
+# >>> from sandbox import data_add, data_get, data_list, data_update, data_remove, data_query
 # >>> import asyncio
 # >>> asyncio.run(data_add('{ "_id":"book-102","type":"book", "name":"Horton hears a who 2","author":"Dr. Suess","published":"1953" }'))
 # >>> asyncio.run(data_list())
@@ -100,5 +100,25 @@ async def data_list():
 async def data_remove(id: str):
 
     result = await hyper.data.remove(id)
+
+    return result
+
+
+async def data_query():
+
+    # fields: Optional[List[str]]
+    # sort: Optional[List[Dict[str, SortOptions]]]
+    # limit: Optional[int]
+    # useIndex: Optional[str]
+
+    options: QueryOptions = {
+        "fields": None,
+        "sort": None,
+        "limit": 10,
+        "useIndex": None,
+    }
+
+    selector = {"author": "Dr. Suess"}
+    result = await hyper.data.query(selector, options)
 
     return result

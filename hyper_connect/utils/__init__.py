@@ -8,3 +8,4 @@ from ._get_host import get_host
 from ._get_key import get_key
 from ._get_secret import get_secret
 from ._handle_response import handle_response
+from ._to_data_query import to_data_query

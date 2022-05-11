@@ -69,12 +69,14 @@ class HyperData:
         listDataDocsFn: Callable,
         updateDataDocFn: Callable,
         removeDataDocFn: Callable,
+        postDataQueryFn: Callable,
     ):
         self._addDataDoc = addDataDocFn
         self._getDataDoc = getDataDocFn
         self._listDataDocs = listDataDocsFn
         self._updateDataDoc = updateDataDocFn
         self._removeDataDoc = removeDataDocFn
+        self._postDataQuery = postDataQueryFn
 
     def add(self, doc: Any):
         return self._addDataDoc(doc)
@@ -90,6 +92,9 @@ class HyperData:
 
     def remove(self, id: str):
         return self._removeDataDoc(id)
+
+    def query(self, selector: Any, options: QueryOptions):
+        return self._postDataQuery(selector, options)
 
 
 # Hyper Classes
