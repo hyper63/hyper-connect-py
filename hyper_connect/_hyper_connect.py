@@ -5,10 +5,11 @@ from hyper_connect.services import (
     addData,
     getDataById,
     getDataList,
+    postQuery,
     removeDataById,
     updateData,
 )
-from hyper_connect.types import Hyper, HyperData, ListOptions
+from hyper_connect.types import Hyper, HyperData, ListOptions, QueryOptions
 from hyper_connect.utils import handle_response
 
 # cache = {"add": addCacheDoc}
@@ -40,12 +41,16 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     def removeDataDoc(id: str):
         return removeDataById(id, CONNECTION_STRING, domain).then(handle_response)
 
+    def queryDocs(selector: Any, options: QueryOptions):
+        return postQuery(selector, options, CONNECTION_STRING, domain)
+
     hyperData: HyperData = HyperData(
         addDataDocFn=addDataDoc,
         getDataDocFn=getDataDoc,
         listDataDocsFn=listDataDocs,
         updateDataDocFn=updateDataDoc,
         removeDataDocFn=removeDataDoc,
+        postDataQueryFn=queryDocs,
     )
 
     hyper: Hyper = Hyper(data=hyperData)
