@@ -1,0 +1,23 @@
+tasks:
+  - name: Create venv
+    before: |
+      python3 -m venv /workspace/hyper-connect-py-test/venv
+      gp sync-done kitty
+      clear
+  - name: venv
+    before: |
+      gp sync-await kitty
+      source venv/bin/activate
+      pip3 install -r requirements.txt
+      clear
+      pre-commit install
+      bash .git/hooks/pre-commit
+      echo 'Heres your virtual environment.  Install deps here.'
+# List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
+ports:
+  - port: 3000
+    onOpen: open-preview
+
+vscode:
+  extensions:
+    - ms-python.python
