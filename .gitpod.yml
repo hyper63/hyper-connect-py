@@ -1,7 +1,7 @@
 tasks:
   - name: Create venv
     before: |
-      python3 -m venv /workspace/hyper-connect-py-test/venv
+      python3 -m venv /workspace/hyper-connect-py/venv
       gp sync-done kitty
       clear
   - name: venv
