@@ -20,6 +20,7 @@ pre-commit==2.18.1
 promisio==0.1.1
 pycodestyle==2.8.0
 PyJWT==2.3.0
+python-dotenv==0.20.0
 PyYAML==6.0
 ramda==0.7.4
 requests==2.27.1

@@ -78,18 +78,6 @@ class HyperData:
     def list(self, options: ListOptions):
         return self._listDataDocs(options)
 
-    # @add.setter
-    # def add(self, value):
-    #     raise WriteHyperDataError("HyperData add property is read-only")
-
-    # @property
-    # def get(self):
-    #     return self._get
-
-    # @get.setter
-    # def get(self, value):
-    #     raise WriteHyperDataError("HyperData get property is read-only")
-
 
 # Hyper Class
 class WriteHyperError(Exception):
