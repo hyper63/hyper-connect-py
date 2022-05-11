@@ -65,20 +65,6 @@ def getDataById(id: str, connection_string: str, domain: str = "default"):
         connection_string, domain, hyperRequest
     )
 
-    # Example HyperRequestParams
-    # {
-    #     'url': 'https://cloud.hyper.io/express-quickstart/data/default',
-    #     'options': {
-    #         'headers': {
-    #             'Content-Type': 'application/json',
-    #             'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ4bWd0YTBudW02ajduNnVuN2FhNm91Z2EyNnZxbjc4NCIsImV4cCI6MTY1MTc2NTAwMX0.ChZqjXFOJDYFgsHMFHLTk_iIRR-qW1BfRutJxMObvqE'
-    #             },
-    #         'method': 'GET',
-    #         'body': 'foo bar'
-    #     }
-    # }
-    # print('inside _data.py addData() hyperRequestParams dict')
-
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
@@ -133,3 +119,24 @@ def updateData(id: str, doc: Any, connection_string: str, domain: str = "default
     headers = hyperRequestParams["options"]["headers"]
 
     return requests.put(url, headers=headers, data=doc)
+
+
+@promisify
+def removeDataById(id: str, connection_string: str, domain: str = "default"):
+
+    hyperRequest: HyperRequest = {
+        "service": "data",
+        "method": "DELETE",
+        "body": None,
+        "resource": id,
+        "params": None,
+        "action": None,
+    }
+    hyperRequestParams: HyperRequestParams = create_hyper_request_params(
+        connection_string, domain, hyperRequest
+    )
+
+    url: str = hyperRequestParams["url"]
+    headers = hyperRequestParams["options"]["headers"]
+
+    return requests.delete(url, headers=headers)

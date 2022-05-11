@@ -9,11 +9,14 @@ from hyper_connect.types import Hyper, ListOptions
 
 config = dotenv_values(".env")
 
-# >>> from sandbox import data_add, data_get, data_list, data_update
+# >>> from sandbox import data_add, data_get, data_list, data_update, data_remove
 # >>> import asyncio
 # >>> asyncio.run(data_add('{ "_id":"book-102","type":"book", "name":"Horton hears a who 2","author":"Dr. Suess","published":"1953" }'))
 # >>> asyncio.run(data_list())
 # >>> asyncio.run(data_update('book-2', '{ "_id":"book-2","type":"book", "name":"The Great Gatsby","author":"Dr. Suess","published":"1922" }'))
+# >>> asyncio.run(data_get('book-2'))
+# >>> asyncio.run(data_remove('book-2'))
+
 
 hyper: Hyper = connect(config["HYPER"])
 
@@ -65,14 +68,37 @@ async def data_list():
     #     "descending": None,
     # }
 
+    # options: ListOptions = {
+    #     "startkey": None,
+    #     "limit": None,
+    #     "endkey": None,
+    #     "keys": ["movie-1", "movie-11"],
+    #     "descending": None,
+    # }
+
     options: ListOptions = {
         "startkey": None,
         "limit": None,
         "endkey": None,
-        "keys": ["movie-1", "movie-11"],
+        "keys": "movie-1,movie-11",
         "descending": None,
     }
 
+    # options: ListOptions = {
+    #     "startkey": None,
+    #     "limit": 4,
+    #     "endkey": None,
+    #     "keys": None,
+    #     "descending": None,
+    # }
+
     result = await hyper.data.list(options)
+
+    return result
+
+
+async def data_remove(id: str):
+
+    result = await hyper.data.remove(id)
 
     return result

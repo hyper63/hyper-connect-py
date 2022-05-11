@@ -98,12 +98,16 @@ def create_hyper_request_params(
 
         tasty_params = pick_by(not_none_value, req_params["params"])
 
-        if has("keys", tasty_params) and type(tasty_params["keys"]) is list:
-            tasty_params["keys"] = join(",", tasty_params["keys"])
+        if "keys" in tasty_params:
+            if type(tasty_params["keys"]) is list:
+                tasty_params["keys"] = join(",", tasty_params["keys"])
+
+        print("tasty_params:", tasty_params)
 
         params = urlencode(tasty_params)
         url = f"{url}?{params}"
 
+        print("url: ", url)
         # params = urlencode(req_params["params"])
         # url = f"{url}?{params}"
 
