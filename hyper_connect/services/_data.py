@@ -162,13 +162,15 @@ def postQuery(
     data_query = to_data_query(selector, options)
 
     print("_data.py postQuery data_query: ", data_query)
+    print("_data.py postQuery data_query type: ", type(data_query))
 
+    # "params": options,
     hyperRequest: HyperRequest = {
         "service": "data",
         "method": "POST",
         "body": data_query,
         "resource": None,
-        "params": options,
+        "params": None,
         "action": "_query",
     }
     hyperRequestParams: HyperRequestParams = create_hyper_request_params(
@@ -180,4 +182,5 @@ def postQuery(
 
     print("_data.py postQuery", url)
 
-    return requests.get(url, headers=headers)
+    results = requests.post(url, headers=headers, data=data_query)
+    return results.json()

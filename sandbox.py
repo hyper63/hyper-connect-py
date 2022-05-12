@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 from dotenv import dotenv_values
 from promisio import Promise
-from ramda import has, join, pick_by
+from ramda import has, is_empty, join, pick_by
 
 from hyper_connect import connect
 from hyper_connect.types import Hyper, ListOptions, QueryOptions
@@ -16,6 +16,13 @@ config = dotenv_values(".env")
 # >>> asyncio.run(data_update('book-2', '{ "_id":"book-2","type":"book", "name":"The Great Gatsby","author":"Dr. Suess","published":"1922" }'))
 # >>> asyncio.run(data_get('book-2'))
 # >>> asyncio.run(data_remove('book-2'))
+# >>> asyncio.run(data_query())
+
+if is_empty(config):
+    print(
+        "You seem to be missing a .env file with a `HYPER` environment variable.  Set HYPER with a connection string from your hyper app keys. https://docs.hyper.io/app-key."
+    )
+    exit()
 
 
 hyper: Hyper = connect(config["HYPER"])
@@ -118,7 +125,7 @@ async def data_query():
         "useIndex": None,
     }
 
-    selector = {"author": "Dr. Suess"}
+    selector = {"type": "movie"}
     result = await hyper.data.query(selector, options)
 
     return result
