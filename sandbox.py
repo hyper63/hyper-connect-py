@@ -114,7 +114,9 @@ async def data_query():
     # limit: Optional[int]
     # useIndex: Optional[str]
 
-    selector = {"type": "movie"}
+    # selector = {"type": "movie"}
+
+    selector = {"type": "movie", "year": {"$gt": "2000"}}
 
     options: QueryOptions = {
         "fields": None,
@@ -122,6 +124,20 @@ async def data_query():
         "limit": 10,
         "useIndex": None,
     }
+
+    # options: QueryOptions = {
+    #     "fields": ["_id", "title", "year"],
+    #     "sort": None,
+    #     "limit": 3,
+    #     "useIndex": None,
+    # }
+
+    # options: QueryOptions = {
+    #     "fields": ["_id", "title", "year"],
+    #     "sort": [{"year": "DESC"}],
+    #     "limit": 3,
+    #     "useIndex": None,
+    # }
 
     result = await hyper.data.query(selector, options)
 
