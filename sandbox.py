@@ -20,7 +20,7 @@ config = dotenv_values(".env")
 # >>> asyncio.run(data_remove('book-2'))
 # >>> asyncio.run(data_query())
 # >>> asyncio.run(data_index())
-# asyncio.run(integration_test({ "_id":"book-000020","type":"book", "name":"The Lumberjack named Lorax the tree slayer","author":"Dr. Suess","published":"1969" }))
+# >>> asyncio.run(integration_test({ "_id":"book-000020","type":"book", "name":"The Lumberjack named Lorax the tree slayer","author":"Dr. Suess","published":"1969" }))
 
 if is_empty(config):
     print(
