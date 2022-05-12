@@ -2,20 +2,8 @@ from promisio import Promise
 from ramda import if_else
 from requests import HTTPError
 
-# class InternalServerError(Exception):
-#     """Exception raised for 500 level HTTP errors when attempting to call hyper REST API.
-
-#     Attributes:
-#         status -- 500 level http status code
-#         message -- explanation of the error
-#     """
-
-#     def __init__(, status, message)
-
 
 def handle_response(response):
-
-    # print('type(response): ', type(response)). #  <class 'requests.models.Response'>
 
     content_type_is_application_json = lambda x: "application/json" in x.headers.get(
         "content-type"
@@ -34,8 +22,6 @@ def handle_response(response):
 
     def check_500_error(r):
         if response.status_code >= 500:
-
-            print("check_500_error occurred!!!", response)
             return Promise.reject(response.raise_for_status())
         else:
             return r

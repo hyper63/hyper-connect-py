@@ -13,20 +13,8 @@ from hyper_connect.services import (
 from hyper_connect.types import Hyper, HyperData, ListOptions, QueryOptions
 from hyper_connect.utils import handle_response
 
-# cache = {"add": addCacheDoc}
-
-# >>> from hyper_connect import connect
-# >>> hyper = connect('cloud://xmgta0num6j7n6un7aa6ouga26vqn784:cADh5FHDPWr5jE6qLDmCqQlMRkfUEWMsLPRaZ64EGFZImvUBx--gI1MkcrUqFPMR@cloud.hyper.io/express-quickstart','default')
-# >>> result = await hyper.data.add(doc)
-
 
 def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
-    def printIdentity(prefix):
-        def print_this(x):
-            print(f"{prefix} -> {x}")
-
-        return print_this
-
     def addDataDoc(doc: Dict):
         return addData(doc, CONNECTION_STRING, domain).then(handle_response)
 

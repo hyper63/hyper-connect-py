@@ -65,8 +65,6 @@ class TestCreateHyperRequestParams(unittest.TestCase):
             hyperRequest,
         )
 
-        # print("hyperRequestParams", hyperRequestParams)
-
         self.assertEqual(
             hyperRequestParams["options"]["body"],
             expected_result["options"]["body"],
@@ -79,8 +77,6 @@ class TestCreateHyperRequestParams(unittest.TestCase):
             "default",
             hyperRequest,
         )
-
-        # print("hyperRequestParams", hyperRequestParams)
 
         self.assertEqual(
             head(split(" ", hyperRequestParams["options"]["headers"]["Authorization"])),

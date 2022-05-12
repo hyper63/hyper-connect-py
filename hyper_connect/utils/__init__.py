@@ -1,7 +1,5 @@
 __version__ = "0.0.1"
 
-# OLD from utils._hyper_request import hyper
-from ._check_json import check_json
 from ._create_hyper_request_params import create_hyper_request_params
 from ._generate_token import decode_token, generate_token
 from ._get_host import get_host

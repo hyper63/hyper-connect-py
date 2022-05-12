@@ -11,16 +11,11 @@ from hyper_connect.types import (
     ListOptions,
     QueryOptions,
 )
-from hyper_connect.utils import check_json, create_hyper_request_params, to_data_query
+from hyper_connect.utils import create_hyper_request_params, to_data_query
 
 
 @promisify
 def addData(body: Dict, connection_string: str, domain: str = "default"):
-
-    # check_json_result: bool = check_json(body)
-
-    # if not check_json_result:
-    #     raise ValueError("body should be a should be a json string.")
 
     hyperRequest: HyperRequest = {
         "service": "data",
@@ -184,10 +179,6 @@ def postIndex(
     connection_string: str,
     domain: str = "default",
 ):
-
-    # '{"name": "idx-title-year", "type":"json", "fields": ["title", "year"]}'
-    # "params": options,
-
     indexBody: Dict = {"name": name, "type": "json", "fields": fields}
 
     hyperRequest: HyperRequest = {

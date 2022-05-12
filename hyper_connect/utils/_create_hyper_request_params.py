@@ -16,8 +16,6 @@ from ._get_host import get_host
 from ._get_key import get_key
 from ._get_secret import get_secret
 
-# from ramda import is_empty  # type: ignore
-
 
 def create_hyper_request_params(
     connection_string: str, domain: str, req_params: HyperRequest
@@ -52,17 +50,7 @@ def create_hyper_request_params(
     if public_key is not None and secret is not None:
 
         token = generate_token(public_key, secret)
-        # print('minty fresh token: ' + token)
-
-        # decoded_token: Dict[str, Any] = decode_token(token, secret)
-        # print('decoded_token below')
-        # print(decoded_token)
-        # print('exp: ', decoded_token["exp"])
-        # print(datetime.fromtimestamp(decoded_token["exp"], timezone.utc))
-
         headers["Authorization"] = f"Bearer {token}"
-
-        # print(headers)
 
     host = get_host(parsed_url.netloc)
 
@@ -91,7 +79,6 @@ def create_hyper_request_params(
     if req_params["params"] is not None:
         # Convert a mapping object or a sequence of two-element tuples,
         # which may contain str or bytes objects, to a percent-encoded ASCII text string.
-        print('req_params["params"] is not None', req_params["params"])
 
         def not_none_value(val, key):
             return val is not None
@@ -102,14 +89,8 @@ def create_hyper_request_params(
             if type(tasty_params["keys"]) is list:
                 tasty_params["keys"] = join(",", tasty_params["keys"])
 
-        print("tasty_params:", tasty_params)
-
         params = urlencode(tasty_params)
         url = f"{url}?{params}"
-
-        print("url: ", url)
-        # params = urlencode(req_params["params"])
-        # url = f"{url}?{params}"
 
     requestOptions = RequestOptions(
         {
