@@ -171,7 +171,9 @@ def postQuery(
     headers = hyperRequestParams["options"]["headers"]
     body = hyperRequestParams["options"]["body"]
 
-    results = requests.post(url, headers=headers, data=body)
+    results = requests.post(url, headers=headers, data=json.dumps(body))
+
+    data = json.dumps(body)
     return results.json()
 
 

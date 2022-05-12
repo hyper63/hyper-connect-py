@@ -3,13 +3,13 @@ from typing import Any, Dict, List, Optional
 
 from dotenv import dotenv_values
 from promisio import Promise
-from ramda import has, is_empty, join, merge, pick_by, prop
+from ramda import compose, has, head, is_empty, join, merge, pick_by, prop, prop_or
 
 from hyper_connect import connect
 from hyper_connect.types import Hyper, ListOptions, QueryOptions
 
 config = dotenv_values(".env")
-# >>> from sandbox import integration_test
+
 # >>> from sandbox import data_add, data_get, data_list, data_update, data_remove, data_query, data_index
 # >>> import asyncio
 # >>> asyncio.run(data_add('{ "_id":"book-102","type":"book", "name":"Horton hears a who 2","author":"Dr. Suess","published":"1953" }'))
@@ -20,7 +20,11 @@ config = dotenv_values(".env")
 # >>> asyncio.run(data_remove('book-2'))
 # >>> asyncio.run(data_query())
 # >>> asyncio.run(data_index())
-# asyncio.run(integration_test({ "_id":"book-000020","type":"book", "name":"The Lumberjack named Lorax the tree slayer","author":"Dr. Suess","published":"1969" }))
+# >>> asyncio.run(integration_test({ "_id":"book-000020","type":"book", "name":"The Lumberjack named Lorax the tree slayer","author":"Dr. Suess","published":"1969" }))
+
+# >>> from sandbox import integration_test
+# >>> import asyncio
+# >>> asyncio.run(integration_test({ "_id":"book-000020","type":"book", "name":"The Lumberjack named Lorax the tree slayer","author":"Dr. Suess","published":"1969" }, {"published": "1970"}, {"type": "book"}))
 
 if is_empty(config):
     print(
@@ -39,11 +43,17 @@ def error_response(err):
     return response
 
 
-async def integration_test(doc: Dict):
+async def integration_test(doc: Dict, updatedData: Dict[str, str], selector: Dict):
 
     getResult = await hyper.data.get(doc["_id"])
 
-    # print('getResult: ', getResult)
+    list_options: ListOptions = {
+        "startkey": None,
+        "limit": None,
+        "endkey": None,
+        "keys": [doc["_id"]],
+        "descending": None,
+    }
 
     if prop("status", getResult) == 404:
         print("The doc was NOT already in the db.")
@@ -53,19 +63,30 @@ async def integration_test(doc: Dict):
         removeResult = await hyper.data.remove(doc["_id"])
         print("...Delete result: ", removeResult)
 
+    def getFirstFromList(result):
+        return compose(head, prop_or([], "docs"))(result)
+
+    query_options: QueryOptions = {
+        "fields": None,
+        "sort": None,
+        "limit": 10,
+        "useIndex": None,
+    }
+
+    print("selector: ", selector)
+    print("query_options: ", query_options)
+
     result = (
         await hyper.data.add(doc)
         .then(lambda x: hyper.data.get(doc["_id"]))
-        .then(lambda doc: merge(doc, {"published": "1970"}))
+        .then(lambda doc: merge(doc, updatedData))
         .then(lambda doc: hyper.data.update(doc["_id"], doc))
+        .then(lambda x: hyper.data.list(list_options))
+        .then(lambda result: getFirstFromList(result))
+        .then(lambda doc: hyper.data.query(selector, query_options))
     )
 
-    print("add and get result", result)
-    #
-    # doc:str = '{ "_id":"book-0200","type":"movie", "title":"Jeremiah Johnson","year":"1972" }'
-    # result = await hyper.data.add(doc)
-    # .then(lambda x: hyper.data.get(x.id))
-    # return result
+    print("integration test result: ", result)
 
 
 async def data_add(doc: Dict):
@@ -150,12 +171,12 @@ async def data_query():
 
     selector = {"type": "movie", "year": {"$gt": "2000"}}
 
-    # options: QueryOptions = {
-    #     "fields": None,
-    #     "sort": None,
-    #     "limit": 10,
-    #     "useIndex": None,
-    # }
+    options: QueryOptions = {
+        "fields": None,
+        "sort": None,
+        "limit": 10,
+        "useIndex": None,
+    }
 
     # options: QueryOptions = {
     #     "fields": ["_id", "title", "year"],
@@ -169,12 +190,13 @@ async def data_query():
     # "sort": [{"year": "DESC"}],
     # "useIndex": "idx_title_year",
 
-    options: QueryOptions = {
-        "fields": ["title", "year"],
-        "sort": [{"title": "DESC"}],
-        "limit": 3,
-        "useIndex": "idx_title_year",
-    }
+    # options: QueryOptions = {
+    #     "fields": ["title", "year"],
+
+    #     "sort": [{"title": "DESC"}],
+    #     "limit": 3,
+    #     "useIndex": "idx_title_year",
+    # }
 
     result = await hyper.data.query(selector, options)
 
