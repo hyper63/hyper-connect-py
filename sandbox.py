@@ -1,4 +1,5 @@
-from typing import Any, List, Optional
+import json
+from typing import Any, Dict, List, Optional
 
 from dotenv import dotenv_values
 from promisio import Promise
@@ -8,16 +9,18 @@ from hyper_connect import connect
 from hyper_connect.types import Hyper, ListOptions, QueryOptions
 
 config = dotenv_values(".env")
-
+# >>> from sandbox import integration_test
 # >>> from sandbox import data_add, data_get, data_list, data_update, data_remove, data_query, data_index
 # >>> import asyncio
 # >>> asyncio.run(data_add('{ "_id":"book-102","type":"book", "name":"Horton hears a who 2","author":"Dr. Suess","published":"1953" }'))
+# >>> asyncio.run(data_add({ "_id":"book-000020","type":"book", "name":"The Lumberjack named Lorax","author":"Dr. Suess","published":"1969" }))
 # >>> asyncio.run(data_list())
-# >>> asyncio.run(data_update('book-2', '{ "_id":"book-2","type":"book", "name":"The Great Gatsby","author":"Dr. Suess","published":"1922" }'))
+# >>> asyncio.run(data_update('book-2', { "_id":"book-2","type":"book", "name":"The Great Gatsby","author":"Dr. Suess","published":"1922" }))
 # >>> asyncio.run(data_get('book-2'))
 # >>> asyncio.run(data_remove('book-2'))
 # >>> asyncio.run(data_query())
 # >>> asyncio.run(data_index())
+# asyncio.run(integration_test({ "_id":"book-000020","type":"book", "name":"The Lumberjack named Lorax the tree slayer","author":"Dr. Suess","published":"1969" }))
 
 if is_empty(config):
     print(
@@ -36,7 +39,17 @@ def error_response(err):
     return response
 
 
-async def data_add(doc: str):
+async def integration_test(doc: Dict):
+
+    result = await hyper.data.remove(doc["_id"]).then(lambda _: hyper.data.add(doc))
+
+    # doc:str = '{ "_id":"book-0200","type":"movie", "title":"Jeremiah Johnson","year":"1972" }'
+    # result = await hyper.data.add(doc)
+    # .then(lambda x: hyper.data.get(x.id))
+    return result
+
+
+async def data_add(doc: Dict):
     result = await hyper.data.add(doc).catch(error_response)
     return result
 
@@ -46,7 +59,7 @@ async def data_get(id: str):
     return result
 
 
-async def data_update(id: str, doc: Any):
+async def data_update(id: str, doc: Dict):
 
     result = await hyper.data.update(id, doc)
 

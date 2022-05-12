@@ -3,13 +3,20 @@
 # python -m unittest discover -s tests -v
 
 import unittest
+from typing import Dict
 
 from ramda import head, split  # type: ignore
 
 from hyper_connect.types import HyperRequest, HyperRequestParams
 from hyper_connect.utils import create_hyper_request_params
 
-body = '{ "_id":"book-102","type":"book", "name":"Horton hears a who 2","author":"Dr. Suess","published":"1953" }'
+body: Dict = {
+    "_id": "book-102",
+    "type": "book",
+    "name": "Horton hears a who 2",
+    "author": "Dr. Suess",
+    "published": "1953",
+}
 
 expected_result: HyperRequestParams = {
     "url": "https://cloud.hyper.io/express-quickstart/data/default",
@@ -19,7 +26,13 @@ expected_result: HyperRequestParams = {
             "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ4bWd0YTBudW02ajduNnVuN2FhNm91Z2EyNnZxbjc4NCIsImV4cCI6MTY1MTg3MTkyMX0.tlfSFwX5uXcHxgLu8oTteTl35nNHlWN8XH7d3i36MAY",
         },
         "method": "POST",
-        "body": '{ "_id":"book-102","type":"book", "name":"Horton hears a who 2","author":"Dr. Suess","published":"1953" }',
+        "body": {
+            "_id": "book-102",
+            "type": "book",
+            "name": "Horton hears a who 2",
+            "author": "Dr. Suess",
+            "published": "1953",
+        },
     },
 }
 

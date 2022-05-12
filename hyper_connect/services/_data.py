@@ -15,12 +15,12 @@ from hyper_connect.utils import check_json, create_hyper_request_params, to_data
 
 
 @promisify
-def addData(body: str, connection_string: str, domain: str = "default"):
+def addData(body: Dict, connection_string: str, domain: str = "default"):
 
-    check_json_result: bool = check_json(body)
+    # check_json_result: bool = check_json(body)
 
-    if not check_json_result:
-        raise ValueError("body should be a should be a json string.")
+    # if not check_json_result:
+    #     raise ValueError("body should be a should be a json string.")
 
     hyperRequest: HyperRequest = {
         "service": "data",
@@ -50,7 +50,7 @@ def addData(body: str, connection_string: str, domain: str = "default"):
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    return requests.post(url, headers=headers, data=body)
+    return requests.post(url, headers=headers, data=json.dumps(body))
 
 
 @promisify
@@ -104,7 +104,7 @@ def getDataList(options: ListOptions, connection_string: str, domain: str = "def
 
 
 @promisify
-def updateData(id: str, doc: Any, connection_string: str, domain: str = "default"):
+def updateData(id: str, doc: Dict, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
         "service": "data",
@@ -121,7 +121,7 @@ def updateData(id: str, doc: Any, connection_string: str, domain: str = "default
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    return requests.put(url, headers=headers, data=doc)
+    return requests.put(url, headers=headers, data=json.dumps(doc))
 
 
 @promisify
@@ -158,7 +158,7 @@ def postQuery(
     hyperRequest: HyperRequest = {
         "service": "data",
         "method": "POST",
-        "body": json.dumps(data_query),
+        "body": data_query,
         "resource": None,
         "params": None,
         "action": "_query",
@@ -191,7 +191,7 @@ def postIndex(
     hyperRequest: HyperRequest = {
         "service": "data",
         "method": "POST",
-        "body": json.dumps(indexBody),
+        "body": indexBody,
         "resource": None,
         "params": None,
         "action": "_index",
@@ -204,5 +204,5 @@ def postIndex(
     headers = hyperRequestParams["options"]["headers"]
     body = hyperRequestParams["options"]["body"]
 
-    results = requests.post(url, headers=headers, data=body)
+    results = requests.post(url, headers=headers, data=json.dumps(body))
     return results.json()

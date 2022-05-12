@@ -26,7 +26,7 @@ class HyperRequest(TypedDict):
     service: ServiceType
     method: Method
     resource: Optional[str]
-    body: Optional[str]
+    body: Optional[Dict]
     params: Union[ListOptions, QueryOptions, None]
     action: Optional[Action]
 
@@ -34,7 +34,7 @@ class HyperRequest(TypedDict):
 class RequestOptions(TypedDict):
     headers: Dict[str, str]
     method: Method
-    body: Optional[Any]
+    body: Optional[Dict]
 
 
 # Example HyperRequestParams
@@ -80,7 +80,7 @@ class HyperData:
         self._postDataQuery = postDataQueryFn
         self._postDataIndex = postDataIndexFn
 
-    def add(self, doc: Any):
+    def add(self, doc: Dict):
         return self._addDataDoc(doc)
 
     def get(self, id: str):
@@ -89,13 +89,13 @@ class HyperData:
     def list(self, options: ListOptions):
         return self._listDataDocs(options)
 
-    def update(self, id: str, doc: Any):
+    def update(self, id: str, doc: Dict):
         return self._updateDataDoc(id, doc)
 
     def remove(self, id: str):
         return self._removeDataDoc(id)
 
-    def query(self, selector: Any, options: QueryOptions):
+    def query(self, selector: Dict, options: QueryOptions):
         return self._postDataQuery(selector, options)
 
     def index(self, name: str, fields: List[str]):

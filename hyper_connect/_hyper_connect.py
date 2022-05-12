@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, Dict, List
 
 # from ._cache import addCacheDoc
 from hyper_connect.services import (
@@ -27,7 +27,7 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
 
         return print_this
 
-    def addDataDoc(doc: Any):
+    def addDataDoc(doc: Dict):
         return addData(doc, CONNECTION_STRING, domain).then(handle_response)
 
     def getDataDoc(id: str):
@@ -36,13 +36,13 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     def listDataDocs(options: ListOptions):
         return getDataList(options, CONNECTION_STRING, domain).then(handle_response)
 
-    def updateDataDoc(id: str, doc: Any):
+    def updateDataDoc(id: str, doc: Dict):
         return updateData(id, doc, CONNECTION_STRING, domain).then(handle_response)
 
     def removeDataDoc(id: str):
         return removeDataById(id, CONNECTION_STRING, domain).then(handle_response)
 
-    def queryDocs(selector: Any, options: QueryOptions):
+    def queryDocs(selector: Dict, options: QueryOptions):
         return postQuery(selector, options, CONNECTION_STRING, domain)
 
     def indexDocs(name: str, fields: List[str]):
