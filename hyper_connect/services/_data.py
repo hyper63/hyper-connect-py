@@ -1,3 +1,4 @@
+import json
 from typing import Any, Dict, Optional, TypedDict
 
 import requests
@@ -156,10 +157,7 @@ def postQuery(
     domain: str = "default",
 ):
 
-    print("_data.py postQuery selector: ", selector)
-    print("_data.py postQuery options: ", options)
-
-    data_query = to_data_query(selector, options)
+    data_query: Dict = to_data_query(selector, options)
 
     print("_data.py postQuery data_query: ", data_query)
     print("_data.py postQuery data_query type: ", type(data_query))
@@ -168,7 +166,7 @@ def postQuery(
     hyperRequest: HyperRequest = {
         "service": "data",
         "method": "POST",
-        "body": data_query,
+        "body": json.dumps(data_query),
         "resource": None,
         "params": None,
         "action": "_query",
@@ -179,8 +177,9 @@ def postQuery(
 
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
+    body = hyperRequestParams["options"]["body"]
 
     print("_data.py postQuery", url)
 
-    results = requests.post(url, headers=headers, data=data_query)
+    results = requests.post(url, headers=headers, data=body)
     return results.json()

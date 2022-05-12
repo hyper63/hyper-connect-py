@@ -18,16 +18,16 @@ config = dotenv_values(".env")
 # >>> asyncio.run(data_remove('book-2'))
 # >>> asyncio.run(data_query())
 
+
 if is_empty(config):
     print(
         "You seem to be missing a .env file with a `HYPER` environment variable.  Set HYPER with a connection string from your hyper app keys. https://docs.hyper.io/app-key."
     )
     exit()
+else:
+    connection_string: str = str(config["HYPER"])
 
-
-hyper: Hyper = connect(config["HYPER"])
-
-# passValueThru = lambda x: x
+hyper: Hyper = connect(connection_string)
 
 
 def error_response(err):
@@ -37,16 +37,12 @@ def error_response(err):
 
 
 async def data_add(doc: str):
-
     result = await hyper.data.add(doc).catch(error_response)
-
     return result
 
 
 async def data_get(id: str):
-
     result = await hyper.data.get(id)
-
     return result
 
 
@@ -75,21 +71,21 @@ async def data_list():
     #     "descending": None,
     # }
 
-    # options: ListOptions = {
-    #     "startkey": None,
-    #     "limit": None,
-    #     "endkey": None,
-    #     "keys": ["movie-1", "movie-11"],
-    #     "descending": None,
-    # }
-
     options: ListOptions = {
         "startkey": None,
         "limit": None,
         "endkey": None,
-        "keys": "movie-1,movie-11",
+        "keys": ["movie-1", "movie-11"],
         "descending": None,
     }
+
+    # options: ListOptions = {
+    #     "startkey": None,
+    #     "limit": None,
+    #     "endkey": None,
+    #     "keys": "movie-1,movie-11",
+    #     "descending": None,
+    # }
 
     # options: ListOptions = {
     #     "startkey": None,
@@ -118,6 +114,8 @@ async def data_query():
     # limit: Optional[int]
     # useIndex: Optional[str]
 
+    selector = {"type": "movie"}
+
     options: QueryOptions = {
         "fields": None,
         "sort": None,
@@ -125,7 +123,6 @@ async def data_query():
         "useIndex": None,
     }
 
-    selector = {"type": "movie"}
     result = await hyper.data.query(selector, options)
 
     return result
