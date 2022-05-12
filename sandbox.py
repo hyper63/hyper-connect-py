@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 from dotenv import dotenv_values
 from promisio import Promise
-from ramda import has, is_empty, join, pick_by
+from ramda import has, is_empty, join, merge, pick_by, prop
 
 from hyper_connect import connect
 from hyper_connect.types import Hyper, ListOptions, QueryOptions
@@ -41,12 +41,31 @@ def error_response(err):
 
 async def integration_test(doc: Dict):
 
-    result = await hyper.data.remove(doc["_id"]).then(lambda _: hyper.data.add(doc))
+    getResult = await hyper.data.get(doc["_id"])
 
+    # print('getResult: ', getResult)
+
+    if prop("status", getResult) == 404:
+        print("The doc was NOT already in the db.")
+        print("not found")
+    else:
+        print("The doc was already in the db. Attempting to delete doc....")
+        removeResult = await hyper.data.remove(doc["_id"])
+        print("...Delete result: ", removeResult)
+
+    result = (
+        await hyper.data.add(doc)
+        .then(lambda x: hyper.data.get(doc["_id"]))
+        .then(lambda doc: merge(doc, {"published": "1970"}))
+        .then(lambda doc: hyper.data.update(doc["_id"], doc))
+    )
+
+    print("add and get result", result)
+    #
     # doc:str = '{ "_id":"book-0200","type":"movie", "title":"Jeremiah Johnson","year":"1972" }'
     # result = await hyper.data.add(doc)
     # .then(lambda x: hyper.data.get(x.id))
-    return result
+    # return result
 
 
 async def data_add(doc: Dict):
