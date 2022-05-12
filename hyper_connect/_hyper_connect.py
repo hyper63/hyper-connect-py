@@ -1,10 +1,11 @@
-from typing import Any
+from typing import Any, List
 
 # from ._cache import addCacheDoc
 from hyper_connect.services import (
     addData,
     getDataById,
     getDataList,
+    postIndex,
     postQuery,
     removeDataById,
     updateData,
@@ -44,6 +45,9 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     def queryDocs(selector: Any, options: QueryOptions):
         return postQuery(selector, options, CONNECTION_STRING, domain)
 
+    def indexDocs(name: str, fields: List[str]):
+        return postIndex(name, fields, CONNECTION_STRING, domain)
+
     hyperData: HyperData = HyperData(
         addDataDocFn=addDataDoc,
         getDataDocFn=getDataDoc,
@@ -51,6 +55,7 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         updateDataDocFn=updateDataDoc,
         removeDataDocFn=removeDataDoc,
         postDataQueryFn=queryDocs,
+        postDataIndexFn=indexDocs,
     )
 
     hyper: Hyper = Hyper(data=hyperData)

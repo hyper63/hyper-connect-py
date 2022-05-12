@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 from dotenv import dotenv_values
 from promisio import Promise
@@ -9,7 +9,7 @@ from hyper_connect.types import Hyper, ListOptions, QueryOptions
 
 config = dotenv_values(".env")
 
-# >>> from sandbox import data_add, data_get, data_list, data_update, data_remove, data_query
+# >>> from sandbox import data_add, data_get, data_list, data_update, data_remove, data_query, data_index
 # >>> import asyncio
 # >>> asyncio.run(data_add('{ "_id":"book-102","type":"book", "name":"Horton hears a who 2","author":"Dr. Suess","published":"1953" }'))
 # >>> asyncio.run(data_list())
@@ -17,7 +17,7 @@ config = dotenv_values(".env")
 # >>> asyncio.run(data_get('book-2'))
 # >>> asyncio.run(data_remove('book-2'))
 # >>> asyncio.run(data_query())
-
+# >>> asyncio.run(data_index())
 
 if is_empty(config):
     print(
@@ -118,12 +118,12 @@ async def data_query():
 
     selector = {"type": "movie", "year": {"$gt": "2000"}}
 
-    options: QueryOptions = {
-        "fields": None,
-        "sort": None,
-        "limit": 10,
-        "useIndex": None,
-    }
+    # options: QueryOptions = {
+    #     "fields": None,
+    #     "sort": None,
+    #     "limit": 10,
+    #     "useIndex": None,
+    # }
 
     # options: QueryOptions = {
     #     "fields": ["_id", "title", "year"],
@@ -132,13 +132,35 @@ async def data_query():
     #     "useIndex": None,
     # }
 
-    # options: QueryOptions = {
-    #     "fields": ["_id", "title", "year"],
-    #     "sort": [{"year": "DESC"}],
-    #     "limit": 3,
-    #     "useIndex": None,
-    # }
+    # "fields": ["title", "year"],
+    # "sort": [{"title": "DESC"},{"year": "DESC"}],
+    # "sort": [{"year": "DESC"}],
+    # "useIndex": "idx_title_year",
+
+    options: QueryOptions = {
+        "fields": ["title", "year"],
+        "sort": [{"title": "DESC"}],
+        "limit": 3,
+        "useIndex": "idx_title_year",
+    }
 
     result = await hyper.data.query(selector, options)
+
+    return result
+
+
+async def data_index():
+
+    # name - The name of the index
+    # fields - JSON array describing the index to create
+
+    # This example creates an index on the fields named title and year.
+    # When querying for both title and year, the datastore can use this index for faster response times.
+
+    name: str = "idx_title_year"
+
+    fields: List[str] = ["title", "year"]
+
+    result = await hyper.data.index(name, fields)
 
     return result

@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, Optional, TypedDict
+from typing import Any, Dict, List, Optional, TypedDict
 
 import requests
 from promisio import promisify
@@ -46,10 +46,6 @@ def addData(body: str, connection_string: str, domain: str = "default"):
     #         'body': 'foo bar'
     #     }
     # }
-    # print('inside _data.py addData() hyperRequestParams dict')
-
-    # for k, v in hyperRequestParams.items():
-    #     print(k, v)
 
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
@@ -159,10 +155,6 @@ def postQuery(
 
     data_query: Dict = to_data_query(selector, options)
 
-    print("_data.py postQuery data_query: ", data_query)
-    print("_data.py postQuery data_query type: ", type(data_query))
-
-    # "params": options,
     hyperRequest: HyperRequest = {
         "service": "data",
         "method": "POST",
@@ -179,7 +171,38 @@ def postQuery(
     headers = hyperRequestParams["options"]["headers"]
     body = hyperRequestParams["options"]["body"]
 
-    print("_data.py postQuery", url)
+    results = requests.post(url, headers=headers, data=body)
+    return results.json()
+
+
+@promisify
+def postIndex(
+    name: str,
+    fields: List[str],
+    connection_string: str,
+    domain: str = "default",
+):
+
+    # '{"name": "idx-title-year", "type":"json", "fields": ["title", "year"]}'
+    # "params": options,
+
+    indexBody: Dict = {"name": name, "type": "json", "fields": fields}
+
+    hyperRequest: HyperRequest = {
+        "service": "data",
+        "method": "POST",
+        "body": json.dumps(indexBody),
+        "resource": None,
+        "params": None,
+        "action": "_index",
+    }
+    hyperRequestParams: HyperRequestParams = create_hyper_request_params(
+        connection_string, domain, hyperRequest
+    )
+
+    url: str = hyperRequestParams["url"]
+    headers = hyperRequestParams["options"]["headers"]
+    body = hyperRequestParams["options"]["body"]
 
     results = requests.post(url, headers=headers, data=body)
     return results.json()
