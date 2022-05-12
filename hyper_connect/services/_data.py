@@ -151,7 +151,7 @@ def removeDataById(id: str, connection_string: str, domain: str = "default"):
 
 @promisify
 def postQuery(
-    selector: Any,
+    selector: Dict,
     options: QueryOptions,
     connection_string: str,
     domain: str = "default",
