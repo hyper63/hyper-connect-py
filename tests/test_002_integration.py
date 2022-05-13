@@ -1,29 +1,16 @@
 # Once you have multiple test files, as long as you follow the test*.py naming pattern,
 # you can provide the name of the directory instead by using the -s flag and the name of the directory:
 # python -m unittest discover -s tests -v
-import json
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
 
 import asynctest
 from artifacts import book_doc_artifact
 from dotenv import dotenv_values
 from promisio import Promise
-from ramda import (
-    compose,
-    has,
-    head,
-    is_empty,
-    join,
-    map,
-    merge,
-    pick_by,
-    prop,
-    prop_or,
-    sum,
-)
+from ramda import head, is_empty, map, sum
 
 from hyper_connect import connect
-from hyper_connect.types import Hyper, ListOptions, QueryOptions
+from hyper_connect.types import Hyper, ListOptions
 
 config = dotenv_values("./.env")
 
