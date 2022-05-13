@@ -92,7 +92,7 @@ class TestIntegration(asynctest.TestCase):
             "startkey": None,
             "limit": None,
             "endkey": None,
-            "keys": "book-000105,book-000106",
+            "keys": ["book-000105,book-000106"],
             "descending": None,
         }
 

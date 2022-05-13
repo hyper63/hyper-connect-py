@@ -1,22 +1,23 @@
 from typing import Dict, Optional
 from urllib.parse import urlencode, urlparse
 
-from ramda import has, join, omit, pick_by
+from ramda import join, pick_by
+from typeguard import typechecked
 
 from hyper_connect.types import (
     Action,
     HyperRequest,
     HyperRequestParams,
-    Method,
     RequestOptions,
 )
 
-from ._generate_token import decode_token, generate_token
+from ._generate_token import generate_token
 from ._get_host import get_host
 from ._get_key import get_key
 from ._get_secret import get_secret
 
 
+@typechecked
 def create_hyper_request_params(
     connection_string: str, domain: str, req_params: HyperRequest
 ) -> HyperRequestParams:
@@ -100,6 +101,8 @@ def create_hyper_request_params(
         }
     )
 
-    hyperRequestParams = HyperRequestParams({"url": url, "options": requestOptions})
+    hyperRequestParams = HyperRequestParams(
+        {"url": url, "options": requestOptions}
+    )
 
     return hyperRequestParams
