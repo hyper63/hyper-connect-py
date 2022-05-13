@@ -7,7 +7,7 @@ import asynctest
 from artifacts import book_doc_artifact
 from dotenv import dotenv_values
 from promisio import Promise
-from ramda import head, is_empty, map, sum
+from ramda import head, is_empty, keys, map, sum
 
 from hyper_connect import connect
 from hyper_connect.types import Hyper, ListOptions
@@ -113,6 +113,43 @@ class TestIntegration(asynctest.TestCase):
 
         self.assertEqual(result["ok"], True, "List keys doc not ok.")
         self.assertEqual(len(result["docs"]), 4, "Length should be 4")
+
+    async def test_data_query1(self):
+
+        selector = {"type": "book", "name": {"$eq": "The Lorax 103"}}
+
+        options: QueryOptions = {
+            "fields": None,
+            "sort": None,
+            "limit": 10,
+            "useIndex": None,
+        }
+
+        result = await hyper.data.query(selector, options)
+
+        self.assertEqual(result["ok"], True, "List keys doc not ok.")
+        self.assertEqual(len(result["docs"]), 1, "Length should be 1")
+
+    async def test_data_query2(self):
+
+        selector = {"type": "book"}
+
+        options: QueryOptions = {
+            "fields": ["_id", "name", "published"],
+            "sort": None,
+            "limit": 3,
+            "useIndex": None,
+        }
+
+        result = await hyper.data.query(selector, options)
+
+        self.assertEqual(result["ok"], True, "List keys doc not ok.")
+        self.assertEqual(len(result["docs"]), 3, "Length should be 3")
+        self.assertEqual(
+            len(keys(head(result["docs"]))),
+            3,
+            "There should be 3 keys in a doc.",
+        )
 
 
 if __name__ == "__main__":
