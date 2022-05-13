@@ -71,7 +71,7 @@ class TestIntegration(asynctest.TestCase):
         }
 
         result = await hyper.data.list(options)
-        self.assertEqual(result["ok"], True, "List startkey doc not ok.")
+        self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
     async def test_data_list_keys_array(self):
@@ -84,7 +84,7 @@ class TestIntegration(asynctest.TestCase):
         }
 
         result = await hyper.data.list(options)
-        self.assertEqual(result["ok"], True, "List keys doc not ok.")
+        self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
     async def test_data_list_keys_comma_list(self):
@@ -97,10 +97,10 @@ class TestIntegration(asynctest.TestCase):
         }
 
         result = await hyper.data.list(options)
-        self.assertEqual(result["ok"], True, "List keys doc not ok.")
+        self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
-    async def test_data_list_keys_limit(self):
+    async def test_data_list_limit(self):
         options: ListOptions = {
             "startkey": "book-000100",
             "limit": 4,
@@ -111,7 +111,7 @@ class TestIntegration(asynctest.TestCase):
 
         result = await hyper.data.list(options)
 
-        self.assertEqual(result["ok"], True, "List keys doc not ok.")
+        self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 4, "Length should be 4")
 
     async def test_data_query1(self):
@@ -127,7 +127,7 @@ class TestIntegration(asynctest.TestCase):
 
         result = await hyper.data.query(selector, options)
 
-        self.assertEqual(result["ok"], True, "List keys doc not ok.")
+        self.assertEqual(result["ok"], True, "Query result not ok.")
         self.assertEqual(len(result["docs"]), 1, "Length should be 1")
 
     async def test_data_query2(self):
@@ -143,7 +143,7 @@ class TestIntegration(asynctest.TestCase):
 
         result = await hyper.data.query(selector, options)
 
-        self.assertEqual(result["ok"], True, "List keys doc not ok.")
+        self.assertEqual(result["ok"], True, "Query result not ok.")
         self.assertEqual(len(result["docs"]), 3, "Length should be 3")
         self.assertEqual(
             len(keys(head(result["docs"]))),
