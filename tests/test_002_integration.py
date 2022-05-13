@@ -74,17 +74,58 @@ class TestIntegration(asynctest.TestCase):
         result = await hyper.data.update(book1["_id"], book1)
         self.assertEqual(result["ok"], True, "Update doc not ok.")
 
-    async def test_data_list_startkey(self):
+    async def test_data_list_startkey_endkey(self):
         options: ListOptions = {
-            "startkey": "movie-5",
+            "startkey": "book-000105",
             "limit": None,
-            "endkey": None,
+            "endkey": "book-000106",
             "keys": None,
             "descending": None,
         }
 
         result = await hyper.data.list(options)
         self.assertEqual(result["ok"], True, "List startkey doc not ok.")
+        self.assertEqual(len(result["docs"]), 2, "Length should be 2")
+
+    async def test_data_list_keys_array(self):
+        options: ListOptions = {
+            "startkey": None,
+            "limit": None,
+            "endkey": None,
+            "keys": ["book-000105", "book-000106"],
+            "descending": None,
+        }
+
+        result = await hyper.data.list(options)
+        self.assertEqual(result["ok"], True, "List keys doc not ok.")
+        self.assertEqual(len(result["docs"]), 2, "Length should be 2")
+
+    async def test_data_list_keys_comma_list(self):
+        options: ListOptions = {
+            "startkey": None,
+            "limit": None,
+            "endkey": None,
+            "keys": "book-000105,book-000106",
+            "descending": None,
+        }
+
+        result = await hyper.data.list(options)
+        self.assertEqual(result["ok"], True, "List keys doc not ok.")
+        self.assertEqual(len(result["docs"]), 2, "Length should be 2")
+
+    async def test_data_list_keys_limit(self):
+        options: ListOptions = {
+            "startkey": "book-000100",
+            "limit": 4,
+            "endkey": None,
+            "keys": None,
+            "descending": None,
+        }
+
+        result = await hyper.data.list(options)
+
+        self.assertEqual(result["ok"], True, "List keys doc not ok.")
+        self.assertEqual(len(result["docs"]), 4, "Length should be 4")
 
 
 if __name__ == "__main__":
