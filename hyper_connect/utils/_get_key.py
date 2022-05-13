@@ -1,10 +1,10 @@
 from typing import Union
 
-from ramda import compose, head, is_empty, last, split
+from ramda import compose, head, is_empty, split
+from typeguard import typechecked
 
 
-# network_location example 1: "hyper app key:hyper app secret@cloud.hyper.io"
-# network_location example 2: "api.github.com"
+@typechecked
 def get_key(network_location: str) -> Union[str, None]:
     key: str = compose(head, split(":"))(network_location)
 

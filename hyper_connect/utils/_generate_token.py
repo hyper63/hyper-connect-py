@@ -2,8 +2,10 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict
 
 import jwt
+from typeguard import typechecked
 
 
+@typechecked
 def generate_token(public_key: str, secret: str) -> str:
 
     encoded_jwt = jwt.encode(

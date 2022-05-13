@@ -1,12 +1,11 @@
 from promisio import Promise
 from ramda import if_else
-from requests import HTTPError
 
 
 def handle_response(response):
 
-    content_type_is_application_json = lambda x: "application/json" in x.headers.get(
-        "content-type"
+    content_type_is_application_json = (
+        lambda x: "application/json" in x.headers.get("content-type")
     )
     to_json = lambda x: x.json()
 
