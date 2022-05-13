@@ -83,7 +83,6 @@ class TestIntegration(asynctest.TestCase):
         try:
             result = await hyper.data.list(options)
         except TypeError as err:
-            print("err", err)
             self.assertEqual(True, True, "Should raise TypeError")
 
         # self.assertEqual(True, False, "Should raise TypeError")
