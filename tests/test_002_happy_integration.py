@@ -128,7 +128,7 @@ class TestIntegration(asynctest.TestCase):
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 4, "Length should be 4")
 
-    async def test_data_query1(self):
+    async def test_data_query_limit_10(self):
 
         selector = {"type": "book", "name": {"$eq": "The Lorax 103"}}
 
@@ -144,7 +144,7 @@ class TestIntegration(asynctest.TestCase):
         self.assertEqual(result["ok"], True, "Query result not ok.")
         self.assertEqual(len(result["docs"]), 1, "Length should be 1")
 
-    async def test_data_query2(self):
+    async def test_data_query_fields(self):
 
         selector = {"type": "book"}
 
@@ -163,6 +163,37 @@ class TestIntegration(asynctest.TestCase):
             len(keys(head(result["docs"]))),
             3,
             "There should be 3 keys in a doc.",
+        )
+
+    async def test_data_query_index(self):
+
+        selector = {"type": "book", "author": "James A. Michener"}
+
+        options: QueryOptions = {
+            "fields": ["author", "published"],
+            "sort": [{"author": "DESC"}, {"published": "DESC"}],
+            "useIndex": "idx_author_published",
+        }
+
+        index_result = await hyper.data.index(
+            "idx_author_published", ["author", "published"]
+        )
+
+        result = await hyper.data.query(selector, options)
+
+        self.assertEqual(
+            index_result["ok"], True, "index create result not ok."
+        )
+        self.assertEqual(len(result["docs"]), 3, "Length should be 3")
+        self.assertEqual(
+            len(keys(head(result["docs"]))),
+            2,
+            "There should be 2 keys in a doc.",
+        )
+        self.assertEqual(
+            prop("published", head(result["docs"])),
+            "1985",
+            "The first doc should be published in 1985",
         )
 
     async def test_bulk_data(self):
