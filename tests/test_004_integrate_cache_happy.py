@@ -5,7 +5,7 @@ import json
 from typing import Dict, List
 
 import asynctest
-from artifacts import book_bulk_doc_artifacts, book_doc_artifacts
+from artifacts import book_doc_artifacts
 from dotenv import dotenv_values
 from promisio import Promise
 from ramda import (
@@ -27,10 +27,8 @@ from hyper_connect.types import Hyper, ListOptions
 config = dotenv_values("./.env")
 
 book_docs: List[Dict] = book_doc_artifacts()
-book_bulk_docs: List[Dict] = book_bulk_doc_artifacts()
 
 book1: Dict = head(book_docs)
-
 
 if is_empty(config):
     print(
@@ -43,21 +41,20 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestIntegration(asynctest.TestCase):
-    async def test_data_add(self):
-
+class TestCacheIntegration(asynctest.TestCase):
+    async def test_cache_add(self):
         # Remove all book docs
         remove_promises = []
 
         for book_doc in book_docs:
-            remove_promises.append(hyper.data.remove(book_doc["_id"]))
+            remove_promises.append(hyper.cache.remove(key=book_doc["_id"]))
 
         remove_promises_result = await Promise.all_settled(remove_promises)
 
         # Add all book docs
         add_promises = []
         for book_doc in book_docs:
-            add_promises.append(hyper.data.add(book_doc))
+            add_promises.append(keys.cache.add())
 
         add_promises_result = await Promise.all_settled(add_promises)
 
@@ -67,166 +64,42 @@ class TestIntegration(asynctest.TestCase):
 
         self.assertEqual(countFulfilled, len(book_docs), "Adding docs not ok.")
 
-    async def test_data_get(self):
+    async def test_cache_get(self):
         result = await hyper.data.get(book1["_id"])
         self.assertEqual(book1["_id"], "book-000100", "Getting doc not ok.")
 
-    async def test_data_update(self):
-        result = await hyper.data.update(book1["_id"], book1)
-        self.assertEqual(result["ok"], True, "Update doc not ok.")
+    # async def test_data_update(self):
+    #     result = await hyper.data.update(book1["_id"], book1)
+    #     self.assertEqual(result["ok"], True, "Update doc not ok.")
 
-    async def test_data_list_startkey_endkey(self):
-        options: ListOptions = {
-            "startkey": "book-000105",
-            "limit": None,
-            "endkey": "book-000106",
-            "keys": None,
-            "descending": None,
-        }
+    # async def test_data_list_keys_array(self):
+    #     options: ListOptions = {
+    #         "startkey": None,
+    #         "limit": None,
+    #         "endkey": None,
+    #         "keys": ["book-000105", "book-000106"],
+    #         "descending": None,
+    #     }
 
-        result = await hyper.data.list(options)
-        self.assertEqual(result["ok"], True, "List result not ok.")
-        self.assertEqual(len(result["docs"]), 2, "Length should be 2")
+    #     result = await hyper.data.list(options)
+    #     self.assertEqual(result["ok"], True, "List result not ok.")
+    #     self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
-    async def test_data_list_keys_array(self):
-        options: ListOptions = {
-            "startkey": None,
-            "limit": None,
-            "endkey": None,
-            "keys": ["book-000105", "book-000106"],
-            "descending": None,
-        }
+    # async def test_data_query_limit_10(self):
 
-        result = await hyper.data.list(options)
-        self.assertEqual(result["ok"], True, "List result not ok.")
-        self.assertEqual(len(result["docs"]), 2, "Length should be 2")
+    #     selector = {"type": "book", "name": {"$eq": "The Lorax 103"}}
 
-    async def test_data_list_keys_comma_list(self):
-        options: ListOptions = {
-            "startkey": None,
-            "limit": None,
-            "endkey": None,
-            "keys": ["book-000105,book-000106"],
-            "descending": None,
-        }
+    #     options: QueryOptions = {
+    #         "fields": None,
+    #         "sort": None,
+    #         "limit": 10,
+    #         "useIndex": None,
+    #     }
 
-        result = await hyper.data.list(options)
-        self.assertEqual(result["ok"], True, "List result not ok.")
-        self.assertEqual(len(result["docs"]), 2, "Length should be 2")
+    #     result = await hyper.data.query(selector, options)
 
-    async def test_data_list_limit(self):
-        options: ListOptions = {
-            "startkey": "book-000100",
-            "limit": 4,
-            "endkey": None,
-            "keys": None,
-            "descending": None,
-        }
-
-        result = await hyper.data.list(options)
-
-        self.assertEqual(result["ok"], True, "List result not ok.")
-        self.assertEqual(len(result["docs"]), 4, "Length should be 4")
-
-    async def test_data_query_limit_10(self):
-
-        selector = {"type": "book", "name": {"$eq": "The Lorax 103"}}
-
-        options: QueryOptions = {
-            "fields": None,
-            "sort": None,
-            "limit": 10,
-            "useIndex": None,
-        }
-
-        result = await hyper.data.query(selector, options)
-
-        self.assertEqual(result["ok"], True, "Query result not ok.")
-        self.assertEqual(len(result["docs"]), 1, "Length should be 1")
-
-    async def test_data_query_fields(self):
-
-        selector = {"type": "book"}
-
-        options: QueryOptions = {
-            "fields": ["_id", "name", "published"],
-            "sort": None,
-            "limit": 3,
-            "useIndex": None,
-        }
-
-        result = await hyper.data.query(selector, options)
-
-        self.assertEqual(result["ok"], True, "Query result not ok.")
-        self.assertEqual(len(result["docs"]), 3, "Length should be 3")
-        self.assertEqual(
-            len(keys(head(result["docs"]))),
-            3,
-            "There should be 3 keys in a doc.",
-        )
-
-    async def test_data_query_index(self):
-
-        selector = {"type": "book", "author": "James A. Michener"}
-
-        options: QueryOptions = {
-            "fields": ["author", "published"],
-            "sort": [{"author": "DESC"}, {"published": "DESC"}],
-            "useIndex": "idx_author_published",
-        }
-
-        index_result = await hyper.data.index(
-            "idx_author_published", ["author", "published"]
-        )
-
-        result = await hyper.data.query(selector, options)
-
-        self.assertEqual(
-            index_result["ok"], True, "index create result not ok."
-        )
-        self.assertEqual(len(result["docs"]), 3, "Length should be 3")
-        self.assertEqual(
-            len(keys(head(result["docs"]))),
-            2,
-            "There should be 2 keys in a doc.",
-        )
-        self.assertEqual(
-            prop("published", head(result["docs"])),
-            "1985",
-            "The first doc should be published in 1985",
-        )
-
-    async def test_bulk_data(self):
-
-        # Bulk remove docs
-        bulkDocs = map(
-            lambda doc: assoc("_deleted", True, doc), book_bulk_docs
-        )
-
-        result = await hyper.data.bulk(bulkDocs).then(
-            lambda _: hyper.data.bulk(book_bulk_docs)
-        )
-
-        self.assertEqual(result["ok"], True, "Bulk result not ok.")
-        self.assertEqual(len(result["results"]), 3, "Length should be 3.")
-
-        # {"ok":true,"results":[{"ok":true,"id":"movie-4"}]}
-
-        def by_ok(r):
-            if r["ok"] is True:
-                return "true"
-            else:
-                return "false"
-
-        number_of_true_results = compose(
-            prop("true"), count_by(by_ok), prop_or([], "results")
-        )(result)
-
-        self.assertEqual(
-            number_of_true_results,
-            3,
-            "There should be 3 ok results.",
-        )
+    #     self.assertEqual(result["ok"], True, "Query result not ok.")
+    #     self.assertEqual(len(result["docs"]), 1, "Length should be 1")
 
 
 if __name__ == "__main__":

@@ -43,7 +43,7 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestIntegration(asynctest.TestCase):
+class TestDataIntegration(asynctest.TestCase):
     async def test_data_add(self):
 
         # Remove all book docs

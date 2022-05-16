@@ -1,4 +1,13 @@
-from typing import Callable, Dict, List, Literal, Optional, TypedDict, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    TypedDict,
+    Union,
+)
 
 SortOptions = Literal["DESC", "ASC"]
 ServiceType = Literal["data", "cache", "storage", "search", "queue", "info"]
@@ -27,7 +36,7 @@ class HyperRequest(TypedDict):
     method: Method
     resource: Optional[str]
     body: Union[Dict, List[Dict], None]
-    params: Union[ListOptions, QueryOptions, None]
+    params: Union[ListOptions, QueryOptions, Dict[str, str], None]
     action: Optional[Action]
 
 
@@ -61,50 +70,81 @@ class WriteHyperDataError(Exception):
     pass
 
 
+class HyperCache:
+    def __init__(
+        self,
+        add_cache_fn: Callable,
+        get_cache_fn: Callable,
+        set_cache_fn: Callable,
+        remove_cache_fn: Callable,
+        post_cache_query_fn: Callable,
+    ):
+        self._add_cache = add_cache_fn
+        self._get_cache = get_cache_fn
+        self._set_cache = set_cache_fn
+        self._remove_cache = remove_cache_fn
+        self._post_cache_query = post_cache_query_fn
+
+    def add(self, key: str, value: Any, ttl: Optional[str]):
+        return self._add_cache(key, value, ttl)
+
+    def get(self, key: str):
+        return self._get_cache(key)
+
+    def set(self, key: str, value: Any, ttl: Optional[str]):
+        return self._set_cache(key, value, ttl)
+
+    def remove(self, key: str):
+        return self._remove_cache(key)
+
+    def query(self, pattern: str):
+        return self._post_cache_query(pattern)
+
+
 class HyperData:
     def __init__(
         self,
-        addDataDocFn: Callable,
-        getDataDocFn: Callable,
-        listDataDocsFn: Callable,
-        updateDataDocFn: Callable,
-        removeDataDocFn: Callable,
-        postDataQueryFn: Callable,
-        postDataIndexFn: Callable,
-        postBulkFn: Callable,
+        add_data_doc_fn: Callable,
+        get_data_doc_fn: Callable,
+        list_data_docs_fn: Callable,
+        update_data_doc_fn: Callable,
+        remove_data_doc_fn: Callable,
+        query_docs_fn: Callable,
+        index_docs_fn: Callable,
+        bulk_docs_fn: Callable,
     ):
-        self._addDataDoc = addDataDocFn
-        self._getDataDoc = getDataDocFn
-        self._listDataDocs = listDataDocsFn
-        self._updateDataDoc = updateDataDocFn
-        self._removeDataDoc = removeDataDocFn
-        self._postDataQuery = postDataQueryFn
-        self._postDataIndex = postDataIndexFn
-        self._postBulk = postBulkFn
+        self._add_data_doc = add_data_doc_fn
+        self._get_data_doc = get_data_doc_fn
+        self._list_data_docs = list_data_docs_fn
+        self._update_data_doc = update_data_doc_fn
+        self._remove_data_doc = remove_data_doc_fn
+        self._query_docs = query_docs_fn
+        self._index_docs = index_docs_fn
+        self._bulk_docs = bulk_docs_fn
 
     def add(self, doc: Dict):
-        return self._addDataDoc(doc)
+        return self._add_data_doc(doc)
 
     def get(self, id: str):
-        return self._getDataDoc(id)
+        return self._get_data_doc(id)
 
     def list(self, options: ListOptions):
-        return self._listDataDocs(options)
+        return self._list_data_docs(options)
 
     def update(self, id: str, doc: Dict):
-        return self._updateDataDoc(id, doc)
+        return self._update_data_doc(id, doc)
 
     def remove(self, id: str):
-        return self._removeDataDoc(id)
+        return self._remove_data_doc(id)
 
     def query(self, selector: Dict, options: QueryOptions):
-        return self._postDataQuery(selector, options)
+        return self._query_docs(selector, options)
 
     def index(self, name: str, fields: List[str]):
-        return self._postDataIndex(name, fields)
+        return self._index_docs(name, fields)
 
     def bulk(self, docs: List[Dict]):
-        return self._postBulk(docs)
+        return self._bulk_docs(docs)
 
 
 # Hyper Classes
@@ -114,9 +154,9 @@ class WriteHyperError(Exception):
 
 # def __init__(self, data, cache, search, storage, queue, info ):
 class Hyper:
-    def __init__(self, data: HyperData):
+    def __init__(self, data: HyperData, cache: HyperCache):
         self._data = data
-        # self._cache = cache
+        self._cache = cache
         # self._search = search
         # self._storage = storage
         # self._queue = queue
@@ -130,13 +170,13 @@ class Hyper:
     def data(self, value):
         raise WriteHyperError("data service property is read-only")
 
-    # @property
-    # def cache(self):
-    #     return self._cache
+    @property
+    def cache(self):
+        return self._cache
 
-    # @cache.setter
-    # def cache(self, value):
-    #     raise WriteHyperError("cache service property is read-only")
+    @cache.setter
+    def cache(self, value):
+        raise WriteHyperError("cache service property is read-only")
 
     # @property
     # def search(self):

@@ -79,7 +79,12 @@ class TestCreateHyperRequestParams(unittest.TestCase):
         )
 
         self.assertEqual(
-            head(split(" ", hyperRequestParams["options"]["headers"]["Authorization"])),
+            head(
+                split(
+                    " ",
+                    hyperRequestParams["options"]["headers"]["Authorization"],
+                )
+            ),
             "Bearer",
             "Bearer does not exist",
         )
