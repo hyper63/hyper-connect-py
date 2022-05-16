@@ -1,13 +1,13 @@
 __version__ = "0.0.1"
 
-from ._cache import addCacheDoc
+from ._cache import add_cache
 from ._data import (
-    addData,
-    getDataById,
-    getDataList,
-    postBulk,
-    postIndex,
-    postQuery,
-    removeDataById,
-    updateData,
+    add_data,
+    get_data,
+    get_data_list,
+    post_bulk,
+    post_index,
+    post_query,
+    remove_data,
+    update_data,
 )

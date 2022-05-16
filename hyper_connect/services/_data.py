@@ -14,7 +14,7 @@ from hyper_connect.utils import create_hyper_request_params, to_data_query
 
 
 @promisify
-def addData(body: Dict, connection_string: str, domain: str = "default"):
+def add_data(body: Dict, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
         "service": "data",
@@ -48,7 +48,7 @@ def addData(body: Dict, connection_string: str, domain: str = "default"):
 
 
 @promisify
-def getDataById(id: str, connection_string: str, domain: str = "default"):
+def get_data(id: str, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
         "service": "data",
@@ -69,7 +69,7 @@ def getDataById(id: str, connection_string: str, domain: str = "default"):
 
 
 @promisify
-def getDataList(
+def get_data_list(
     options: ListOptions, connection_string: str, domain: str = "default"
 ):
 
@@ -100,7 +100,7 @@ def getDataList(
 
 
 @promisify
-def updateData(
+def update_data(
     id: str, doc: Dict, connection_string: str, domain: str = "default"
 ):
 
@@ -123,7 +123,7 @@ def updateData(
 
 
 @promisify
-def removeDataById(id: str, connection_string: str, domain: str = "default"):
+def remove_data(id: str, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
         "service": "data",
@@ -144,7 +144,7 @@ def removeDataById(id: str, connection_string: str, domain: str = "default"):
 
 
 @promisify
-def postQuery(
+def post_query(
     selector: Dict,
     options: QueryOptions,
     connection_string: str,
@@ -176,7 +176,7 @@ def postQuery(
 
 
 @promisify
-def postIndex(
+def post_index(
     name: str,
     fields: List[str],
     connection_string: str,
@@ -205,7 +205,7 @@ def postIndex(
 
 
 @promisify
-def postBulk(
+def post_bulk(
     docs: List[Dict],
     connection_string: str,
     domain: str = "default",

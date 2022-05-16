@@ -27,7 +27,7 @@ class HyperRequest(TypedDict):
     method: Method
     resource: Optional[str]
     body: Union[Dict, List[Dict], None]
-    params: Union[ListOptions, QueryOptions, None]
+    params: Union[ListOptions, QueryOptions, Dict[str, str], None]
     action: Optional[Action]
 
 
@@ -64,23 +64,23 @@ class WriteHyperDataError(Exception):
 class HyperData:
     def __init__(
         self,
-        addDataDocFn: Callable,
-        getDataDocFn: Callable,
-        listDataDocsFn: Callable,
-        updateDataDocFn: Callable,
-        removeDataDocFn: Callable,
-        postDataQueryFn: Callable,
-        postDataIndexFn: Callable,
-        postBulkFn: Callable,
+        add_data_doc_fn: Callable,
+        get_data_doc_fn: Callable,
+        list_data_docs_fn: Callable,
+        update_data_doc_fn: Callable,
+        remove_data_doc_fn: Callable,
+        query_docs_fn: Callable,
+        index_docs_fn: Callable,
+        bulk_docs_fn: Callable,
     ):
-        self._addDataDoc = addDataDocFn
-        self._getDataDoc = getDataDocFn
-        self._listDataDocs = listDataDocsFn
-        self._updateDataDoc = updateDataDocFn
-        self._removeDataDoc = removeDataDocFn
-        self._postDataQuery = postDataQueryFn
-        self._postDataIndex = postDataIndexFn
-        self._postBulk = postBulkFn
+        self._addDataDoc = add_data_doc_fn
+        self._getDataDoc = get_data_doc_fn
+        self._listDataDocs = list_data_docs_fn
+        self._updateDataDoc = update_data_doc_fn
+        self._removeDataDoc = remove_data_doc_fn
+        self._postDataQuery = query_docs_fn
+        self._postDataIndex = index_docs_fn
+        self._postBulk = bulk_docs_fn
 
     def add(self, doc: Dict):
         return self._addDataDoc(doc)
