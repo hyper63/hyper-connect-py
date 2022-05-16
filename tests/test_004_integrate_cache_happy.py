@@ -54,7 +54,9 @@ class TestCacheIntegration(asynctest.TestCase):
         # Add all book docs
         add_promises = []
         for book_doc in book_docs:
-            add_promises.append(keys.cache.add())
+            add_promises.append(
+                hyper.cache.add(key=book_doc["_id"], value=book_doc, ttl="1d")
+            )
 
         add_promises_result = await Promise.all_settled(add_promises)
 
@@ -65,7 +67,7 @@ class TestCacheIntegration(asynctest.TestCase):
         self.assertEqual(countFulfilled, len(book_docs), "Adding docs not ok.")
 
     async def test_cache_get(self):
-        result = await hyper.data.get(book1["_id"])
+        result = await hyper.cache.get(book1["_id"])
         self.assertEqual(book1["_id"], "book-000100", "Getting doc not ok.")
 
     # async def test_data_update(self):

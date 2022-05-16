@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, Dict, List, Optional
 
 from typeguard import typechecked
 
@@ -69,12 +69,29 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         bulk_docs_fn=bulk_docs,
     )
 
+    def add_cache_doc(key: str, value: Any, ttl: Optional[str]):
+        return add_cache(key, value, ttl, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    def get_cache_doc(key: str):
+        return get_cache(key, CONNECTION_STRING, domain)
+
+    def set_cache_doc(key: str, value: Any, ttl: Optional[str]):
+        return set_cache(key, value, ttl, CONNECTION_STRING, domain)
+
+    def remove_cache_doc(key: str):
+        return remove_cache(key, CONNECTION_STRING, domain)
+
+    def post_cache_query_doc(pattern: str):
+        return post_cache_query(pattern, CONNECTION_STRING, domain)
+
     hyper_cache: HyperCache = HyperCache(
-        add_cache_fn=add_cache,
-        get_cache_fn=get_cache,
-        set_cache_fn=set_cache,
-        remove_cache_fn=remove_cache,
-        post_cache_query_fn=post_cache_query,
+        add_cache_fn=add_cache_doc,
+        get_cache_fn=get_cache_doc,
+        set_cache_fn=set_cache_doc,
+        remove_cache_fn=remove_cache_doc,
+        post_cache_query_fn=post_cache_query_doc,
     )
 
     hyper: Hyper = Hyper(data=hyper_data, cache=hyper_cache)
