@@ -4,7 +4,7 @@
 from typing import Dict, List
 
 import asynctest
-from artifacts import book_doc_artifact
+from artifacts import book_doc_artifacts
 from dotenv import dotenv_values
 from ramda import head, is_empty
 
@@ -13,7 +13,7 @@ from hyper_connect.types import Hyper, ListOptions
 
 config = dotenv_values("./.env")
 
-book_docs: List[Dict] = book_doc_artifact()
+book_docs: List[Dict] = book_doc_artifacts()
 
 book1: Dict = head(book_docs)
 

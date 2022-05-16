@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 
-def book_doc_artifact() -> List[Dict]:
+def book_doc_artifacts() -> List[Dict]:
 
     return [
         {
@@ -52,5 +52,32 @@ def book_doc_artifact() -> List[Dict]:
             "name": "The Lorax 106",
             "author": "Dr. Suess",
             "published": "1969",
+        },
+    ]
+
+
+def book_bulk_doc_artifacts() -> List[Dict]:
+
+    return [
+        {
+            "_id": "book-000200",
+            "type": "book",
+            "name": "Tales of the South Pacific",
+            "author": "James A. Michener",
+            "published": "1947",
+        },
+        {
+            "_id": "book-000201",
+            "type": "book",
+            "name": "Hawaii",
+            "author": "James A. Michener",
+            "published": "1959",
+        },
+        {
+            "_id": "book-000202",
+            "type": "book",
+            "name": "Texas",
+            "author": "James A. Michener",
+            "published": "1985",
         },
     ]

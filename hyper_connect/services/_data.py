@@ -1,11 +1,10 @@
 import json
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Dict, List
 
 import requests
 from promisio import promisify
 
 from hyper_connect.types import (
-    Action,
     HyperRequest,
     HyperRequestParams,
     ListOptions,
@@ -70,7 +69,9 @@ def getDataById(id: str, connection_string: str, domain: str = "default"):
 
 
 @promisify
-def getDataList(options: ListOptions, connection_string: str, domain: str = "default"):
+def getDataList(
+    options: ListOptions, connection_string: str, domain: str = "default"
+):
 
     hyperRequest: HyperRequest = {
         "service": "data",
@@ -99,7 +100,9 @@ def getDataList(options: ListOptions, connection_string: str, domain: str = "def
 
 
 @promisify
-def updateData(id: str, doc: Dict, connection_string: str, domain: str = "default"):
+def updateData(
+    id: str, doc: Dict, connection_string: str, domain: str = "default"
+):
 
     hyperRequest: HyperRequest = {
         "service": "data",
@@ -188,6 +191,33 @@ def postIndex(
         "resource": None,
         "params": None,
         "action": "_index",
+    }
+    hyperRequestParams: HyperRequestParams = create_hyper_request_params(
+        connection_string, domain, hyperRequest
+    )
+
+    url: str = hyperRequestParams["url"]
+    headers = hyperRequestParams["options"]["headers"]
+    body = hyperRequestParams["options"]["body"]
+
+    results = requests.post(url, headers=headers, data=json.dumps(body))
+    return results.json()
+
+
+@promisify
+def postBulk(
+    docs: List[Dict],
+    connection_string: str,
+    domain: str = "default",
+):
+
+    hyperRequest: HyperRequest = {
+        "service": "data",
+        "method": "POST",
+        "body": docs,
+        "resource": None,
+        "params": None,
+        "action": "_bulk",
     }
     hyperRequestParams: HyperRequestParams = create_hyper_request_params(
         connection_string, domain, hyperRequest

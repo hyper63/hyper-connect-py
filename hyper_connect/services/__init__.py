@@ -5,6 +5,7 @@ from ._data import (
     addData,
     getDataById,
     getDataList,
+    postBulk,
     postIndex,
     postQuery,
     removeDataById,

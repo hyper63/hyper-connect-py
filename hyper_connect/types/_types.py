@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Literal, Optional, TypedDict, Union
+from typing import Callable, Dict, List, Literal, Optional, TypedDict, Union
 
 SortOptions = Literal["DESC", "ASC"]
 ServiceType = Literal["data", "cache", "storage", "search", "queue", "info"]
@@ -26,7 +26,7 @@ class HyperRequest(TypedDict):
     service: ServiceType
     method: Method
     resource: Optional[str]
-    body: Optional[Dict]
+    body: Union[Dict, List[Dict], None]
     params: Union[ListOptions, QueryOptions, None]
     action: Optional[Action]
 
@@ -34,7 +34,7 @@ class HyperRequest(TypedDict):
 class RequestOptions(TypedDict):
     headers: Dict[str, str]
     method: Method
-    body: Optional[Dict]
+    body: Union[Dict, List[Dict], None]
 
 
 # Example HyperRequestParams
@@ -71,6 +71,7 @@ class HyperData:
         removeDataDocFn: Callable,
         postDataQueryFn: Callable,
         postDataIndexFn: Callable,
+        postBulkFn: Callable,
     ):
         self._addDataDoc = addDataDocFn
         self._getDataDoc = getDataDocFn
@@ -79,6 +80,7 @@ class HyperData:
         self._removeDataDoc = removeDataDocFn
         self._postDataQuery = postDataQueryFn
         self._postDataIndex = postDataIndexFn
+        self._postBulk = postBulkFn
 
     def add(self, doc: Dict):
         return self._addDataDoc(doc)
@@ -100,6 +102,9 @@ class HyperData:
 
     def index(self, name: str, fields: List[str]):
         return self._postDataIndex(name, fields)
+
+    def bulk(self, docs: List[Dict]):
+        return self._postBulk(docs)
 
 
 # Hyper Classes

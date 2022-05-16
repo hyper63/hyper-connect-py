@@ -1,22 +1,36 @@
 # Once you have multiple test files, as long as you follow the test*.py naming pattern,
 # you can provide the name of the directory instead by using the -s flag and the name of the directory:
 # python -m unittest discover -s tests -v
+import json
 from typing import Dict, List
 
 import asynctest
-from artifacts import book_doc_artifact
+from artifacts import book_bulk_doc_artifacts, book_doc_artifacts
 from dotenv import dotenv_values
 from promisio import Promise
-from ramda import head, is_empty, keys, map, sum
+from ramda import (
+    assoc,
+    compose,
+    count_by,
+    head,
+    is_empty,
+    keys,
+    map,
+    prop,
+    prop_or,
+    sum,
+)
 
 from hyper_connect import connect
 from hyper_connect.types import Hyper, ListOptions
 
 config = dotenv_values("./.env")
 
-book_docs: List[Dict] = book_doc_artifact()
+book_docs: List[Dict] = book_doc_artifacts()
+book_bulk_docs: List[Dict] = book_bulk_doc_artifacts()
 
 book1: Dict = head(book_docs)
+
 
 if is_empty(config):
     print(
@@ -149,6 +163,38 @@ class TestIntegration(asynctest.TestCase):
             len(keys(head(result["docs"]))),
             3,
             "There should be 3 keys in a doc.",
+        )
+
+    async def test_bulk_data(self):
+
+        # Bulk remove docs
+        bulkDocs = map(
+            lambda doc: assoc("_deleted", True, doc), book_bulk_docs
+        )
+
+        result = await hyper.data.bulk(bulkDocs).then(
+            lambda _: hyper.data.bulk(book_bulk_docs)
+        )
+
+        self.assertEqual(result["ok"], True, "Bulk result not ok.")
+        self.assertEqual(len(result["results"]), 3, "Length should be 3.")
+
+        # {"ok":true,"results":[{"ok":true,"id":"movie-4"}]}
+
+        def by_ok(r):
+            if r["ok"] is True:
+                return "true"
+            else:
+                return "false"
+
+        number_of_true_results = compose(
+            prop("true"), count_by(by_ok), prop_or([], "results")
+        )(result)
+
+        self.assertEqual(
+            number_of_true_results,
+            3,
+            "There should be 3 ok results.",
         )
 
 

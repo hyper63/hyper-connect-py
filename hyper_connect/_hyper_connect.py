@@ -7,6 +7,7 @@ from hyper_connect.services import (
     addData,
     getDataById,
     getDataList,
+    postBulk,
     postIndex,
     postQuery,
     removeDataById,
@@ -45,6 +46,9 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     def indexDocs(name: str, fields: List[str]):
         return postIndex(name, fields, CONNECTION_STRING, domain)
 
+    def bulkDocs(docs: List[Dict]):
+        return postBulk(docs, CONNECTION_STRING, domain)
+
     hyperData: HyperData = HyperData(
         addDataDocFn=addDataDoc,
         getDataDocFn=getDataDoc,
@@ -53,6 +57,7 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         removeDataDocFn=removeDataDoc,
         postDataQueryFn=queryDocs,
         postDataIndexFn=indexDocs,
+        postBulkFn=bulkDocs,
     )
 
     hyper: Hyper = Hyper(data=hyperData)
