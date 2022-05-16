@@ -30,7 +30,6 @@ def add_cache(
         "params": None,
         "action": None,
     }
-
     hyperRequestParams: HyperRequestParams = create_hyper_request_params(
         connection_string, domain, hyperRequest
     )
