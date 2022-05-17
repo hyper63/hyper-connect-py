@@ -5,7 +5,7 @@ import json
 from typing import Dict, List
 
 import asynctest
-from artifacts import book_doc_artifacts
+from artifacts import movie_doc_artifacts
 from dotenv import dotenv_values
 from promisio import Promise
 from ramda import (
@@ -26,9 +26,9 @@ from hyper_connect.types import Hyper, ListOptions
 
 config = dotenv_values("./.env")
 
-book_docs: List[Dict] = book_doc_artifacts()
+movie_docs: List[Dict] = movie_doc_artifacts()
 
-book1: Dict = head(book_docs)
+movie1: Dict = head(movie_docs)
 
 if is_empty(config):
     print(
@@ -41,21 +41,21 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestCacheIntegration(asynctest.TestCase):
-    async def test_cache_add(self):
+class TestSearchIntegration(asynctest.TestCase):
+    async def test_search_add(self):
         # Remove all book docs
         remove_promises = []
 
-        for book_doc in book_docs:
-            remove_promises.append(hyper.cache.remove(key=book_doc["_id"]))
+        for movie_doc in movie_docs:
+            remove_promises.append(hyper.search.remove(key=movie_doc["_id"]))
 
         remove_promises_result = await Promise.all_settled(remove_promises)
 
         # Add all book docs
         add_promises = []
-        for book_doc in book_docs:
+        for movie_doc in movie_docs:
             add_promises.append(
-                hyper.cache.add(key=book_doc["_id"], value=book_doc, ttl="1d")
+                hyper.search.add(key=movie_doc["_id"], doc=movie_doc)
             )
 
         add_promises_result = await Promise.all_settled(add_promises)
@@ -64,15 +64,25 @@ class TestCacheIntegration(asynctest.TestCase):
             map(lambda x: x["status"] == "fulfilled", add_promises_result)
         )
 
-        self.assertEqual(countFulfilled, len(book_docs), "Adding docs not ok.")
+        self.assertEqual(
+            countFulfilled, len(movie_docs), "Adding docs to search not ok."
+        )
 
-    async def test_cache_get(self):
-        result = await hyper.cache.get(book1["_id"])
-        self.assertEqual(book1["_id"], "book-000100", "Getting doc not ok.")
+    async def test_search_get(self):
+        result = await hyper.search.get(movie1["_id"])
 
-    # async def test_data_update(self):
-    #     result = await hyper.data.update(book1["_id"], book1)
-    #     self.assertEqual(result["ok"], True, "Update doc not ok.")
+        # {'key': 'movie-100', 'doc': {'type': 'movie', 'title': 'Chariots of Fire', 'year': '1981', '_id': 'movie-100'}, 'ok': True}
+        # update_result = await hyper.search.update(movie1["_id"], movie1)
+        # print('update_result: ', update_result)
+        # self.assertEqual(update_result["ok"], True, "Update doc not ok.")
+
+        doc = result["doc"]
+
+        self.assertEqual(
+            doc["title"],
+            "Chariots of Fire",
+            "Getting doc from search not ok.",
+        )
 
     # async def test_data_list_keys_array(self):
     #     options: ListOptions = {

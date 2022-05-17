@@ -30,7 +30,6 @@ book_docs: List[Dict] = book_doc_artifacts()
 
 book1: Dict = head(book_docs)
 
-
 if is_empty(config):
     print(
         "You seem to be missing a .env file with a `HYPER` environment variable.  Set HYPER with a connection string from your hyper app keys. https://docs.hyper.io/app-key."
@@ -42,21 +41,22 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestIntegration(asynctest.TestCase):
-    async def test_data_add(self):
-
+class TestCacheIntegration(asynctest.TestCase):
+    async def test_cache_add(self):
         # Remove all book docs
         remove_promises = []
 
         for book_doc in book_docs:
-            remove_promises.append(hyper.data.remove(book_doc["_id"]))
+            remove_promises.append(hyper.cache.remove(key=book_doc["_id"]))
 
         remove_promises_result = await Promise.all_settled(remove_promises)
 
         # Add all book docs
         add_promises = []
         for book_doc in book_docs:
-            add_promises.append(hyper.data.add(book_doc))
+            add_promises.append(
+                hyper.cache.add(key=book_doc["_id"], value=book_doc, ttl="1d")
+            )
 
         add_promises_result = await Promise.all_settled(add_promises)
 
@@ -66,13 +66,13 @@ class TestIntegration(asynctest.TestCase):
 
         self.assertEqual(countFulfilled, len(book_docs), "Adding docs not ok.")
 
-    async def test_data_get(self):
-        result = await hyper.data.get(book1["_id"])
+    async def test_cache_get(self):
+        result = await hyper.cache.get(book1["_id"])
         self.assertEqual(book1["_id"], "book-000100", "Getting doc not ok.")
 
-    # async def test_data_update(self):
-    #     result = await hyper.data.update(book1["_id"], book1)
-    #     self.assertEqual(result["ok"], True, "Update doc not ok.")
+    async def test_cache_update(self):
+        result = await hyper.cache.set(book1["_id"], book1, ttl="1d")
+        self.assertEqual(result["ok"], True, "Update doc not ok.")
 
     # async def test_data_list_keys_array(self):
     #     options: ListOptions = {

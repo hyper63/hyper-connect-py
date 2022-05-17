@@ -7,11 +7,13 @@ from ._types import (
     HyperData,
     HyperRequest,
     HyperRequestParams,
+    HyperSearch,
     ListOptions,
     Method,
     QueryOptions,
     QueueStatus,
     RequestOptions,
+    SearchQueryOptions,
     ServiceType,
     SortOptions,
 )
