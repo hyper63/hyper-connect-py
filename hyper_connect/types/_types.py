@@ -31,6 +31,11 @@ class QueryOptions(TypedDict):
     useIndex: Optional[str]
 
 
+class SearchQueryOptions(TypedDict):
+    fields: List[str]
+    filter: Dict[str, str]
+
+
 class HyperRequest(TypedDict):
     service: ServiceType
     method: Method
@@ -147,6 +152,47 @@ class HyperData:
         return self._bulk_docs(docs)
 
 
+# ///////////////////////
+# ////// BEGIN HERE
+# ///////////////////////
+
+
+class HyperSearch:
+    def __init__(
+        self,
+        add_search_doc_fn: Callable,
+        remove_search_doc_fn: Callable,
+        get_search_doc_fn: Callable,
+        update_search_doc_fn: Callable,
+        load_search_fn: Callable,
+        query_search_fn: Callable,
+    ):
+        self._add_search_doc = add_search_doc_fn
+        self._remove_search_doc = remove_search_doc_fn
+        self._get_search_doc = get_search_doc_fn
+        self._update_search_doc = update_search_doc_fn
+        self._load_search = load_search_fn
+        self._query_search = query_search_fn
+
+    def add(self, key: str, doc: Dict):
+        return self._add_search_doc(key, doc)
+
+    def remove(self, key: str):
+        return self._remove_search_doc(key)
+
+    def get(self, key: str):
+        return self._get_search_doc(key)
+
+    def update(self, key: str, doc: Dict):
+        return self._update_search_doc(key, doc)
+
+    def load(self, docs: List[Dict]):
+        return self._load_search(docs)
+
+    def query(self, query: str, options: Optional[SearchQueryOptions]):
+        return self._query_search(query, options)
+
+
 # Hyper Classes
 class WriteHyperError(Exception):
     pass
@@ -154,10 +200,12 @@ class WriteHyperError(Exception):
 
 # def __init__(self, data, cache, search, storage, queue, info ):
 class Hyper:
-    def __init__(self, data: HyperData, cache: HyperCache):
+    def __init__(
+        self, data: HyperData, cache: HyperCache, search: HyperSearch
+    ):
         self._data = data
         self._cache = cache
-        # self._search = search
+        self._search = search
         # self._storage = storage
         # self._queue = queue
         # self._info = info
@@ -178,13 +226,13 @@ class Hyper:
     def cache(self, value):
         raise WriteHyperError("cache service property is read-only")
 
-    # @property
-    # def search(self):
-    #     return self._search
+    @property
+    def search(self):
+        return self._search
 
-    # @search.setter
-    # def search(self, value):
-    #     raise WriteHyperError("search service property is read-only")
+    @search.setter
+    def search(self, value):
+        raise WriteHyperError("search service property is read-only")
 
     # @property
     # def storage(self):

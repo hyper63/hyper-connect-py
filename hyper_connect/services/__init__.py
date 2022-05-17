@@ -17,3 +17,11 @@ from ._data import (
     remove_data,
     update_data,
 )
+from ._search import (
+    add_search,
+    get_search,
+    load_search,
+    post_query_search,
+    remove_search,
+    update_search,
+)

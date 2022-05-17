@@ -6,30 +6,43 @@ from typeguard import typechecked
 from hyper_connect.services import (
     add_cache,
     add_data,
+    add_search,
     get_cache,
     get_data,
     get_data_list,
+    get_search,
+    load_search,
     post_bulk,
     post_cache_query,
     post_index,
     post_query,
+    post_query_search,
     remove_cache,
     remove_data,
+    remove_search,
     set_cache,
     update_data,
+    update_search,
 )
 from hyper_connect.types import (
     Hyper,
     HyperCache,
     HyperData,
+    HyperSearch,
     ListOptions,
     QueryOptions,
+    SearchQueryOptions,
 )
 from hyper_connect.utils import handle_response
 
 
 @typechecked
 def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
+
+    # //////////////////////
+    #      HyperData
+    # //////////////////////
+
     def add_data_doc(doc: Dict):
         return add_data(doc, CONNECTION_STRING, domain).then(handle_response)
 
@@ -69,6 +82,10 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         bulk_docs_fn=bulk_docs,
     )
 
+    # //////////////////////
+    #      HyperCache
+    # //////////////////////
+
     def add_cache_doc(key: str, value: Any, ttl: Optional[str]):
         return add_cache(key, value, ttl, CONNECTION_STRING, domain).then(
             handle_response
@@ -94,13 +111,41 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         post_cache_query_fn=post_cache_query_doc,
     )
 
-    hyper: Hyper = Hyper(data=hyper_data, cache=hyper_cache)
+    # //////////////////////
+    #      HyperSearch
+    # //////////////////////
 
-    # hyper = {
-    #     "data": {
-    #         "add": lambda body: addData(body, CONNECTION_STRING, domain).then(
-    #             handle_response
-    #         )
-    #     }
-    # }
+    def add_search_doc(key: str, doc: Dict):
+        return add_search(key, doc, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    def remove_search_doc(key: str):
+        return remove_search(key, CONNECTION_STRING, domain)
+
+    def get_search_doc(key: str):
+        return get_search(key, CONNECTION_STRING, domain)
+
+    def update_search_doc(key: str, doc: Dict):
+        return update_search(key, doc, CONNECTION_STRING, domain)
+
+    def load_search_docs(docs: List[Dict]):
+        return load_search(docs, CONNECTION_STRING, domain)
+
+    def post_query_search_docs(query: str, options: SearchQueryOptions):
+        return post_query_search(query, options, CONNECTION_STRING, domain)
+
+    hyper_search: HyperSearch = HyperSearch(
+        add_search_doc_fn=add_search_doc,
+        remove_search_doc_fn=remove_search_doc,
+        get_search_doc_fn=get_search_doc,
+        update_search_doc_fn=update_search_doc,
+        load_search_fn=load_search_docs,
+        query_search_fn=post_query_search_docs,
+    )
+
+    hyper: Hyper = Hyper(
+        data=hyper_data, cache=hyper_cache, search=hyper_search
+    )
+
     return hyper
