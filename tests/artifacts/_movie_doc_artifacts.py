@@ -1,6 +1,23 @@
 from typing import Dict, List
 
 
+def movie_bulk_doc_artifacts() -> List[Dict]:
+    return [
+        {
+            "_id": "movie-104",
+            "type": "movie",
+            "title": "Full Metal Jacket",
+            "year": "1987",
+        },
+        {
+            "_id": "movie-105",
+            "type": "movie",
+            "title": "Predator",
+            "year": "1987",
+        },
+    ]
+
+
 def movie_doc_artifacts() -> List[Dict]:
 
     return [

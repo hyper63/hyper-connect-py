@@ -5,7 +5,7 @@ import json
 from typing import Dict, List
 
 import asynctest
-from artifacts import movie_doc_artifacts
+from artifacts import movie_bulk_doc_artifacts, movie_doc_artifacts
 from dotenv import dotenv_values
 from promisio import Promise
 from ramda import (
@@ -27,6 +27,8 @@ from hyper_connect.types import Hyper, ListOptions, SearchQueryOptions
 config = dotenv_values("./.env")
 
 movie_docs: List[Dict] = movie_doc_artifacts()
+
+bulk_movie_docs: List[Dict] = movie_bulk_doc_artifacts()
 
 movie1: Dict = head(movie_docs)
 
@@ -105,6 +107,26 @@ class TestSearchIntegration(asynctest.TestCase):
             len(result["matches"]),
             1,
             "# of search result matches do not equal 1.",
+        )
+
+    async def test_search_bulk(self):
+
+        result = await hyper.search.load(bulk_movie_docs)
+
+        print("test_search_bulk result:", result)
+
+        # {"ok": True, "results": []}
+
+        self.assertEqual(
+            result["ok"],
+            True,
+            "Bulk load to search not ok",
+        )
+
+        self.assertEqual(
+            len(result["results"]),
+            2,
+            "# of bulk search load results does not equal 2.",
         )
 
     # async def test_data_list_keys_array(self):
