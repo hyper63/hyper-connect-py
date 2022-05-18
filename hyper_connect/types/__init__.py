@@ -8,6 +8,7 @@ from ._types import (
     HyperRequest,
     HyperRequestParams,
     HyperSearch,
+    HyperStorage,
     ListOptions,
     Method,
     QueryOptions,

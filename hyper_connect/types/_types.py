@@ -1,3 +1,4 @@
+import io
 from typing import (
     Any,
     Callable,
@@ -40,7 +41,7 @@ class HyperRequest(TypedDict):
     service: ServiceType
     method: Method
     resource: Optional[str]
-    body: Union[Dict, List[Dict], None]
+    body: Any
     params: Union[ListOptions, QueryOptions, Dict[str, str], None]
     action: Optional[Action]
 
@@ -152,9 +153,12 @@ class HyperData:
         return self._bulk_docs(docs)
 
 
-# ///////////////////////
-# ////// BEGIN HERE
-# ///////////////////////
+class HyperStorage:
+    def __init__(self, upload_fn: Callable):
+        self._upload_fn = upload_fn
+
+    def upload(self, name: str, data: io.BufferedReader):
+        return self._upload_fn(name, data)
 
 
 class HyperSearch:
@@ -201,12 +205,16 @@ class WriteHyperError(Exception):
 # def __init__(self, data, cache, search, storage, queue, info ):
 class Hyper:
     def __init__(
-        self, data: HyperData, cache: HyperCache, search: HyperSearch
+        self,
+        data: HyperData,
+        cache: HyperCache,
+        search: HyperSearch,
+        storage: HyperStorage,
     ):
         self._data = data
         self._cache = cache
         self._search = search
-        # self._storage = storage
+        self._storage = storage
         # self._queue = queue
         # self._info = info
 
@@ -234,13 +242,13 @@ class Hyper:
     def search(self, value):
         raise WriteHyperError("search service property is read-only")
 
-    # @property
-    # def storage(self):
-    #     return self._storage
+    @property
+    def storage(self):
+        return self._storage
 
-    # @storage.setter
-    # def storage(self, value):
-    #     raise WriteHyperError("storage service property is read-only")
+    @storage.setter
+    def storage(self, value):
+        raise WriteHyperError("storage service property is read-only")
 
     # @property
     # def queue(self):

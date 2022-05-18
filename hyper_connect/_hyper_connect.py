@@ -1,3 +1,4 @@
+import io
 from typing import Any, Dict, List, Optional
 
 from typeguard import typechecked
@@ -23,12 +24,14 @@ from hyper_connect.services import (
     set_cache,
     update_data,
     update_search,
+    upload,
 )
 from hyper_connect.types import (
     Hyper,
     HyperCache,
     HyperData,
     HyperSearch,
+    HyperStorage,
     ListOptions,
     QueryOptions,
     SearchQueryOptions,
@@ -144,8 +147,22 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         query_search_fn=post_query_search_docs,
     )
 
+    # //////////////////////
+    #      HyperStorage
+    # //////////////////////
+
+    def upload_doc(name: str, data: io.BufferedReader):
+        return upload(name, data, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    hyper_storage: HyperStorage = HyperStorage(upload_fn=upload_doc)
+
     hyper: Hyper = Hyper(
-        data=hyper_data, cache=hyper_cache, search=hyper_search
+        data=hyper_data,
+        cache=hyper_cache,
+        search=hyper_search,
+        storage=hyper_storage,
     )
 
     return hyper

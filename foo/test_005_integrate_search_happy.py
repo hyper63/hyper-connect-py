@@ -129,35 +129,6 @@ class TestSearchIntegration(asynctest.TestCase):
             "# of bulk search load results does not equal 2.",
         )
 
-    # async def test_data_list_keys_array(self):
-    #     options: ListOptions = {
-    #         "startkey": None,
-    #         "limit": None,
-    #         "endkey": None,
-    #         "keys": ["book-000105", "book-000106"],
-    #         "descending": None,
-    #     }
-
-    #     result = await hyper.data.list(options)
-    #     self.assertEqual(result["ok"], True, "List result not ok.")
-    #     self.assertEqual(len(result["docs"]), 2, "Length should be 2")
-
-    # async def test_data_query_limit_10(self):
-
-    #     selector = {"type": "book", "name": {"$eq": "The Lorax 103"}}
-
-    #     options: QueryOptions = {
-    #         "fields": None,
-    #         "sort": None,
-    #         "limit": 10,
-    #         "useIndex": None,
-    #     }
-
-    #     result = await hyper.data.query(selector, options)
-
-    #     self.assertEqual(result["ok"], True, "Query result not ok.")
-    #     self.assertEqual(len(result["docs"]), 1, "Length should be 1")
-
 
 if __name__ == "__main__":
     asynctest.main()

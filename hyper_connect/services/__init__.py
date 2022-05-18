@@ -25,3 +25,4 @@ from ._search import (
     remove_search,
     update_search,
 )
+from ._storage import upload
