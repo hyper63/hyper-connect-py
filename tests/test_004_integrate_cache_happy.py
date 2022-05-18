@@ -74,34 +74,19 @@ class TestCacheIntegration(asynctest.TestCase):
         result = await hyper.cache.set(book1["_id"], book1, ttl="1d")
         self.assertEqual(result["ok"], True, "Update doc not ok.")
 
-    # async def test_data_list_keys_array(self):
-    #     options: ListOptions = {
-    #         "startkey": None,
-    #         "limit": None,
-    #         "endkey": None,
-    #         "keys": ["book-000105", "book-000106"],
-    #         "descending": None,
-    #     }
+    async def test_cache_query(self):
+        result = await hyper.cache.query("book-0001*")
+        # { ok: true, docs: [ { key: 'movie-5-1985', value: [Object] } ] }
+        self.assertEqual(result["ok"], True, "cache query result not ok.")
+        self.assertEqual(
+            len(result["docs"]) <= 7,
+            True,
+            "cache query docs length should 6 (after delete) or 7",
+        )
 
-    #     result = await hyper.data.list(options)
-    #     self.assertEqual(result["ok"], True, "List result not ok.")
-    #     self.assertEqual(len(result["docs"]), 2, "Length should be 2")
-
-    # async def test_data_query_limit_10(self):
-
-    #     selector = {"type": "book", "name": {"$eq": "The Lorax 103"}}
-
-    #     options: QueryOptions = {
-    #         "fields": None,
-    #         "sort": None,
-    #         "limit": 10,
-    #         "useIndex": None,
-    #     }
-
-    #     result = await hyper.data.query(selector, options)
-
-    #     self.assertEqual(result["ok"], True, "Query result not ok.")
-    #     self.assertEqual(len(result["docs"]), 1, "Length should be 1")
+    async def test_cache_delete(self):
+        result = await hyper.cache.remove("book-000101")
+        self.assertEqual(result["ok"], True, "Removing cached doc not ok.")
 
 
 if __name__ == "__main__":

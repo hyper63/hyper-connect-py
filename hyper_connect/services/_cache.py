@@ -80,7 +80,8 @@ def remove_cache(key: str, connection_string: str, domain: str = "default"):
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    return requests.get(url, headers=headers)
+    result = requests.delete(url, headers=headers)
+    return result.json()
 
 
 @promisify
