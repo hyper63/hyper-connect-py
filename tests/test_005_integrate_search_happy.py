@@ -22,7 +22,7 @@ from ramda import (
 )
 
 from hyper_connect import connect
-from hyper_connect.types import Hyper, ListOptions
+from hyper_connect.types import Hyper, ListOptions, SearchQueryOptions
 
 config = dotenv_values("./.env")
 
@@ -69,12 +69,7 @@ class TestSearchIntegration(asynctest.TestCase):
         )
 
     async def test_search_get(self):
-        result = await hyper.search.get(movie1["_id"])
-
-        # {'key': 'movie-100', 'doc': {'type': 'movie', 'title': 'Chariots of Fire', 'year': '1981', '_id': 'movie-100'}, 'ok': True}
-        # update_result = await hyper.search.update(movie1["_id"], movie1)
-        # print('update_result: ', update_result)
-        # self.assertEqual(update_result["ok"], True, "Update doc not ok.")
+        result = await hyper.search.get(key="movie-100")
 
         doc = result["doc"]
 
@@ -82,6 +77,34 @@ class TestSearchIntegration(asynctest.TestCase):
             doc["title"],
             "Chariots of Fire",
             "Getting doc from search not ok.",
+        )
+
+    async def test_search_delete(self):
+        result = await hyper.search.remove(key="movie-101")
+
+        self.assertEqual(
+            result["ok"],
+            True,
+            "Deleting from search not ok",
+        )
+
+    async def test_search_query(self):
+
+        options: SearchQueryOptions = {"fields": ["title"], "filter": None}
+
+        query = "Chariots"
+        result = await hyper.search.query(query, options)
+
+        self.assertEqual(
+            result["ok"],
+            True,
+            "Deleting from search not ok",
+        )
+
+        self.assertEqual(
+            len(result["matches"]),
+            1,
+            "# of search result matches do not equal 1.",
         )
 
     # async def test_data_list_keys_array(self):

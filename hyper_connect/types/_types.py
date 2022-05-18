@@ -32,8 +32,8 @@ class QueryOptions(TypedDict):
 
 
 class SearchQueryOptions(TypedDict):
-    fields: List[str]
-    filter: Dict[str, str]
+    fields: Optional[List[str]]
+    filter: Optional[Dict[str, str]]
 
 
 class HyperRequest(TypedDict):

@@ -140,31 +140,9 @@ We prefer you use Gitpod.  Gitpod provides a fully initialized, perfectly set-up
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/tripott/hyper-connect-py-test)
 
+### Environment Variables
 
-### Static type checking and code formatting
-
-We use git pre-commit hooks, black, and isort to prettify the code and run static type checking with mypy.   See the **.pre-commit-config.yaml**.
-
-To run these checks, execute the `bash lint.sh` command or run the `bash .git/hooks/pre-commit` command in a terminal window where the virtual environment has been activated.
-
-### Tests
-
-Run the `bash test.sh` command or run `python -m unittest discover -s tests -v` in a terminal window where the virtual environment has been activated.
-
-### Test Client
-
-**sandbox.py** contains a quick and dirty client that takes hyper connect for. a test drive.  The `data_add` function attempts to add a book document to the hyper data service, while `data_get` retrieves a book by the doc `_id` primary key value.
-
-```
-$ pyton
->>> from sandbox import data_add, data_get
->>> import asyncio
->>> asyncio.run(data_add('{ "_id":"book-102","type":"book", "name":"Horton hears a who 2","author":"Dr. Suess","published":"1953" }'))
-```
-
-#### Environment Variables
-
-**sandbox.py** expects an environment variable named `HYPER`.
+If you plan on running tests, you'll need to create an environment variable named `HYPER`.
 
 - Create a **.env** file in the project root.
 - Within **.env**, create an environment variable named `HYPER` with a value of your hyper app's [connection string](https://docs.hyper.io/app-keys#nq-connection-string).
@@ -173,6 +151,22 @@ $ pyton
 ```bash
 HYPER=cloud://your app key:your app secret--gI1MkcrUqFPMR@cloud.hyper.io/express-quickstart
 ```
+
+## Linting
+
+We use git pre-commit hooks, black, and isort to prettify the code and run static type checking with mypy.   See the **.pre-commit-config.yaml**.
+
+To run these checks, execute the `make lint` command.
+
+## Tests
+
+> Heads up! Integration tests assume a hyper app and services have been created.  See https://docs.hyper.io/applications for details on creating hyper applications and service.
+
+A storage service should have the following configuration:
+
+![Search Service Config](search-svc-config.png)
+
+Run the `make test` script to run the unit and integration tests.
 
 ### License
 

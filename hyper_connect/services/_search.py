@@ -102,7 +102,8 @@ def remove_search(key: str, connection_string: str, domain: str = "default"):
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    return requests.delete(url, headers=headers)
+    result = requests.delete(url, headers=headers)
+    return result.json()
 
 
 @promisify
@@ -122,9 +123,7 @@ def post_query_search(
     search_body = {"query": query}
 
     if options is not None:
-        search_body = merge(body, options)
-
-    print("search_body: ", search_body)
+        search_body = merge(search_body, options)
 
     hyperRequest: HyperRequest = {
         "service": "search",
@@ -144,7 +143,6 @@ def post_query_search(
 
     results = requests.post(url, headers=headers, data=json.dumps(body))
 
-    data = json.dumps(body)
     return results.json()
 
 
