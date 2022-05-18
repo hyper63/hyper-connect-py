@@ -12,7 +12,7 @@ from hyper_connect.utils import create_hyper_request_params
 @promisify
 def add_cache(
     key: str,
-    value: Any,
+    value: Dict,
     ttl: Optional[str],
     connection_string: str,
     domain: str = "default",
@@ -86,7 +86,7 @@ def remove_cache(key: str, connection_string: str, domain: str = "default"):
 @promisify
 def set_cache(
     key: str,
-    value: Any,
+    value: Dict,
     ttl: Optional[str],
     connection_string: str,
     domain: str = "default",
@@ -97,8 +97,8 @@ def set_cache(
     else:
         params = None
 
-    if isinstance(value, dict):
-        value = json.dumps(value)
+    # if isinstance(value, dict):
+    #     value = json.dumps(value)
 
     hyperRequest: HyperRequest = {
         "service": "cache",
@@ -115,7 +115,8 @@ def set_cache(
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    return requests.post(url, headers=headers, data=value)
+    result = requests.put(url, headers=headers, data=json.dumps(value))
+    return result.json()
 
 
 @promisify

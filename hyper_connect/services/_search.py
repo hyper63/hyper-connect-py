@@ -80,7 +80,8 @@ def update_search(
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    return requests.put(url, headers=headers, data=json.dumps(doc))
+    result = requests.put(url, headers=headers, data=json.dumps(doc))
+    return result.json()
 
 
 @promisify
