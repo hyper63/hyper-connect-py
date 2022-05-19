@@ -49,7 +49,7 @@ class HyperRequest(TypedDict):
 class RequestOptions(TypedDict):
     headers: Dict[str, str]
     method: Method
-    body: Union[Dict, List[Dict], None]
+    body: Any
 
 
 # Example HyperRequestParams
@@ -154,11 +154,15 @@ class HyperData:
 
 
 class HyperStorage:
-    def __init__(self, upload_fn: Callable):
+    def __init__(self, upload_fn: Callable, download_fn: Callable):
         self._upload_fn = upload_fn
+        self._download_fn = download_fn
 
     def upload(self, name: str, data: io.BufferedReader):
         return self._upload_fn(name, data)
+
+    def download(self, name: str):
+        return self._download_fn(name)
 
 
 class HyperSearch:

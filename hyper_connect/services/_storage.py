@@ -39,11 +39,52 @@ def upload(
 
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
-    # body = hyperRequestParams["options"]["body"]
 
-    # r = requests.post(url, data=m,
-    #                   headers={'Content-Type': m.content_type})
+    headers["Content-Type"] = m.content_type
 
-    r = requests.post(url, headers={"Content-Type": m.content_type}, data=m)
+    r = requests.post(url, headers=headers, data=m)
+
+    return r
+
+
+# export const download = (name: string) =>
+#   async (h: HyperRequestFunction) => {
+#     const req = await h({ service, method: Method.GET, resource: name });
+#     const headers = new Headers();
+#     headers.set("Authorization", req.headers.get("authorization") as string);
+
+#     return new Request(req.url, {
+#       method: Method.GET,
+#       headers,
+#     });
+#   };
+
+
+@promisify
+def download(
+    name: str,
+    connection_string: str,
+    domain: str = "default",
+):
+    hyperRequest: HyperRequest = {
+        "service": "storage",
+        "method": "GET",
+        "body": None,
+        "resource": name,
+        "params": None,
+        "action": None,
+    }
+    hyperRequestParams: HyperRequestParams = create_hyper_request_params(
+        connection_string, domain, hyperRequest
+    )
+
+    url: str = hyperRequestParams["url"]
+    headers = hyperRequestParams["options"]["headers"]
+
+    r = requests.get(url, headers=headers, stream=True)
+
+    # with open("foobar.png", 'wb') as fd:
+    #     for chunk in r.iter_content(chunk_size=128):
+    #         fd.write(chunk)
 
     return r

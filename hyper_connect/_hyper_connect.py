@@ -8,6 +8,7 @@ from hyper_connect.services import (
     add_cache,
     add_data,
     add_search,
+    download,
     get_cache,
     get_data,
     get_data_list,
@@ -156,7 +157,18 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
             handle_response
         )
 
-    hyper_storage: HyperStorage = HyperStorage(upload_fn=upload_doc)
+    def handle_download(res):
+
+        print("NEW !!!! handle_download res:", res)
+
+        return res["body"]
+
+    def download_doc(name: str):
+        return download(name, CONNECTION_STRING, domain)
+
+    hyper_storage: HyperStorage = HyperStorage(
+        upload_fn=upload_doc, download_fn=download_doc
+    )
 
     hyper: Hyper = Hyper(
         data=hyper_data,
