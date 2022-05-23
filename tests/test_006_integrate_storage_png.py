@@ -40,26 +40,33 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestStorageIntegration(asynctest.TestCase):
+class TestStorageIntegrationPNG(asynctest.TestCase):
     async def test_storage_image_upload(self):
 
-        br: io.BufferedReader = open(
+        # begin upload remix.png image file
+        br_remix_png: io.BufferedReader = open(
             os.path.join(sys.path[0], "remix.png"), "rb"
         )
-        result = await hyper.storage.upload(name="remix", data=br).then(
-            lambda _: hyper.storage.download(name="remix")
-        )
+        br_remix_png_download_result = await hyper.storage.upload(
+            name="remix", data=br_remix_png
+        ).then(lambda _: hyper.storage.download(name="remix"))
 
-        br.close()
+        br_remix_png.close()
+        # end upload
 
+        # begin download of remix.png image file as remix_downloaded.png
         path = os.path.join(sys.path[0], "remix_downloaded.png")
 
         with open(path, "wb") as fd:
-            for chunk in result.iter_content(chunk_size=128):
+            for chunk in br_remix_png_download_result.iter_content(
+                chunk_size=128
+            ):
                 fd.write(chunk)
 
+        # end download
+
         self.assertEqual(
-            result.status_code,
+            br_remix_png_download_result.status_code,
             200,
             "Storage download status isn't 200. no es bueno",
         )
@@ -69,7 +76,7 @@ class TestStorageIntegration(asynctest.TestCase):
         self.assertEqual(
             remove_result["ok"],
             True,
-            "Deleting from storage not ok",
+            "Deleting remix.png from storage not ok",
         )
 
 

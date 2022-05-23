@@ -1,0 +1,3 @@
+hyper - a service for building hyperscale applications
+Create. Connect. Build.
+Create your services. Connect using an consistent, clean API. Build and focus on your application's features, not its cloud plumbing.
