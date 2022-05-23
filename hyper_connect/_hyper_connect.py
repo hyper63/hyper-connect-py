@@ -183,6 +183,7 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         return download(name, CONNECTION_STRING, domain)
 
     def remove_storage_doc(name: str):
+
         return remove_storage(name, CONNECTION_STRING, domain).then(
             handle_response
         )

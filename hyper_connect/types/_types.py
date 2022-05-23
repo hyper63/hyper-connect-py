@@ -159,6 +159,7 @@ class HyperStorage:
     ):
         self._upload_fn = upload_fn
         self._download_fn = download_fn
+        self._remove_fn = remove_fn
 
     def upload(self, name: str, data: io.BufferedReader):
         return self._upload_fn(name, data)
@@ -167,7 +168,7 @@ class HyperStorage:
         return self._download_fn(name)
 
     def remove(self, name: str):
-        return self._download_fn(name)
+        return self._remove_fn(name)
 
 
 class HyperSearch:

@@ -64,15 +64,12 @@ class TestStorageIntegration(asynctest.TestCase):
             "Storage download status isn't 200. no es bueno",
         )
 
-    async def test_storage_delete(self):
-        result = await hyper.storage.remove(name="remix")
-
-        print("storage delete result", result)
+        remove_result = await hyper.storage.remove(name="remix")
 
         self.assertEqual(
-            result["ok"],
+            remove_result["ok"],
             True,
-            "Deleting from search not ok",
+            "Deleting from storage not ok",
         )
 
 

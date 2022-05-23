@@ -9,6 +9,7 @@ def handle_response(response):
 
     def content_type_is_application_json(x):
 
+        print("")
         if "application/json" in x.headers.get("content-type"):
             return True
         else:

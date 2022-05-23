@@ -38,9 +38,7 @@ def upload(
 
     headers["Content-Type"] = m.content_type
 
-    r = requests.post(url, headers=headers, data=m)
-
-    return r
+    return requests.post(url, headers=headers, data=m)
 
 
 @promisify
@@ -64,9 +62,7 @@ def download(
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    r = requests.get(url, headers=headers, stream=True)
-
-    return r
+    return requests.get(url, headers=headers, stream=True)
 
 
 @promisify
@@ -90,9 +86,4 @@ def remove_storage(
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    result = requests.delete(url, headers=headers, stream=True)
-    theresult = result.json()
-
-    print("************* theresult", theresult)
-
-    return theresult
+    return requests.delete(url, headers=headers)
