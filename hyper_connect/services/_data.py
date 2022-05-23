@@ -169,10 +169,7 @@ def post_query(
     headers = hyperRequestParams["options"]["headers"]
     body = hyperRequestParams["options"]["body"]
 
-    results = requests.post(url, headers=headers, data=json.dumps(body))
-
-    data = json.dumps(body)
-    return results.json()
+    return requests.post(url, headers=headers, data=json.dumps(body))
 
 
 @promisify
@@ -200,8 +197,7 @@ def post_index(
     headers = hyperRequestParams["options"]["headers"]
     body = hyperRequestParams["options"]["body"]
 
-    results = requests.post(url, headers=headers, data=json.dumps(body))
-    return results.json()
+    return requests.post(url, headers=headers, data=json.dumps(body))
 
 
 @promisify
@@ -228,4 +224,4 @@ def post_bulk(
     body = hyperRequestParams["options"]["body"]
 
     results = requests.post(url, headers=headers, data=json.dumps(body))
-    return results.json()
+    return results

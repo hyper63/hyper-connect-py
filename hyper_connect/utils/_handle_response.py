@@ -8,6 +8,7 @@ def handle_response(response):
     # )
 
     def content_type_is_application_json(x):
+
         if "application/json" in x.headers.get("content-type"):
             return True
         else:
@@ -18,14 +19,9 @@ def handle_response(response):
     def to_ok(x):
         return {"ok": x.ok, "msg": x.text}
 
-    def check_response_ok_add_status(r):
-
-        if response.ok:
-            r["status"] = response.status_code
-            return r
-        else:
-            r["status"] = response.status_code
-            return r
+    def add_status(r):
+        r["status"] = response.status_code
+        return r
 
     def check_500_error(r):
         if response.status_code >= 500:
@@ -36,6 +32,6 @@ def handle_response(response):
     return (
         Promise.resolve(response)
         .then(if_else(content_type_is_application_json, to_json, to_ok))
-        .then(check_response_ok_add_status)
+        .then(add_status)
         .then(check_500_error)
     )

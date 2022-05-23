@@ -22,6 +22,7 @@ from hyper_connect.services import (
     remove_cache,
     remove_data,
     remove_search,
+    remove_storage,
     set_cache,
     update_data,
     update_search,
@@ -67,13 +68,17 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         return remove_data(id, CONNECTION_STRING, domain).then(handle_response)
 
     def query_docs(selector: Dict, options: QueryOptions):
-        return post_query(selector, options, CONNECTION_STRING, domain)
+        return post_query(selector, options, CONNECTION_STRING, domain).then(
+            handle_response
+        )
 
     def index_docs(name: str, fields: List[str]):
-        return post_index(name, fields, CONNECTION_STRING, domain)
+        return post_index(name, fields, CONNECTION_STRING, domain).then(
+            handle_response
+        )
 
     def bulk_docs(docs: List[Dict]):
-        return post_bulk(docs, CONNECTION_STRING, domain)
+        return post_bulk(docs, CONNECTION_STRING, domain).then(handle_response)
 
     hyper_data: HyperData = HyperData(
         add_data_doc_fn=add_data_doc,
@@ -96,13 +101,17 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         )
 
     def get_cache_doc(key: str):
-        return get_cache(key, CONNECTION_STRING, domain)
+        return get_cache(key, CONNECTION_STRING, domain).then(handle_response)
 
     def set_cache_doc(key: str, value: Any, ttl: Optional[str]):
-        return set_cache(key, value, ttl, CONNECTION_STRING, domain)
+        return set_cache(key, value, ttl, CONNECTION_STRING, domain).then(
+            handle_response
+        )
 
     def remove_cache_doc(key: str):
-        return remove_cache(key, CONNECTION_STRING, domain)
+        return remove_cache(key, CONNECTION_STRING, domain).then(
+            handle_response
+        )
 
     def post_cache_query_doc(pattern: str):
         return post_cache_query(pattern, CONNECTION_STRING, domain)
@@ -157,17 +166,21 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
             handle_response
         )
 
-    def handle_download(res):
-
-        print("NEW !!!! handle_download res:", res)
-
-        return res["body"]
+    # def handle_download(res):
+    #     return res["body"]
 
     def download_doc(name: str):
         return download(name, CONNECTION_STRING, domain)
 
+    def remove_storage_doc(name: str):
+        return remove_storage(name, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
     hyper_storage: HyperStorage = HyperStorage(
-        upload_fn=upload_doc, download_fn=download_doc
+        upload_fn=upload_doc,
+        download_fn=download_doc,
+        remove_fn=remove_storage_doc,
     )
 
     hyper: Hyper = Hyper(

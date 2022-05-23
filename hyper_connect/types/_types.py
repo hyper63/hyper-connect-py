@@ -154,7 +154,9 @@ class HyperData:
 
 
 class HyperStorage:
-    def __init__(self, upload_fn: Callable, download_fn: Callable):
+    def __init__(
+        self, upload_fn: Callable, download_fn: Callable, remove_fn: Callable
+    ):
         self._upload_fn = upload_fn
         self._download_fn = download_fn
 
@@ -162,6 +164,9 @@ class HyperStorage:
         return self._upload_fn(name, data)
 
     def download(self, name: str):
+        return self._download_fn(name)
+
+    def remove(self, name: str):
         return self._download_fn(name)
 
 

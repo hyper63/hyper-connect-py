@@ -46,56 +46,34 @@ class TestStorageIntegration(asynctest.TestCase):
         br: io.BufferedReader = open(
             os.path.join(sys.path[0], "remix.png"), "rb"
         )
-        result = await hyper.storage.upload(name="remix", data=br)
+        result = await hyper.storage.upload(name="remix", data=br).then(
+            lambda _: hyper.storage.download(name="remix")
+        )
 
         br.close()
 
-        self.assertEqual(
-            result["ok"],
-            True,
-            "Storage upload no es bueno",
-        )
-
-    async def test_storage_image_download(self):
-
-        # br: io.BufferedReader = open(os.path.join(sys.path[0], "remix.png"), "rb")
-        result = await hyper.storage.download(name="remix")
-
         path = os.path.join(sys.path[0], "remix_downloaded.png")
-
-        # print('download result', result)
-
-        # self.assertEqual(
-        #     result["status"],
-        #     200,
-        #     "Storage download status isn't 200. no es bueno",
-        # )
-
-        # with open(path, 'wb') as f:
-        #     result.raw.decode_content = True
-        #     shutil.copyfileobj(result.raw, f)
 
         with open(path, "wb") as fd:
             for chunk in result.iter_content(chunk_size=128):
                 fd.write(chunk)
 
-        # import requests
-        # import shutil
+        self.assertEqual(
+            result.status_code,
+            200,
+            "Storage download status isn't 200. no es bueno",
+        )
 
-        # r = requests.get(settings.STATICMAP_URL.format(**data), stream=True)
-        # if r.status_code == 200:
-        #     with open(path, 'wb') as f:
-        #         r.raw.decode_content = True
-        #         shutil.copyfileobj(r.raw, f)
+    async def test_storage_delete(self):
+        result = await hyper.storage.remove(name="remix")
 
-    # async def test_search_delete(self):
-    #     result = await hyper.search.remove(key="movie-101")
+        print("storage delete result", result)
 
-    #     self.assertEqual(
-    #         result["ok"],
-    #         True,
-    #         "Deleting from search not ok",
-    #     )
+        self.assertEqual(
+            result["ok"],
+            True,
+            "Deleting from search not ok",
+        )
 
 
 if __name__ == "__main__":

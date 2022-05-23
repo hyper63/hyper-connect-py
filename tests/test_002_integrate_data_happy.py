@@ -69,7 +69,7 @@ class TestDataIntegration(asynctest.TestCase):
 
     async def test_data_get(self):
         result = await hyper.data.get(book1["_id"])
-        self.assertEqual(book1["_id"], "book-000100", "Getting doc not ok.")
+        self.assertEqual(book1["_id"], result["_id"], "Getting doc not ok.")
 
     async def test_data_update(self):
         result = await hyper.data.update(book1["_id"], book1)
