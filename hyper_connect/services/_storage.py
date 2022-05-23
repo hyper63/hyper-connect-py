@@ -1,10 +1,7 @@
 import io
-import json
-from typing import Any, Dict, List, Optional, Union
 
 import requests
 from promisio import promisify
-from ramda import merge
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from hyper_connect.types import HyperRequest, HyperRequestParams

@@ -1,7 +1,6 @@
 # Once you have multiple test files, as long as you follow the test*.py naming pattern,
 # you can provide the name of the directory instead by using the -s flag and the name of the directory:
 # python -m unittest discover -s tests -v
-import json
 from typing import Dict, List
 
 import asynctest

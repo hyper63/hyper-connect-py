@@ -1,9 +1,7 @@
-import json
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
 
 from dotenv import dotenv_values
-from promisio import Promise
-from ramda import compose, has, head, is_empty, join, merge, pick_by, prop, prop_or
+from ramda import compose, head, is_empty, merge, prop, prop_or
 
 from hyper_connect import connect
 from hyper_connect.types import Hyper, ListOptions, QueryOptions
@@ -43,7 +41,9 @@ def error_response(err):
     return response
 
 
-async def integration_test(doc: Dict, updatedData: Dict[str, str], selector: Dict):
+async def integration_test(
+    doc: Dict, updatedData: Dict[str, str], selector: Dict
+):
 
     getResult = await hyper.data.get(doc["_id"])
 

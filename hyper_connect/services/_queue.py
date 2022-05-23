@@ -1,11 +1,10 @@
 import json
-from typing import Any, Dict, List, Optional
+from typing import Dict
 
 import requests
 from promisio import promisify
-from ramda import merge
 
-from hyper_connect.types import HyperRequest, HyperRequestParams, QueueStatus
+from hyper_connect.types import HyperRequest, HyperRequestParams
 from hyper_connect.utils import create_hyper_request_params
 
 
