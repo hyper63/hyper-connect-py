@@ -113,10 +113,6 @@ class TestSearchIntegration(asynctest.TestCase):
 
         result = await hyper.search.load(bulk_movie_docs)
 
-        print("test_search_bulk result:", result)
-
-        # {"ok": True, "results": []}
-
         self.assertEqual(
             result["ok"],
             True,

@@ -136,19 +136,27 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         )
 
     def remove_search_doc(key: str):
-        return remove_search(key, CONNECTION_STRING, domain)
+        return remove_search(key, CONNECTION_STRING, domain).then(
+            handle_response
+        )
 
     def get_search_doc(key: str):
-        return get_search(key, CONNECTION_STRING, domain)
+        return get_search(key, CONNECTION_STRING, domain).then(handle_response)
 
     def update_search_doc(key: str, doc: Dict):
-        return update_search(key, doc, CONNECTION_STRING, domain)
+        return update_search(key, doc, CONNECTION_STRING, domain).then(
+            handle_response
+        )
 
     def load_search_docs(docs: List[Dict]):
-        return load_search(docs, CONNECTION_STRING, domain)
+        return load_search(docs, CONNECTION_STRING, domain).then(
+            handle_response
+        )
 
     def post_query_search_docs(query: str, options: SearchQueryOptions):
-        return post_query_search(query, options, CONNECTION_STRING, domain)
+        return post_query_search(
+            query, options, CONNECTION_STRING, domain
+        ).then(handle_response)
 
     hyper_search: HyperSearch = HyperSearch(
         add_search_doc_fn=add_search_doc,

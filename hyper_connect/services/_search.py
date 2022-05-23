@@ -55,9 +55,7 @@ def get_search(key: str, connection_string: str, domain: str = "default"):
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    result = requests.get(url, headers=headers)
-
-    return result.json()
+    return requests.get(url, headers=headers)
 
 
 @promisify
@@ -80,8 +78,7 @@ def update_search(
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    result = requests.put(url, headers=headers, data=json.dumps(doc))
-    return result.json()
+    return requests.put(url, headers=headers, data=json.dumps(doc))
 
 
 @promisify
@@ -102,8 +99,7 @@ def remove_search(key: str, connection_string: str, domain: str = "default"):
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    result = requests.delete(url, headers=headers)
-    return result.json()
+    return requests.delete(url, headers=headers)
 
 
 @promisify
@@ -141,9 +137,7 @@ def post_query_search(
     headers = hyperRequestParams["options"]["headers"]
     body: Any = hyperRequestParams["options"]["body"]
 
-    results = requests.post(url, headers=headers, data=json.dumps(body))
-
-    return results.json()
+    return requests.post(url, headers=headers, data=json.dumps(body))
 
 
 @promisify
@@ -169,5 +163,4 @@ def load_search(
     headers = hyperRequestParams["options"]["headers"]
     body = hyperRequestParams["options"]["body"]
 
-    results = requests.post(url, headers=headers, data=json.dumps(body))
-    return results.json()
+    return requests.post(url, headers=headers, data=json.dumps(body))
