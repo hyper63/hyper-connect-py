@@ -19,6 +19,9 @@ from hyper_connect.services import (
     post_index,
     post_query,
     post_query_search,
+    queue_enqueue,
+    queue_errors,
+    queue_queued,
     remove_cache,
     remove_data,
     remove_search,
@@ -32,6 +35,7 @@ from hyper_connect.types import (
     Hyper,
     HyperCache,
     HyperData,
+    HyperQueue,
     HyperSearch,
     HyperStorage,
     ListOptions,
@@ -176,14 +180,10 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
             handle_response
         )
 
-    # def handle_download(res):
-    #     return res["body"]
-
     def download_doc(name: str):
         return download(name, CONNECTION_STRING, domain)
 
     def remove_storage_doc(name: str):
-
         return remove_storage(name, CONNECTION_STRING, domain).then(
             handle_response
         )
@@ -194,11 +194,33 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         remove_fn=remove_storage_doc,
     )
 
+    # //////////////////////
+    #      HyperQueue
+    # //////////////////////
+
+    def enqueue_job(job: Dict):
+        return queue_enqueue(job, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    def list_job_errors():
+        return queue_errors(CONNECTION_STRING, domain).then(handle_response)
+
+    def list_job_queued():
+        return queue_queued(CONNECTION_STRING, domain).then(handle_response)
+
+    hyper_queue: HyperQueue = HyperQueue(
+        enqueue_fn=enqueue_job,
+        list_job_errors_fn=list_job_errors,
+        list_job_queued_fn=list_job_queued,
+    )
+
     hyper: Hyper = Hyper(
         data=hyper_data,
         cache=hyper_cache,
         search=hyper_search,
         storage=hyper_storage,
+        queue=hyper_queue,
     )
 
     return hyper

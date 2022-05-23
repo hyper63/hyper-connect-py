@@ -17,6 +17,7 @@ from ._data import (
     remove_data,
     update_data,
 )
+from ._queue import queue_enqueue, queue_errors, queue_queued
 from ._search import (
     add_search,
     get_search,

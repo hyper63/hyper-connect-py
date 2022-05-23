@@ -171,6 +171,27 @@ class HyperStorage:
         return self._remove_fn(name)
 
 
+class HyperQueue:
+    def __init__(
+        self,
+        enqueue_fn: Callable,
+        list_job_errors_fn: Callable,
+        list_job_queued_fn: Callable,
+    ):
+        self._enqueue_fn = enqueue_fn
+        self._list_errors_fn = list_job_errors_fn
+        self._list_queued_fn = list_job_queued_fn
+
+    def enqueue(self, job: Dict):
+        return self._enqueue_fn(job)
+
+    def errors(self):
+        return self._list_errors_fn()
+
+    def queued(self):
+        return self._list_queued_fn()
+
+
 class HyperSearch:
     def __init__(
         self,
@@ -220,12 +241,13 @@ class Hyper:
         cache: HyperCache,
         search: HyperSearch,
         storage: HyperStorage,
+        queue: HyperQueue,
     ):
         self._data = data
         self._cache = cache
         self._search = search
         self._storage = storage
-        # self._queue = queue
+        self._queue = queue
         # self._info = info
 
     @property
@@ -260,13 +282,13 @@ class Hyper:
     def storage(self, value):
         raise WriteHyperError("storage service property is read-only")
 
-    # @property
-    # def queue(self):
-    #     return self._queue
+    @property
+    def queue(self):
+        return self._queue
 
-    # @queue.setter
-    # def queue(self, value):
-    #     raise WriteHyperError("queue service property is read-only")
+    @queue.setter
+    def queue(self, value):
+        raise WriteHyperError("queue service property is read-only")
 
     # @property
     # def info(self):
