@@ -80,8 +80,7 @@ def remove_cache(key: str, connection_string: str, domain: str = "default"):
     url: str = hyperRequestParams["url"]
     headers = hyperRequestParams["options"]["headers"]
 
-    result = requests.delete(url, headers=headers)
-    return result.json()
+    return requests.delete(url, headers=headers)
 
 
 @promisify
@@ -117,7 +116,7 @@ def set_cache(
     headers = hyperRequestParams["options"]["headers"]
 
     result = requests.put(url, headers=headers, data=json.dumps(value))
-    return result.json()
+    return result
 
 
 @promisify
@@ -149,4 +148,4 @@ def post_cache_query(
     results = requests.post(url, headers=headers, data=json.dumps(body))
 
     data = json.dumps(body)
-    return results.json()
+    return results

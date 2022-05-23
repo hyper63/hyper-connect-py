@@ -114,7 +114,9 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         )
 
     def post_cache_query_doc(pattern: str):
-        return post_cache_query(pattern, CONNECTION_STRING, domain)
+        return post_cache_query(pattern, CONNECTION_STRING, domain).then(
+            handle_response
+        )
 
     hyper_cache: HyperCache = HyperCache(
         add_cache_fn=add_cache_doc,
