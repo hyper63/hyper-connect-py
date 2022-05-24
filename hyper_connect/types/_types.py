@@ -228,6 +228,16 @@ class HyperSearch:
         return self._query_search(query, options)
 
 
+class HyperInfo:
+    def __init__(self, services_fn: Callable):
+        self._services_fn = services_fn
+
+    def services(
+        self,
+    ):
+        return self._services_fn()
+
+
 # Hyper Classes
 class WriteHyperError(Exception):
     pass
@@ -242,13 +252,14 @@ class Hyper:
         search: HyperSearch,
         storage: HyperStorage,
         queue: HyperQueue,
+        info: HyperInfo,
     ):
         self._data = data
         self._cache = cache
         self._search = search
         self._storage = storage
         self._queue = queue
-        # self._info = info
+        self._info = info
 
     @property
     def data(self):
@@ -290,10 +301,10 @@ class Hyper:
     def queue(self, value):
         raise WriteHyperError("queue service property is read-only")
 
-    # @property
-    # def info(self):
-    #     return self._info
+    @property
+    def info(self):
+        return self._info
 
-    # @info.setter
-    # def info(self, value):
-    #     raise WriteHyperError("info service property is read-only")
+    @info.setter
+    def info(self, value):
+        raise WriteHyperError("info service property is read-only")

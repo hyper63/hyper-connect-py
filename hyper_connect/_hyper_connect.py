@@ -26,6 +26,7 @@ from hyper_connect.services import (
     remove_data,
     remove_search,
     remove_storage,
+    services,
     set_cache,
     update_data,
     update_search,
@@ -35,6 +36,7 @@ from hyper_connect.types import (
     Hyper,
     HyperCache,
     HyperData,
+    HyperInfo,
     HyperQueue,
     HyperSearch,
     HyperStorage,
@@ -195,6 +197,15 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     )
 
     # //////////////////////
+    #      HyperInfo
+    # //////////////////////
+
+    def get_services():
+        return services(CONNECTION_STRING, domain).then(handle_response)
+
+    hyper_info: HyperInfo = HyperInfo(services_fn=get_services)
+
+    # //////////////////////
     #      HyperQueue
     # //////////////////////
 
@@ -221,6 +232,7 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         search=hyper_search,
         storage=hyper_storage,
         queue=hyper_queue,
+        info=hyper_info,
     )
 
     return hyper

@@ -5,6 +5,7 @@ from ._types import (
     Hyper,
     HyperCache,
     HyperData,
+    HyperInfo,
     HyperQueue,
     HyperRequest,
     HyperRequestParams,
