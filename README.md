@@ -16,37 +16,73 @@ pip install hyper_connect
 
 `hyper_connect` wraps your hyper app's REST API, generating a short-lived JWT using a [connection string](https://docs.hyper.io/app-keys) from one of your hyper app's app keys.
 
-A call to the `connect` function returns a `Hyper` object.
+Once you've created an environment variable named `HYPER` with a connection string, you're ready to make a call to the `connect` function which returns a `Hyper` object.
 
-```
+```py
+from typing import Dict
 from hyper_connect import connect
 from hyper_connect.types import Hyper
+from dotenv import dotenv_values
 
-hyper: Hyper = connect(
-    "<your hyper app's connection string>"
-)
+config = dotenv_values("./.env")
 
-doc = '{ "_id":"book-102","type":"book", "name":"Horton hears a who 2","author":"Dr. Suess","published":"1953" }'
+connection_string: str = str(config["HYPER"])
+hyper: Hyper = connect(connection_string)
 
-result = await hyper.data.add(doc)
+async def data_add():
 
+        movie: Dict = {
+            "_id": "movie-4000",
+            "type": "movie",
+            "title": "Back to the Future",
+            "year": "1985",
+        }
+
+        result = await hyper.data.add(movie)
+
+        print('hyper.data.add result --> ', result)
+        # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
 ```
 
 ## Examples
 
-### How to add a document to hyper data?
+### How to add a document to a hyper data service?
 
-```js
-const doc = {
-  id: "movie-1",
-  type: "movie",
-  title: "Dune",
-  year: "2021",
-};
+```py
+from typing import Dict
+from hyper_connect import connect
+from hyper_connect.types import Hyper
+from dotenv import dotenv_values
 
-const result = await hyper.data.add(doc);
-console.log(result); // {ok: true, id: "movie-1"}
+config = dotenv_values("./.env")
+
+connection_string: str = str(config["HYPER"])
+hyper: Hyper = connect(connection_string)
+
+async def data_add():
+
+        movie: Dict = {
+            "_id": "movie-4000",
+            "type": "movie",
+            "title": "Back to the Future",
+            "year": "1985",
+        }
+
+        result = await hyper.data.add(movie)
+
+        print('hyper.data.add result --> ', result)
+        # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
 ```
+### How do I remove a doc from the data service?
+
+```py
+    id: str = "movie-4000"
+    result = await hyper.data.remove(id)
+    print('hyper.data.remove result --> ', result)
+    # hyper.data.remove result -->  {'id': 'movie-4000', 'ok': True, 'status': 200}
+```
+
+****BEGIN HERE****
 
 ### How to get all the documents of type 'movie'?
 
