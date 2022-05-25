@@ -76,20 +76,137 @@ async def data_add():
 ### How do I remove a doc from the data service?
 
 ```py
-    id: str = "movie-4000"
-    result = await hyper.data.remove(id)
-    print('hyper.data.remove result --> ', result)
-    # hyper.data.remove result -->  {'id': 'movie-4000', 'ok': True, 'status': 200}
+id: str = "movie-4000"
+result = await hyper.data.remove(id)
+print('hyper.data.remove result --> ', result)
+# hyper.data.remove result -->  {'id': 'movie-4000', 'ok': True, 'status': 200}
 ```
 
-****BEGIN HERE****
+### How do I get a doc from the data service?
 
-### How to get all the documents of type 'movie'?
+```py
+id: str = "book-000200"
+result = await hyper.data.get(id)
+print("hyper.data.get result --> ", result)
 
-```js
-const result = await hyper.data.query({ type: "movie" });
-console.log(result); // {ok: true, docs: [...]}
+# hyper.data.get result -->  {'_id': 'book-000200', 'type': 'book', 'name': 'Tales of the South Pacific', 'author': 'James A. Michener', 'published': '1947', 'status': 200}
 ```
+
+### What if a doc isn't found?
+
+```py
+id: str = "movie-105"
+result = await hyper.data.get(id)
+print("hyper.data.get result --> ", result)
+
+# hyper.data.get result -->  {'ok': False, 'status': 404, 'msg': 'doc not found'}
+```
+
+### How do I update a doc within the data service?
+
+```py
+book: Dict = {
+        "_id": "book-000100",
+        "type": "book",
+        "name": "The Lorax 100",
+        "author": "Dr. Suess",
+        "published": "1969",
+    }
+
+result = await hyper.data.update("book-000100", book)
+print("hyper.data.update result --> ", result)
+# hyper.data.update result -->  {'ok': True, 'id': 'book-000100', 'status': 200}
+```
+
+### How do I get a range of documents from the data service?
+
+```py
+from hyper_connect.types import Hyper, ListOptions
+
+options: ListOptions = {
+        "startkey": "book-000105",
+        "limit": None,
+        "endkey": "book-000106",
+        "keys": None,
+        "descending": None,
+    }
+
+result = await hyper.data.list(options)
+print("hyper.data.list result --> ", result)
+# hyper.data.list result -->  {'docs': [{...}, {...}], 'ok': True, 'status': 200}
+```
+
+### How do I retrieve a specific set of docs from the data service?
+
+```py
+options: ListOptions = {
+        "startkey": None,
+        "limit": None,
+        "endkey": None,
+        "keys": ["book-000105", "book-000106"],
+        "descending": None,
+    }
+
+result = await hyper.data.list(options)
+print("hyper.data.list result --> ", result)
+# hyper.data.update result -->  {'docs': [{...}, {...}], 'ok': True, 'status': 200}
+
+```
+
+
+### How do I query for just books?
+
+This example uses a `selector` to filter book documents.  An array of `fields` allows you to select which fields to return.  Use `limit` to restrict the number of documents returned.  This is helpful for pagination use cases.
+
+```py
+from hyper_connect.types import Hyper, QueryOptions
+
+selector = {"type": "book"}
+
+options: QueryOptions = {
+    "fields": ["_id", "name", "published"],
+    "sort": None,
+    "limit": 3,
+    "useIndex": None,
+}
+
+result = await hyper.data.query(selector, options)
+print("hyper.data.query result --> ", result)
+
+# hyper.data.query result -->  {'docs': [{'_id': 'book-000010', 'name': 'The Lorax', 'published': '1959'}, {'_id': 'book-000020', 'name': 'The Lumberjack named Lorax the tree slayer', 'published': '1969'}, {'_id': 'book-000100', 'name': 'The Lorax 100', 'published': '1969'}], 'ok': True, 'status': 200}
+```
+
+
+here
+
+### How do I sort data from my data service?
+
+First create an index on the fields you wish to sort.  Then use the `QueryOptions` with the `sort` key to sort.
+
+```py
+index_result = await hyper.data.index(
+        "idx_author_published", ["author", "published"]
+)
+
+print('index_result --> ', index_result )
+
+selector = {"type": "book", "author": "James A. Michener"}
+
+options: QueryOptions = {
+    "fields": ["author", "published"],
+    "sort": [{"author": "DESC"}, {"published": "DESC"}],
+    "useIndex": "idx_author_published",
+}
+
+result = await hyper.data.query(selector, options)
+print("hyper.data.query result --> ", result)
+
+# index_result -->  {'ok': True, 'status': 201}
+
+# hyper.data.query result -->  {'docs': [{'author': 'James A. Michener', 'published': '1985'}, {'author': 'James A. Michener', 'published': '1959'}, {'author': 'James A. Michener', 'published': '1947'}], 'ok': True, 'status': 200}
+```
+
+
 
 ### How to add a cache key/value pair to hyper cache?
 
