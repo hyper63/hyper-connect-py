@@ -19,10 +19,10 @@ pip install hyper_connect
 Once you've created an environment variable named `HYPER` with a connection string, you're ready to make a call to the `connect` function which returns a `Hyper` object.
 
 ```py
-from typing import Dict
 from hyper_connect import connect
 from hyper_connect.types import Hyper
 from dotenv import dotenv_values
+from typing import Dict
 
 config = dotenv_values("./.env")
 
@@ -287,7 +287,7 @@ secure way.
 
 ### Developer Setup
 
-We prefer you use Gitpod.  Gitpod provides a fully initialized, perfectly set-up developer environmments the hyper connect SDK.
+We prefer you use Gitpod.  Gitpod provides a fully initialized, perfectly set-up developer environmment for the hyper connect SDK.
 
 > We recommend you [install the Gitpod browser extension](https://www.gitpod.io/docs/browser-extension) to make this a one-click operation.
 
