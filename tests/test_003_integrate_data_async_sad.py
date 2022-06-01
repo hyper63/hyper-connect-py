@@ -28,30 +28,8 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestIntegration(asynctest.TestCase):
-
-    # async def test_data_get(self):
-    #     result = await hyper.data.get(book1["_id"])
-    #     self.assertEqual(book1["_id"], "book-000100", "Getting doc not ok.")
-
-    # async def test_data_update(self):
-    #     result = await hyper.data.update(book1["_id"], book1)
-    #     self.assertEqual(result["ok"], True, "Update doc not ok.")
-
-    # async def test_data_list_startkey_endkey(self):
-    #     options: ListOptions = {
-    #         "startkey": "book-000105",
-    #         "limit": None,
-    #         "endkey": "book-000106",
-    #         "keys": None,
-    #         "descending": None,
-    #     }
-
-    #     result = await hyper.data.list(options)
-    #     self.assertEqual(result["ok"], True, "List startkey doc not ok.")
-    #     self.assertEqual(len(result["docs"]), 2, "Length should be 2")
-
-    async def test_data_list_bad_keys_array(self):
+class TestIntegration_ASYNC(asynctest.TestCase):
+    async def test_data_list_bad_keys_array_async(self):
         options: ListOptions = {
             "startkey": None,
             "limit": None,
@@ -61,17 +39,11 @@ class TestIntegration(asynctest.TestCase):
         }
 
         try:
-            result = await hyper.data.list(options)
+            result = await hyper.data.list_async(options)
         except TypeError:
             self.assertEqual(True, True, "Should raise TypeError")
 
-        # self.assertEqual(True, False, "Should raise TypeError")
-
-        # print(result)
-        # self.assertEqual(result["ok"], True, "query should be ok.")
-        # self.assertEqual(len(result["docs"]), 0, "length of docs should be 0")
-
-    async def test_data_list_bad_keys(self):
+    async def test_data_list_bad_keys_async(self):
         options: ListOptions = {
             "startkey": None,
             "limit": None,
@@ -81,16 +53,11 @@ class TestIntegration(asynctest.TestCase):
         }
 
         try:
-            result = await hyper.data.list(options)
+            result = await hyper.data.list_async(options)
         except TypeError as err:
             self.assertEqual(True, True, "Should raise TypeError")
 
-        # self.assertEqual(True, False, "Should raise TypeError")
-
-        # self.assertEqual(result["ok"], True, "query should be ok.")
-        # self.assertEqual(len(result["docs"]), 0, "length of docs should be 0")
-
-    async def test_data_list_bad_limit(self):
+    async def test_data_list_bad_limit_async(self):
         options: ListOptions = {
             "startkey": "book-000100",
             "limit": "foo",
@@ -100,13 +67,11 @@ class TestIntegration(asynctest.TestCase):
         }
 
         try:
-            result = await hyper.data.list(options)
+            result = await hyper.data.list_async(options)
         except TypeError:
             self.assertEqual(True, True, "Should raise TypeError")
 
-        # self.assertEqual(True, False, "Should raise TypeError")
-
-    async def test_data_query_bad_sort(self):
+    async def test_data_query_bad_sort_async(self):
 
         selector = {"type": "book"}
 
@@ -117,12 +82,12 @@ class TestIntegration(asynctest.TestCase):
             "useIndex": None,
         }
 
-        result = await hyper.data.query(selector, options)
+        result = await hyper.data.query_async(selector, options)
 
         self.assertEqual(result["ok"], False, "query doc ok.")
         self.assertEqual(result["status"], 422, "status should be 422")
 
-    async def test_data_query_bad_limit(self):
+    async def test_data_query_bad_limit_async(self):
 
         selector = {"type": "book"}
 
@@ -133,7 +98,7 @@ class TestIntegration(asynctest.TestCase):
             "useIndex": None,
         }
 
-        result = await hyper.data.query(selector, options)
+        result = await hyper.data.query_async(selector, options)
         self.assertEqual(result["ok"], False, "query doc ok.")
         self.assertEqual(result["status"], 422, "status should be 422")
 
