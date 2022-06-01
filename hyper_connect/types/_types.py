@@ -142,6 +142,7 @@ class HyperCache:
 class HyperData:
     def __init__(
         self,
+        # ASYNC
         add_data_doc_async_fn: Callable,
         get_data_doc_async_fn: Callable,
         list_data_docs_async_fn: Callable,
@@ -150,7 +151,17 @@ class HyperData:
         query_docs_async_fn: Callable,
         index_docs_async_fn: Callable,
         bulk_docs_async_fn: Callable,
+        # SYNC
+        add_data_doc_sync_fn: Callable,
+        get_data_doc_sync_fn: Callable,
+        list_data_docs_sync_fn: Callable,
+        update_data_doc_sync_fn: Callable,
+        remove_data_doc_sync_fn: Callable,
+        query_docs_sync_fn: Callable,
+        index_docs_sync_fn: Callable,
+        bulk_docs_sync_fn: Callable,
     ):
+        # ASYNC
         self._add_data_async_doc = add_data_doc_async_fn
         self._get_data_async_doc = get_data_doc_async_fn
         self._list_data_async_docs = list_data_docs_async_fn
@@ -160,6 +171,17 @@ class HyperData:
         self._index_async_docs = index_docs_async_fn
         self._bulk_async_docs = bulk_docs_async_fn
 
+        # SYNC
+        self._add_data_sync_doc = add_data_doc_sync_fn
+        self._get_data_sync_doc = get_data_doc_sync_fn
+        self._list_data_sync_docs = list_data_docs_sync_fn
+        self._update_data_sync_doc = update_data_doc_sync_fn
+        self._remove_data_sync_doc = remove_data_doc_sync_fn
+        self._query_sync_docs = query_docs_sync_fn
+        self._index_sync_docs = index_docs_sync_fn
+        self._bulk_sync_docs = bulk_docs_sync_fn
+
+    # ASYNC
     def add_async(self, doc: Dict):
         return self._add_data_async_doc(doc)
 
@@ -183,6 +205,31 @@ class HyperData:
 
     def bulk_async(self, docs: List[Dict]):
         return self._bulk_async_docs(docs)
+
+    # SYNC
+    def add(self, doc: Dict):
+        return self._add_data_sync_doc(doc)
+
+    def get(self, id: str):
+        return self._get_data_sync_doc(id)
+
+    def list(self, options: ListOptions):
+        return self._list_data_sync_docs(options)
+
+    def update(self, id: str, doc: Dict):
+        return self._update_data_sync_doc(id, doc)
+
+    def remove(self, id: str):
+        return self._remove_data_sync_doc(id)
+
+    def query(self, selector: Dict, options: QueryOptions):
+        return self._query_sync_docs(selector, options)
+
+    def index(self, name: str, fields: List[str]):
+        return self._index_sync_docs(name, fields)
+
+    def bulk(self, docs: List[Dict]):
+        return self._bulk_sync_docs(docs)
 
 
 class HyperStorage:

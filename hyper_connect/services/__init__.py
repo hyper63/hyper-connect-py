@@ -14,13 +14,21 @@ from ._cache import (
 )
 from ._data import (
     add_data,
+    add_data_async,
     get_data,
+    get_data_async,
     get_data_list,
+    get_data_list_async,
     post_bulk,
+    post_bulk_async,
     post_index,
+    post_index_async,
     post_query,
+    post_query_async,
     remove_data,
+    remove_data_async,
     update_data,
+    update_data_async,
 )
 from ._info import services
 from ._queue import queue_enqueue, queue_errors, queue_queued

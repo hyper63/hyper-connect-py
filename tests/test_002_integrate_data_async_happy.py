@@ -42,21 +42,21 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestDataIntegration(asynctest.TestCase):
-    async def test_data_add(self):
+class TestDataIntegration_ASYNC(asynctest.TestCase):
+    async def test_data_add_async(self):
 
         # Remove all book docs
         remove_promises = []
 
         for book_doc in book_docs:
-            remove_promises.append(hyper.data.remove(book_doc["_id"]))
+            remove_promises.append(hyper.data.remove_async(book_doc["_id"]))
 
         remove_promises_result = await Promise.all_settled(remove_promises)
 
         # Add all book docs
         add_promises = []
         for book_doc in book_docs:
-            add_promises.append(hyper.data.add(book_doc))
+            add_promises.append(hyper.data.add_async(book_doc))
 
         add_promises_result = await Promise.all_settled(add_promises)
 
@@ -66,15 +66,15 @@ class TestDataIntegration(asynctest.TestCase):
 
         self.assertEqual(countFulfilled, len(book_docs), "Adding docs not ok.")
 
-    async def test_data_get(self):
-        result = await hyper.data.get(book1["_id"])
+    async def test_data_get_async(self):
+        result = await hyper.data.get_async(book1["_id"])
         self.assertEqual(book1["_id"], result["_id"], "Getting doc not ok.")
 
-    async def test_data_update(self):
-        result = await hyper.data.update(book1["_id"], book1)
+    async def test_data_update_async(self):
+        result = await hyper.data.update_async(book1["_id"], book1)
         self.assertEqual(result["ok"], True, "Update doc not ok.")
 
-    async def test_data_list_startkey_endkey(self):
+    async def test_data_list_startkey_endkey_async(self):
         options: ListOptions = {
             "startkey": "book-000105",
             "limit": None,
@@ -83,11 +83,11 @@ class TestDataIntegration(asynctest.TestCase):
             "descending": None,
         }
 
-        result = await hyper.data.list(options)
+        result = await hyper.data.list_async(options)
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
-    async def test_data_list_keys_array(self):
+    async def test_data_list_keys_array_async(self):
         options: ListOptions = {
             "startkey": None,
             "limit": None,
@@ -96,11 +96,11 @@ class TestDataIntegration(asynctest.TestCase):
             "descending": None,
         }
 
-        result = await hyper.data.list(options)
+        result = await hyper.data.list_async(options)
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
-    async def test_data_list_keys_comma_list(self):
+    async def test_data_list_keys_comma_list_async(self):
         options: ListOptions = {
             "startkey": None,
             "limit": None,
@@ -109,11 +109,11 @@ class TestDataIntegration(asynctest.TestCase):
             "descending": None,
         }
 
-        result = await hyper.data.list(options)
+        result = await hyper.data.list_async(options)
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
-    async def test_data_list_limit(self):
+    async def test_data_list_limit_async(self):
         options: ListOptions = {
             "startkey": "book-000100",
             "limit": 4,
@@ -122,12 +122,12 @@ class TestDataIntegration(asynctest.TestCase):
             "descending": None,
         }
 
-        result = await hyper.data.list(options)
+        result = await hyper.data.list_async(options)
 
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 4, "Length should be 4")
 
-    async def test_data_query_limit_10(self):
+    async def test_data_query_limit_10_async(self):
 
         selector = {"type": "book", "name": {"$eq": "The Lorax 103"}}
 
@@ -138,12 +138,12 @@ class TestDataIntegration(asynctest.TestCase):
             "useIndex": None,
         }
 
-        result = await hyper.data.query(selector, options)
+        result = await hyper.data.query_async(selector, options)
 
         self.assertEqual(result["ok"], True, "Query result not ok.")
         self.assertEqual(len(result["docs"]), 1, "Length should be 1")
 
-    async def test_data_query_fields(self):
+    async def test_data_query_fields_async(self):
 
         selector = {"type": "book"}
 
@@ -154,7 +154,7 @@ class TestDataIntegration(asynctest.TestCase):
             "useIndex": None,
         }
 
-        result = await hyper.data.query(selector, options)
+        result = await hyper.data.query_async(selector, options)
 
         self.assertEqual(result["ok"], True, "Query result not ok.")
         self.assertEqual(len(result["docs"]), 3, "Length should be 3")
@@ -164,7 +164,7 @@ class TestDataIntegration(asynctest.TestCase):
             "There should be 3 keys in a doc.",
         )
 
-    async def test_data_query_index(self):
+    async def test_data_query_index_async(self):
 
         selector = {"type": "book", "author": "James A. Michener"}
 
@@ -174,11 +174,11 @@ class TestDataIntegration(asynctest.TestCase):
             "useIndex": "idx_author_published",
         }
 
-        index_result = await hyper.data.index(
+        index_result = await hyper.data.index_async(
             "idx_author_published", ["author", "published"]
         )
 
-        result = await hyper.data.query(selector, options)
+        result = await hyper.data.query_async(selector, options)
 
         self.assertEqual(
             index_result["ok"], True, "index create result not ok."
@@ -195,15 +195,15 @@ class TestDataIntegration(asynctest.TestCase):
             "The first doc should be published in 1985",
         )
 
-    async def test_bulk_data(self):
+    async def test_bulk_data_async(self):
 
         # Bulk remove docs
         bulkDocs = map(
             lambda doc: assoc("_deleted", True, doc), book_bulk_docs
         )
 
-        result = await hyper.data.bulk(bulkDocs).then(
-            lambda _: hyper.data.bulk(book_bulk_docs)
+        result = await hyper.data.bulk_async(bulkDocs).then(
+            lambda _: hyper.data.bulk_async(book_bulk_docs)
         )
 
         self.assertEqual(result["ok"], True, "Bulk result not ok.")

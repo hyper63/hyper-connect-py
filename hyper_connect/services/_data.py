@@ -14,6 +14,13 @@ from hyper_connect.utils import create_hyper_request_params, to_data_query
 
 
 @promisify
+def add_data_async(
+    body: Dict, connection_string: str, domain: str = "default"
+):
+    result = add_data(body, connection_string, domain)
+    return result
+
+
 def add_data(body: Dict, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
@@ -48,6 +55,10 @@ def add_data(body: Dict, connection_string: str, domain: str = "default"):
 
 
 @promisify
+def get_data_async(id: str, connection_string: str, domain: str = "default"):
+    return get_data(id, connection_string, domain)
+
+
 def get_data(id: str, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
@@ -69,6 +80,12 @@ def get_data(id: str, connection_string: str, domain: str = "default"):
 
 
 @promisify
+def get_data_list_async(
+    options: ListOptions, connection_string: str, domain: str = "default"
+):
+    return get_data_list(options, connection_string, domain)
+
+
 def get_data_list(
     options: ListOptions, connection_string: str, domain: str = "default"
 ):
@@ -100,6 +117,12 @@ def get_data_list(
 
 
 @promisify
+def update_data_async(
+    id: str, doc: Dict, connection_string: str, domain: str = "default"
+):
+    return update_data(id, doc, connection_string, domain)
+
+
 def update_data(
     id: str, doc: Dict, connection_string: str, domain: str = "default"
 ):
@@ -123,6 +146,12 @@ def update_data(
 
 
 @promisify
+def remove_data_async(
+    id: str, connection_string: str, domain: str = "default"
+):
+    return remove_data(id, connection_string, domain)
+
+
 def remove_data(id: str, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
@@ -144,6 +173,15 @@ def remove_data(id: str, connection_string: str, domain: str = "default"):
 
 
 @promisify
+def post_query_async(
+    selector: Dict,
+    options: QueryOptions,
+    connection_string: str,
+    domain: str = "default",
+):
+    return post_query(selector, options, connection_string, domain)
+
+
 def post_query(
     selector: Dict,
     options: QueryOptions,
@@ -173,6 +211,15 @@ def post_query(
 
 
 @promisify
+def post_index_async(
+    name: str,
+    fields: List[str],
+    connection_string: str,
+    domain: str = "default",
+):
+    return post_index(name, fields, connection_string, domain)
+
+
 def post_index(
     name: str,
     fields: List[str],
@@ -201,6 +248,14 @@ def post_index(
 
 
 @promisify
+def post_bulk_async(
+    docs: List[Dict],
+    connection_string: str,
+    domain: str = "default",
+):
+    return post_bulk(docs, connection_string, domain)
+
+
 def post_bulk(
     docs: List[Dict],
     connection_string: str,

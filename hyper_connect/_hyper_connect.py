@@ -8,19 +8,25 @@ from hyper_connect.services import (
     add_cache,
     add_cache_async,
     add_data,
+    add_data_async,
     add_search,
     download,
     get_cache,
     get_cache_async,
     get_data,
+    get_data_async,
     get_data_list,
+    get_data_list_async,
     get_search,
     load_search,
     post_bulk,
+    post_bulk_async,
     post_cache_query,
     post_cache_query_async,
     post_index,
+    post_index_async,
     post_query,
+    post_query_async,
     post_query_search,
     queue_enqueue,
     queue_errors,
@@ -28,12 +34,14 @@ from hyper_connect.services import (
     remove_cache,
     remove_cache_async,
     remove_data,
+    remove_data_async,
     remove_search,
     remove_storage,
     services,
     set_cache,
     set_cache_async,
     update_data,
+    update_data_async,
     update_search,
     upload,
 )
@@ -55,52 +63,129 @@ from hyper_connect.utils import handle_response, handle_response_sync
 @typechecked
 def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
 
-    # //////////////////////
-    #      HyperData
-    # //////////////////////
+    # /////////////////////////
+    #      BEGIN HyperData
+    # /////////////////////////
 
-    def add_data_doc(doc: Dict):
-        return add_data(doc, CONNECTION_STRING, domain).then(handle_response)
+    # /////////////////////////
+    #          ASYNC
+    # /////////////////////////
 
-    def get_data_doc(id: str):
-        return get_data(id, CONNECTION_STRING, domain).then(handle_response)
-
-    def list_data_docs(options: ListOptions):
-        return get_data_list(options, CONNECTION_STRING, domain).then(
+    def add_data_doc_async(doc: Dict):
+        return add_data_async(doc, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def update_data_doc(id: str, doc: Dict):
-        return update_data(id, doc, CONNECTION_STRING, domain).then(
+    def get_data_doc_async(id: str):
+        return get_data_async(id, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def remove_data_doc(id: str):
-        return remove_data(id, CONNECTION_STRING, domain).then(handle_response)
-
-    def query_docs(selector: Dict, options: QueryOptions):
-        return post_query(selector, options, CONNECTION_STRING, domain).then(
+    def list_data_docs_async(options: ListOptions):
+        return get_data_list_async(options, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def index_docs(name: str, fields: List[str]):
-        return post_index(name, fields, CONNECTION_STRING, domain).then(
+    def update_data_doc_async(id: str, doc: Dict):
+        return update_data_async(id, doc, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def bulk_docs(docs: List[Dict]):
-        return post_bulk(docs, CONNECTION_STRING, domain).then(handle_response)
+    def remove_data_doc_async(id: str):
+        return remove_data_async(id, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    def query_docs_async(selector: Dict, options: QueryOptions):
+        return post_query_async(
+            selector, options, CONNECTION_STRING, domain
+        ).then(handle_response)
+
+    def index_docs_async(name: str, fields: List[str]):
+        return post_index_async(name, fields, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    def bulk_docs_async(docs: List[Dict]):
+        return post_bulk_async(docs, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    # ////////////////////////////
+    #         END ASYNC
+    # ////////////////////////////
+
+    # ////////////////////////////
+    #         BEGIN SYNC
+    # ////////////////////////////
+
+    def add_data_doc_sync(doc: Dict):
+        response = add_data(doc, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def get_data_doc_sync(id: str):
+        response = get_data(id, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def list_data_docs_sync(options: ListOptions):
+        response = get_data_list(options, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def update_data_doc_sync(id: str, doc: Dict):
+        response = update_data(id, doc, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def remove_data_doc_sync(id: str):
+        response = remove_data(id, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def query_docs_sync(selector: Dict, options: QueryOptions):
+        response = post_query(selector, options, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def index_docs_sync(name: str, fields: List[str]):
+        response = post_index(name, fields, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def bulk_docs_sync(docs: List[Dict]):
+        response = post_bulk(docs, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    # ////////////////////////////
+    #     END SYNC
+    # ////////////////////////////
 
     hyper_data: HyperData = HyperData(
-        add_data_doc_async_fn=add_data_doc,
-        get_data_doc_async_fn=get_data_doc,
-        list_data_docs_async_fn=list_data_docs,
-        update_data_doc_async_fn=update_data_doc,
-        remove_data_doc_async_fn=remove_data_doc,
-        query_docs_async_fn=query_docs,
-        index_docs_async_fn=index_docs,
-        bulk_docs_async_fn=bulk_docs,
+        # Async
+        add_data_doc_async_fn=add_data_doc_async,
+        get_data_doc_async_fn=get_data_doc_async,
+        list_data_docs_async_fn=list_data_docs_async,
+        update_data_doc_async_fn=update_data_doc_async,
+        remove_data_doc_async_fn=remove_data_doc_async,
+        query_docs_async_fn=query_docs_async,
+        index_docs_async_fn=index_docs_async,
+        bulk_docs_async_fn=bulk_docs_async,
+        # Sync
+        add_data_doc_sync_fn=add_data_doc_sync,
+        get_data_doc_sync_fn=get_data_doc_sync,
+        list_data_docs_sync_fn=list_data_docs_sync,
+        update_data_doc_sync_fn=update_data_doc_sync,
+        remove_data_doc_sync_fn=remove_data_doc_sync,
+        query_docs_sync_fn=query_docs_sync,
+        index_docs_sync_fn=index_docs_sync,
+        bulk_docs_sync_fn=bulk_docs_sync,
     )
+    # /////////////////////////
+    #      END HyperData
+    # /////////////////////////
 
     # ////////////////////////////
     #     BEGIN HyperCache
@@ -172,11 +257,13 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     # ////////////////////////////
 
     hyper_cache: HyperCache = HyperCache(
+        # Async
         add_cache_async_fn=add_cache_doc_async,
         get_cache_async_fn=get_cache_doc_async,
         set_cache_async_fn=set_cache_doc_async,
         remove_cache_async_fn=remove_cache_doc_async,
         post_cache_query_async_fn=post_cache_query_doc_async,
+        # Sync
         add_cache_sync_fn=add_cache_doc_sync,
         get_cache_sync_fn=get_cache_doc_sync,
         set_cache_sync_fn=set_cache_doc_sync,
