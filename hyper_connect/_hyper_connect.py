@@ -6,16 +6,19 @@ from typeguard import typechecked
 # from ._cache import addCacheDoc
 from hyper_connect.services import (
     add_cache,
+    add_cache_async,
     add_data,
     add_search,
     download,
     get_cache,
+    get_cache_async,
     get_data,
     get_data_list,
     get_search,
     load_search,
     post_bulk,
     post_cache_query,
+    post_cache_query_async,
     post_index,
     post_query,
     post_query_search,
@@ -23,11 +26,13 @@ from hyper_connect.services import (
     queue_errors,
     queue_queued,
     remove_cache,
+    remove_cache_async,
     remove_data,
     remove_search,
     remove_storage,
     services,
     set_cache,
+    set_cache_async,
     update_data,
     update_search,
     upload,
@@ -44,7 +49,7 @@ from hyper_connect.types import (
     QueryOptions,
     SearchQueryOptions,
 )
-from hyper_connect.utils import handle_response
+from hyper_connect.utils import handle_response, handle_response_sync
 
 
 @typechecked
@@ -106,25 +111,27 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     # ////////////////////////////
 
     def add_cache_doc_async(key: str, value: Any, ttl: Optional[str]):
-        return add_cache(key, value, ttl, CONNECTION_STRING, domain).then(
-            handle_response
-        )
+        return add_cache_async(
+            key, value, ttl, CONNECTION_STRING, domain
+        ).then(handle_response)
 
     def get_cache_doc_async(key: str):
-        return get_cache(key, CONNECTION_STRING, domain).then(handle_response)
-
-    def set_cache_doc_async(key: str, value: Any, ttl: Optional[str]):
-        return set_cache(key, value, ttl, CONNECTION_STRING, domain).then(
+        return get_cache_async(key, CONNECTION_STRING, domain).then(
             handle_response
         )
 
+    def set_cache_doc_async(key: str, value: Any, ttl: Optional[str]):
+        return set_cache_async(
+            key, value, ttl, CONNECTION_STRING, domain
+        ).then(handle_response)
+
     def remove_cache_doc_async(key: str):
-        return remove_cache(key, CONNECTION_STRING, domain).then(
+        return remove_cache_async(key, CONNECTION_STRING, domain).then(
             handle_response
         )
 
     def post_cache_query_doc_async(pattern: str):
-        return post_cache_query(pattern, CONNECTION_STRING, domain).then(
+        return post_cache_query_async(pattern, CONNECTION_STRING, domain).then(
             handle_response
         )
 
@@ -135,34 +142,29 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     # ////////////////////////////
     #         BEGIN SYNC
     # ////////////////////////////
-    async def add_cache_doc_sync(key: str, value: Any, ttl: Optional[str]):
-        result = await add_cache(
-            key, value, ttl, CONNECTION_STRING, domain
-        ).then(handle_response)
+    def add_cache_doc_sync(key: str, value: Any, ttl: Optional[str]):
+        response = add_cache(key, value, ttl, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
         return result
 
-    async def get_cache_doc_sync(key: str):
-        result = await get_cache(key, CONNECTION_STRING, domain).then(
-            handle_response
-        )
+    def get_cache_doc_sync(key: str):
+        response = get_cache(key, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
         return result
 
-    async def set_cache_doc_sync(key: str, value: Any, ttl: Optional[str]):
-        result = await set_cache(
-            key, value, ttl, CONNECTION_STRING, domain
-        ).then(handle_response)
+    def set_cache_doc_sync(key: str, value: Any, ttl: Optional[str]):
+        response = set_cache(key, value, ttl, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
         return result
 
-    async def remove_cache_doc_sync(key: str):
-        result = await remove_cache(key, CONNECTION_STRING, domain).then(
-            handle_response
-        )
+    def remove_cache_doc_sync(key: str):
+        response = remove_cache(key, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
         return result
 
-    async def post_cache_query_doc_sync(pattern: str):
-        result = await post_cache_query(
-            pattern, CONNECTION_STRING, domain
-        ).then(handle_response)
+    def post_cache_query_doc_sync(pattern: str):
+        response = post_cache_query(pattern, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
         return result
 
     # ////////////////////////////

@@ -10,6 +10,17 @@ from hyper_connect.utils import create_hyper_request_params
 
 
 @promisify
+def add_cache_async(
+    key: str,
+    value: Dict,
+    ttl: Optional[str],
+    connection_string: str,
+    domain: str = "default",
+):
+    result = add_cache(key, value, ttl, connection_string, domain)
+    return result
+
+
 def add_cache(
     key: str,
     value: Dict,
@@ -38,10 +49,16 @@ def add_cache(
     headers = hyperRequestParams["options"]["headers"]
     body = hyperRequestParams["options"]["body"]
 
-    return requests.post(url, headers=headers, data=json.dumps(body))
+    result = requests.post(url, headers=headers, data=json.dumps(body))
+    return result
 
 
 @promisify
+def get_cache_async(key: str, connection_string: str, domain: str = "default"):
+    result = get_cache(key, connection_string, domain)
+    return result
+
+
 def get_cache(key: str, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
@@ -63,6 +80,13 @@ def get_cache(key: str, connection_string: str, domain: str = "default"):
 
 
 @promisify
+def remove_cache_async(
+    key: str, connection_string: str, domain: str = "default"
+):
+    result = remove_cache(key, connection_string, domain)
+    return result
+
+
 def remove_cache(key: str, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
@@ -84,6 +108,17 @@ def remove_cache(key: str, connection_string: str, domain: str = "default"):
 
 
 @promisify
+def set_cache_async(
+    key: str,
+    value: Dict,
+    ttl: Optional[str],
+    connection_string: str,
+    domain: str = "default",
+):
+    result = set_cache(key, value, ttl, connection_string, domain)
+    return result
+
+
 def set_cache(
     key: str,
     value: Dict,
@@ -120,6 +155,15 @@ def set_cache(
 
 
 @promisify
+def post_cache_query_async(
+    pattern: Optional[str],
+    connection_string: str,
+    domain: str = "default",
+):
+    result = post_cache_query(pattern, connection_string, domain)
+    return result
+
+
 def post_cache_query(
     pattern: Optional[str],
     connection_string: str,

@@ -2,10 +2,15 @@ __version__ = "0.0.1"
 
 from ._cache import (
     add_cache,
+    add_cache_async,
     get_cache,
+    get_cache_async,
     post_cache_query,
+    post_cache_query_async,
     remove_cache,
+    remove_cache_async,
     set_cache,
+    set_cache_async,
 )
 from ._data import (
     add_data,

@@ -68,7 +68,7 @@ class TestCacheIntegration_ASYNC(asynctest.TestCase):
 
     async def test_cache_query_async(self):
         result = await hyper.cache.query_async("book-0001*")
-        # { ok: true, docs: [ { key: 'movie-5-1985', value: [Object] } ] }
+
         self.assertEqual(result["ok"], True, "cache query result not ok.")
         self.assertEqual(
             len(result["docs"]) <= 7,

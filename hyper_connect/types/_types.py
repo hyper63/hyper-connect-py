@@ -79,11 +79,13 @@ class WriteHyperDataError(Exception):
 class HyperCache:
     def __init__(
         self,
+        # ASYNC
         add_cache_async_fn: Callable,
         get_cache_async_fn: Callable,
         set_cache_async_fn: Callable,
         remove_cache_async_fn: Callable,
         post_cache_query_async_fn: Callable,
+        # SYNC
         add_cache_sync_fn: Callable,
         get_cache_sync_fn: Callable,
         set_cache_sync_fn: Callable,
@@ -128,13 +130,13 @@ class HyperCache:
         return self._get_cache_sync(key)
 
     def set(self, key: str, value: Any, ttl: Optional[str]):
-        return self._set_cache_async(key, value, ttl)
+        return self._set_cache_sync(key, value, ttl)
 
     def remove(self, key: str):
-        return self._remove_cache_async(key)
+        return self._remove_cache_sync(key)
 
     def query(self, pattern: str):
-        return self._post_cache_query_async(pattern)
+        return self._post_cache_query_sync(pattern)
 
 
 class HyperData:
