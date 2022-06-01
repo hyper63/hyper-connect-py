@@ -38,6 +38,7 @@ from hyper_connect.services import (
     remove_search,
     remove_storage,
     services,
+    services_async,
     set_cache,
     set_cache_async,
     update_data,
@@ -372,10 +373,17 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     #      BEGIN HyperInfo
     # /////////////////////////
 
-    def get_services():
-        return services(CONNECTION_STRING, domain).then(handle_response)
+    def get_services_async():
+        return services_async(CONNECTION_STRING, domain).then(handle_response)
 
-    hyper_info: HyperInfo = HyperInfo(services_fn=get_services)
+    def get_services_sync():
+        response = services(CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    hyper_info: HyperInfo = HyperInfo(
+        services_async_fn=get_services_async, services_fn=get_services_sync
+    )
 
     # /////////////////////////
     #      END HyperInfo

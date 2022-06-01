@@ -311,8 +311,12 @@ class HyperSearch:
 
 
 class HyperInfo:
-    def __init__(self, services_fn: Callable):
+    def __init__(self, services_async_fn: Callable, services_fn: Callable):
+        self._services_async_fn = services_async_fn
         self._services_fn = services_fn
+
+    def services_async(self):
+        return self._services_async_fn()
 
     def services(
         self,

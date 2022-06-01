@@ -30,7 +30,7 @@ from ._data import (
     update_data,
     update_data_async,
 )
-from ._info import services
+from ._info import services, services_async
 from ._queue import queue_enqueue, queue_errors, queue_queued
 from ._search import (
     add_search,

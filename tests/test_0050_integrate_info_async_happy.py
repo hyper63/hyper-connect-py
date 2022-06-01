@@ -23,9 +23,9 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestInfoIntegeration(asynctest.TestCase):
-    async def test_get_info_services(self):
-        result = await hyper.info.services()
+class TestInfoIntegeration_ASYNC(asynctest.TestCase):
+    async def test_get_info_services_async(self):
+        result = await hyper.info.services_async()
 
         # result --> {'name': 'hyper', 'version': '1.0-beta', 'services': ['cache', 'data', 'storage', 'search', 'queue'], 'status': 200}
 
