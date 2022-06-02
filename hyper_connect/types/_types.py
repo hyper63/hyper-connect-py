@@ -235,14 +235,25 @@ class HyperData:
 class HyperStorage:
     def __init__(
         self,
+        # ASYNC
         upload_async_fn: Callable,
         download_async_fn: Callable,
         remove_async_fn: Callable,
+        # SYNC
+        upload_sync_fn: Callable,
+        download_sync_fn: Callable,
+        remove_sync_fn: Callable,
     ):
+        # ASYNC
         self._upload_async_fn = upload_async_fn
         self._download_async_fn = download_async_fn
         self._remove_async_fn = remove_async_fn
+        # SYNC
+        self._upload_sync_fn = upload_sync_fn
+        self._download_sync_fn = download_sync_fn
+        self._remove_sync_fn = remove_sync_fn
 
+    # ASYNC
     def upload_async(self, name: str, data: io.BufferedReader):
         return self._upload_async_fn(name, data)
 
@@ -251,6 +262,16 @@ class HyperStorage:
 
     def remove_async(self, name: str):
         return self._remove_async_fn(name)
+
+    # SYNC
+    def upload(self, name: str, data: io.BufferedReader):
+        return self._upload_sync_fn(name, data)
+
+    def download(self, name: str):
+        return self._download_sync_fn(name)
+
+    def remove(self, name: str):
+        return self._remove_sync_fn(name)
 
 
 class HyperQueue:

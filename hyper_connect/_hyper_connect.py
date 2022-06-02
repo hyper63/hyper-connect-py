@@ -12,6 +12,7 @@ from hyper_connect.services import (
     add_search,
     add_search_async,
     download,
+    download_async,
     get_cache,
     get_cache_async,
     get_data,
@@ -42,6 +43,7 @@ from hyper_connect.services import (
     remove_search,
     remove_search_async,
     remove_storage,
+    remove_storage_async,
     services,
     services_async,
     set_cache,
@@ -51,6 +53,7 @@ from hyper_connect.services import (
     update_search,
     update_search_async,
     upload,
+    upload_async,
 )
 from hyper_connect.types import (
     Hyper,
@@ -350,23 +353,47 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     #      BEGIN HyperStorage
     # ///////////////////////////
 
-    def upload_doc(name: str, data: io.BufferedReader):
-        return upload(name, data, CONNECTION_STRING, domain).then(
+    # ////////////////////////////
+    #          ASYNC
+    # ////////////////////////////
+
+    def upload_doc_async(name: str, data: io.BufferedReader):
+        return upload_async(name, data, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def download_doc(name: str):
+    def download_doc_async(name: str):
+        return download_async(name, CONNECTION_STRING, domain)
+
+    def remove_storage_doc_async(name: str):
+        return remove_storage_async(name, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    # ////////////////////////////
+    #            SYNC
+    # ////////////////////////////
+
+    def upload_doc_sync(name: str, data: io.BufferedReader):
+        response = upload(name, data, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def download_doc_sync(name: str):
         return download(name, CONNECTION_STRING, domain)
 
-    def remove_storage_doc(name: str):
-        return remove_storage(name, CONNECTION_STRING, domain).then(
-            handle_response
-        )
+    def remove_storage_doc_sync(name: str):
+        response = remove_storage(name, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
 
     hyper_storage: HyperStorage = HyperStorage(
-        upload_async_fn=upload_doc,
-        download_async_fn=download_doc,
-        remove_async_fn=remove_storage_doc,
+        # Async
+        upload_async_fn=upload_doc_async,
+        download_async_fn=download_doc_async,
+        remove_async_fn=remove_storage_doc_async,
+        # Sync
+        upload_sync_fn=upload_doc_sync,
+        download_sync_fn=download_doc_sync,
+        remove_sync_fn=remove_storage_doc_sync,
     )
     # ///////////////////////////
     #      END HyperStorage

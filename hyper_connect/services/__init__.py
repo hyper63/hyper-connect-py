@@ -46,4 +46,11 @@ from ._search import (
     update_search,
     update_search_async,
 )
-from ._storage import download, remove_storage, upload
+from ._storage import (
+    download,
+    download_async,
+    remove_storage,
+    remove_storage_async,
+    upload,
+    upload_async,
+)

@@ -25,25 +25,25 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestStorageIntegrationTXT(asynctest.TestCase):
-    async def test_storage_image_upload(self):
+class TestStorageIntegrationPNG_ASYNC(asynctest.TestCase):
+    async def test_storage_image_upload_async(self):
 
         # begin upload remix.png image file
-        br_hyper_txt: io.BufferedReader = open(
-            os.path.join(sys.path[0], "hyper.txt"), "rb"
+        br_remix_png: io.BufferedReader = open(
+            os.path.join(sys.path[0], "remix.png"), "rb"
         )
-        br_hyper_txt_download_result = await hyper.storage.upload(
-            name="hyper.txt", data=br_hyper_txt
-        ).then(lambda _: hyper.storage.download(name="hyper.txt"))
+        br_remix_png_download_result = await hyper.storage.upload_async(
+            name="remix", data=br_remix_png
+        ).then(lambda _: hyper.storage.download_async(name="remix"))
 
-        br_hyper_txt.close()
+        br_remix_png.close()
         # end upload
 
         # begin download of remix.png image file as remix_downloaded.png
-        path = os.path.join(sys.path[0], "hyper_downloaded.txt")
+        path = os.path.join(sys.path[0], "remix_downloaded.png")
 
         with open(path, "wb") as fd:
-            for chunk in br_hyper_txt_download_result.iter_content(
+            for chunk in br_remix_png_download_result.iter_content(
                 chunk_size=128
             ):
                 fd.write(chunk)
@@ -51,17 +51,17 @@ class TestStorageIntegrationTXT(asynctest.TestCase):
         # end download
 
         self.assertEqual(
-            br_hyper_txt_download_result.status_code,
+            br_remix_png_download_result.status_code,
             200,
             "Storage download status isn't 200. no es bueno",
         )
 
-        remove_result = await hyper.storage.remove(name="hyper.txt")
+        remove_result = await hyper.storage.remove_async(name="remix")
 
         self.assertEqual(
             remove_result["ok"],
             True,
-            "Deleting hyper.txt from storage not ok",
+            "Deleting remix.png from storage not ok",
         )
 
 
