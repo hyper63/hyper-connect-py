@@ -17,8 +17,7 @@ def add_cache_async(
     connection_string: str,
     domain: str = "default",
 ):
-    result = add_cache(key, value, ttl, connection_string, domain)
-    return result
+    return add_cache(key, value, ttl, connection_string, domain)
 
 
 def add_cache(
@@ -55,8 +54,7 @@ def add_cache(
 
 @promisify
 def get_cache_async(key: str, connection_string: str, domain: str = "default"):
-    result = get_cache(key, connection_string, domain)
-    return result
+    return get_cache(key, connection_string, domain)
 
 
 def get_cache(key: str, connection_string: str, domain: str = "default"):
@@ -83,8 +81,7 @@ def get_cache(key: str, connection_string: str, domain: str = "default"):
 def remove_cache_async(
     key: str, connection_string: str, domain: str = "default"
 ):
-    result = remove_cache(key, connection_string, domain)
-    return result
+    return remove_cache(key, connection_string, domain)
 
 
 def remove_cache(key: str, connection_string: str, domain: str = "default"):
@@ -115,8 +112,7 @@ def set_cache_async(
     connection_string: str,
     domain: str = "default",
 ):
-    result = set_cache(key, value, ttl, connection_string, domain)
-    return result
+    return set_cache(key, value, ttl, connection_string, domain)
 
 
 def set_cache(
@@ -160,8 +156,7 @@ def post_cache_query_async(
     connection_string: str,
     domain: str = "default",
 ):
-    result = post_cache_query(pattern, connection_string, domain)
-    return result
+    return post_cache_query(pattern, connection_string, domain)
 
 
 def post_cache_query(

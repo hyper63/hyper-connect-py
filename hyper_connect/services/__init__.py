@@ -34,10 +34,16 @@ from ._info import services, services_async
 from ._queue import queue_enqueue, queue_errors, queue_queued
 from ._search import (
     add_search,
+    add_search_async,
     get_search,
+    get_search_async,
     load_search,
+    load_search_async,
     post_query_search,
+    post_query_search_async,
     remove_search,
+    remove_search_async,
     update_search,
+    update_search_async,
 )
 from ._storage import download, remove_storage, upload

@@ -1,9 +1,9 @@
 # Once you have multiple test files, as long as you follow the test*.py naming pattern,
 # you can provide the name of the directory instead by using the -s flag and the name of the directory:
 # python -m unittest discover -s tests -v
+import unittest
 from typing import Dict, List
 
-import asynctest
 from artifacts import movie_bulk_doc_artifacts, movie_doc_artifacts
 from dotenv import dotenv_values
 from promisio import Promise
@@ -31,35 +31,21 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestSearchIntegration(asynctest.TestCase):
-    async def test_search_add(self):
-        # Remove all book docs
-        remove_promises = []
+class TestSearchIntegration_SYNC(unittest.TestCase):
+    def test_search_add_sync(self):
 
-        for movie_doc in movie_docs:
-            remove_promises.append(hyper.search.remove(key=movie_doc["_id"]))
-
-        remove_promises_result = await Promise.all_settled(remove_promises)
-
-        # Add all book docs
-        add_promises = []
-        for movie_doc in movie_docs:
-            add_promises.append(
-                hyper.search.add(key=movie_doc["_id"], doc=movie_doc)
-            )
-
-        add_promises_result = await Promise.all_settled(add_promises)
-
-        countFulfilled = sum(
-            map(lambda x: x["status"] == "fulfilled", add_promises_result)
-        )
+        remove_result = hyper.search.remove(key=movie1["_id"])
+        add_result = hyper.search.add(key=movie1["_id"], doc=movie1)
 
         self.assertEqual(
-            countFulfilled, len(movie_docs), "Adding docs to search not ok."
+            remove_result["ok"], True, "SYNC Removing data doc not ok."
+        )
+        self.assertEqual(
+            add_result["ok"], True, "SYNC Adding data doc not ok."
         )
 
-    async def test_search_get(self):
-        result = await hyper.search.get(key="movie-100")
+    def test_search_get_sync(self):
+        result = hyper.search.get(key="movie-100")
 
         doc = result["doc"]
 
@@ -69,8 +55,8 @@ class TestSearchIntegration(asynctest.TestCase):
             "Getting doc from search not ok.",
         )
 
-    async def test_search_delete(self):
-        result = await hyper.search.remove(key="movie-101")
+    def test_search_delete_sync(self):
+        result = hyper.search.remove(key="movie-101")
 
         self.assertEqual(
             result["ok"],
@@ -78,12 +64,12 @@ class TestSearchIntegration(asynctest.TestCase):
             "Deleting from search not ok",
         )
 
-    async def test_search_query(self):
+    def test_search_query_sync(self):
 
         options: SearchQueryOptions = {"fields": ["title"], "filter": None}
 
         query = "Chariots"
-        result = await hyper.search.query(query, options)
+        result = hyper.search.query(query, options)
 
         self.assertEqual(
             result["ok"],
@@ -97,9 +83,9 @@ class TestSearchIntegration(asynctest.TestCase):
             "# of search result matches do not equal 1.",
         )
 
-    async def test_search_bulk(self):
+    def test_search_bulk_sync(self):
 
-        result = await hyper.search.load(bulk_movie_docs)
+        result = hyper.search.load(bulk_movie_docs)
 
         self.assertEqual(
             result["ok"],
@@ -115,4 +101,4 @@ class TestSearchIntegration(asynctest.TestCase):
 
 
 if __name__ == "__main__":
-    asynctest.main()
+    unittest.main()

@@ -277,13 +277,22 @@ class HyperQueue:
 class HyperSearch:
     def __init__(
         self,
+        # ASYNC
         add_search_doc_async_fn: Callable,
         remove_search_doc_async_fn: Callable,
         get_search_doc_async_fn: Callable,
         update_search_doc_async_fn: Callable,
         load_search_async_fn: Callable,
         query_search_async_fn: Callable,
+        # SYNC
+        add_search_doc_sync_fn: Callable,
+        remove_search_doc_sync_fn: Callable,
+        get_search_doc_sync_fn: Callable,
+        update_search_doc_sync_fn: Callable,
+        load_search_sync_fn: Callable,
+        query_search_sync_fn: Callable,
     ):
+        # ASYNC
         self._add_search_async_doc = add_search_doc_async_fn
         self._remove_search_async_doc = remove_search_doc_async_fn
         self._get_search_async_doc = get_search_doc_async_fn
@@ -291,6 +300,15 @@ class HyperSearch:
         self._load_search_async = load_search_async_fn
         self._query_search_async = query_search_async_fn
 
+        # SYNC
+        self._add_search_sync_doc = add_search_doc_sync_fn
+        self._remove_search_sync_doc = remove_search_doc_sync_fn
+        self._get_search_sync_doc = get_search_doc_sync_fn
+        self._update_search_sync_doc = update_search_doc_sync_fn
+        self._load_search_sync = load_search_sync_fn
+        self._query_search_sync = query_search_sync_fn
+
+    # ASYNC
     def add_async(self, key: str, doc: Dict):
         return self._add_search_async_doc(key, doc)
 
@@ -308,6 +326,25 @@ class HyperSearch:
 
     def query_async(self, query: str, options: Optional[SearchQueryOptions]):
         return self._query_search_async(query, options)
+
+    # SYNC
+    def add(self, key: str, doc: Dict):
+        return self._add_search_sync_doc(key, doc)
+
+    def remove(self, key: str):
+        return self._remove_search_sync_doc(key)
+
+    def get(self, key: str):
+        return self._get_search_sync_doc(key)
+
+    def update(self, key: str, doc: Dict):
+        return self._update_search_sync_doc(key, doc)
+
+    def load(self, docs: List[Dict]):
+        return self._load_search_sync(docs)
+
+    def query(self, query: str, options: Optional[SearchQueryOptions]):
+        return self._query_search_sync(query, options)
 
 
 class HyperInfo:
