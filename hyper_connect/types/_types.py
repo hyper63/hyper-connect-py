@@ -277,14 +277,25 @@ class HyperStorage:
 class HyperQueue:
     def __init__(
         self,
+        # ASYNC
         enqueue_async_fn: Callable,
         list_job_errors_async_fn: Callable,
         list_job_queued_async_fn: Callable,
+        # SYNC
+        enqueue_sync_fn: Callable,
+        list_job_errors_sync_fn: Callable,
+        list_job_queued_sync_fn: Callable,
     ):
+        # ASYNC
         self._enqueue_async_fn = enqueue_async_fn
         self._list_errors_async_fn = list_job_errors_async_fn
         self._list_queued_async_fn = list_job_queued_async_fn
+        # SYNC
+        self._enqueue_sync_fn = enqueue_sync_fn
+        self._list_errors_sync_fn = list_job_errors_sync_fn
+        self._list_queued_sync_fn = list_job_queued_sync_fn
 
+    # ASYNC
     def enqueue_async(self, job: Dict):
         return self._enqueue_async_fn(job)
 
@@ -293,6 +304,16 @@ class HyperQueue:
 
     def queued_async(self):
         return self._list_queued_async_fn()
+
+    # SYNC
+    def enqueue(self, job: Dict):
+        return self._enqueue_sync_fn(job)
+
+    def errors(self):
+        return self._list_errors_sync_fn()
+
+    def queued(self):
+        return self._list_queued_sync_fn()
 
 
 class HyperSearch:

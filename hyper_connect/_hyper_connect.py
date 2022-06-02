@@ -34,8 +34,11 @@ from hyper_connect.services import (
     post_query_search,
     post_query_search_async,
     queue_enqueue,
+    queue_enqueue_async,
     queue_errors,
+    queue_errors_async,
     queue_queued,
+    queue_queued_async,
     remove_cache,
     remove_cache_async,
     remove_data,
@@ -402,21 +405,51 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
     # /////////////////////////
     #      BEGIN HyperQueue
     # /////////////////////////
-    def enqueue_job(job: Dict):
-        return queue_enqueue(job, CONNECTION_STRING, domain).then(
+
+    # ////////////////////////////
+    #          ASYNC
+    # ////////////////////////////
+
+    def enqueue_job_async(job: Dict):
+        return queue_enqueue_async(job, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def list_job_errors():
-        return queue_errors(CONNECTION_STRING, domain).then(handle_response)
+    def list_job_errors_async():
+        return queue_errors_async(CONNECTION_STRING, domain).then(
+            handle_response
+        )
 
-    def list_job_queued():
-        return queue_queued(CONNECTION_STRING, domain).then(handle_response)
+    def list_job_queued_async():
+        return queue_queued_async(CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    # ////////////////////////////
+    #            SYNC
+    # ////////////////////////////
+
+    def enqueue_job_sync(job: Dict):
+        response = queue_enqueue(job, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def list_job_errors_sync():
+        response = queue_errors(CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def list_job_queued_sync():
+        response = queue_queued(CONNECTION_STRING, domain)
+        return handle_response_sync(response)
 
     hyper_queue: HyperQueue = HyperQueue(
-        enqueue_async_fn=enqueue_job,
-        list_job_errors_async_fn=list_job_errors,
-        list_job_queued_async_fn=list_job_queued,
+        # Async
+        enqueue_async_fn=enqueue_job_async,
+        list_job_errors_async_fn=list_job_errors_async,
+        list_job_queued_async_fn=list_job_queued_async,
+        # Sync
+        enqueue_sync_fn=enqueue_job_sync,
+        list_job_errors_sync_fn=list_job_errors_sync,
+        list_job_queued_sync_fn=list_job_queued_sync,
     )
     # /////////////////////////
     #      END HyperQueue

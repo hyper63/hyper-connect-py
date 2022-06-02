@@ -31,7 +31,14 @@ from ._data import (
     update_data_async,
 )
 from ._info import services, services_async
-from ._queue import queue_enqueue, queue_errors, queue_queued
+from ._queue import (
+    queue_enqueue,
+    queue_enqueue_async,
+    queue_errors,
+    queue_errors_async,
+    queue_queued,
+    queue_queued_async,
+)
 from ._search import (
     add_search,
     add_search_async,

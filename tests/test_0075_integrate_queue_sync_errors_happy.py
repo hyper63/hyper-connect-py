@@ -2,7 +2,8 @@
 # you can provide the name of the directory instead by using the -s flag and the name of the directory:
 # python -m unittest discover -s tests -v
 
-import asynctest
+import unittest
+
 from dotenv import dotenv_values
 from ramda import is_empty
 
@@ -23,15 +24,16 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestQueueIntegeration(asynctest.TestCase):
-    async def test_queue_enqueue(self):
-        result = await hyper.queue.enqueue(
-            {"type": "NEW_MOVIE", "id": "movie-1"}
-        )
+class TestQueueIntegeration_SYNC(unittest.TestCase):
+    def test_get_queue_errors_sync(self):
+        result = hyper.queue.errors()
+
         self.assertEqual(
-            result["status"], 201, "enqueue a job isn't 201. no es bueno!"
+            len(result["jobs"]) > 0,
+            True,
+            "The number of errored jobs isnt gt 0.  No es bueno!",
         )
 
 
 if __name__ == "__main__":
-    asynctest.main()
+    unittest.main()

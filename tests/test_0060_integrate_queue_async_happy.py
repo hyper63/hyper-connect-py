@@ -23,14 +23,13 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestQueueIntegeration(asynctest.TestCase):
-    async def test_get_queue_errors(self):
-        result = await hyper.queue.errors()
-
+class TestQueueIntegeration_ASYNC(asynctest.TestCase):
+    async def test_queue_enqueue_async(self):
+        result = await hyper.queue.enqueue_async(
+            {"type": "NEW_MOVIE", "id": "movie-1"}
+        )
         self.assertEqual(
-            len(result["jobs"]) > 0,
-            True,
-            "The number of errored jobs isnt gt 0.  No es bueno!",
+            result["status"], 201, "enqueue a job isn't 201. no es bueno!"
         )
 
 

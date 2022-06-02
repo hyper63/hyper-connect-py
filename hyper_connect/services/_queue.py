@@ -9,6 +9,12 @@ from hyper_connect.utils import create_hyper_request_params
 
 
 @promisify
+def queue_enqueue_async(
+    job: Dict, connection_string: str, domain: str = "default"
+):
+    return queue_enqueue(job, connection_string, domain)
+
+
 def queue_enqueue(job: Dict, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
@@ -31,6 +37,10 @@ def queue_enqueue(job: Dict, connection_string: str, domain: str = "default"):
 
 
 @promisify
+def queue_errors_async(connection_string: str, domain: str = "default"):
+    return queue_errors(connection_string, domain)
+
+
 def queue_errors(connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
@@ -52,6 +62,10 @@ def queue_errors(connection_string: str, domain: str = "default"):
 
 
 @promisify
+def queue_queued_async(connection_string: str, domain: str = "default"):
+    queue_queued(connection_string, domain)
+
+
 def queue_queued(connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
