@@ -29,13 +29,15 @@ else:
 hyper: Hyper = connect(connection_string)
 
 
-class TestCacheIntegration(asynctest.TestCase):
-    async def test_cache_add(self):
+class TestCacheIntegration_ASYNC(asynctest.TestCase):
+    async def test_cache_add_async(self):
         # Remove all book docs
         remove_promises = []
 
         for book_doc in book_docs:
-            remove_promises.append(hyper.cache.remove(key=book_doc["_id"]))
+            remove_promises.append(
+                hyper.cache.remove_async(key=book_doc["_id"])
+            )
 
         remove_promises_result = await Promise.all_settled(remove_promises)
 
@@ -43,7 +45,9 @@ class TestCacheIntegration(asynctest.TestCase):
         add_promises = []
         for book_doc in book_docs:
             add_promises.append(
-                hyper.cache.add(key=book_doc["_id"], value=book_doc, ttl="1d")
+                hyper.cache.add_async(
+                    key=book_doc["_id"], value=book_doc, ttl="1d"
+                )
             )
 
         add_promises_result = await Promise.all_settled(add_promises)
@@ -54,17 +58,17 @@ class TestCacheIntegration(asynctest.TestCase):
 
         self.assertEqual(countFulfilled, len(book_docs), "Adding docs not ok.")
 
-    async def test_cache_get(self):
-        result = await hyper.cache.get(book1["_id"])
+    async def test_cache_get_async(self):
+        result = await hyper.cache.get_async(book1["_id"])
         self.assertEqual(book1["_id"], "book-000100", "Getting doc not ok.")
 
-    async def test_cache_update(self):
-        result = await hyper.cache.set(book1["_id"], book1, ttl="1d")
+    async def test_cache_update_async(self):
+        result = await hyper.cache.set_async(book1["_id"], book1, ttl="1d")
         self.assertEqual(result["ok"], True, "Update doc not ok.")
 
-    async def test_cache_query(self):
-        result = await hyper.cache.query("book-0001*")
-        # { ok: true, docs: [ { key: 'movie-5-1985', value: [Object] } ] }
+    async def test_cache_query_async(self):
+        result = await hyper.cache.query_async("book-0001*")
+
         self.assertEqual(result["ok"], True, "cache query result not ok.")
         self.assertEqual(
             len(result["docs"]) <= 7,
@@ -72,8 +76,8 @@ class TestCacheIntegration(asynctest.TestCase):
             "cache query docs length should 6 (after delete) or 7",
         )
 
-    async def test_cache_delete(self):
-        result = await hyper.cache.remove("book-000101")
+    async def test_cache_delete_async(self):
+        result = await hyper.cache.remove_async("book-000101")
         self.assertEqual(result["ok"], True, "Removing cached doc not ok.")
 
 

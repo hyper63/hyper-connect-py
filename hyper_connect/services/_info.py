@@ -6,6 +6,14 @@ from hyper_connect.utils import create_hyper_request_params
 
 
 @promisify
+def services_async(
+    connection_string: str,
+    domain: str = "default",
+):
+    result = services(connection_string, domain)
+    return result
+
+
 def services(
     connection_string: str,
     domain: str = "default",

@@ -79,158 +79,302 @@ class WriteHyperDataError(Exception):
 class HyperCache:
     def __init__(
         self,
-        add_cache_fn: Callable,
-        get_cache_fn: Callable,
-        set_cache_fn: Callable,
-        remove_cache_fn: Callable,
-        post_cache_query_fn: Callable,
+        # ASYNC
+        add_cache_async_fn: Callable,
+        get_cache_async_fn: Callable,
+        set_cache_async_fn: Callable,
+        remove_cache_async_fn: Callable,
+        post_cache_query_async_fn: Callable,
+        # SYNC
+        add_cache_sync_fn: Callable,
+        get_cache_sync_fn: Callable,
+        set_cache_sync_fn: Callable,
+        remove_cache_sync_fn: Callable,
+        post_cache_query_sync_fn: Callable,
     ):
-        self._add_cache = add_cache_fn
-        self._get_cache = get_cache_fn
-        self._set_cache = set_cache_fn
-        self._remove_cache = remove_cache_fn
-        self._post_cache_query = post_cache_query_fn
+        # ASYNC
+        self._add_cache_async = add_cache_async_fn
+        self._get_cache_async = get_cache_async_fn
+        self._set_cache_async = set_cache_async_fn
+        self._remove_cache_async = remove_cache_async_fn
+        self._post_cache_query_async = post_cache_query_async_fn
 
+        # SYNC
+        self._add_cache_sync = add_cache_sync_fn
+        self._get_cache_sync = get_cache_sync_fn
+        self._set_cache_sync = set_cache_sync_fn
+        self._remove_cache_sync = remove_cache_sync_fn
+        self._post_cache_query_sync = post_cache_query_sync_fn
+
+    # ASYNC
+    def add_async(self, key: str, value: Any, ttl: Optional[str]):
+        return self._add_cache_async(key, value, ttl)
+
+    def get_async(self, key: str):
+        return self._get_cache_async(key)
+
+    def set_async(self, key: str, value: Any, ttl: Optional[str]):
+        return self._set_cache_async(key, value, ttl)
+
+    def remove_async(self, key: str):
+        return self._remove_cache_async(key)
+
+    def query_async(self, pattern: str):
+        return self._post_cache_query_async(pattern)
+
+    # SYNC
     def add(self, key: str, value: Any, ttl: Optional[str]):
-        return self._add_cache(key, value, ttl)
+        return self._add_cache_sync(key, value, ttl)
 
     def get(self, key: str):
-        return self._get_cache(key)
+        return self._get_cache_sync(key)
 
     def set(self, key: str, value: Any, ttl: Optional[str]):
-        return self._set_cache(key, value, ttl)
+        return self._set_cache_sync(key, value, ttl)
 
     def remove(self, key: str):
-        return self._remove_cache(key)
+        return self._remove_cache_sync(key)
 
     def query(self, pattern: str):
-        return self._post_cache_query(pattern)
+        return self._post_cache_query_sync(pattern)
 
 
 class HyperData:
     def __init__(
         self,
-        add_data_doc_fn: Callable,
-        get_data_doc_fn: Callable,
-        list_data_docs_fn: Callable,
-        update_data_doc_fn: Callable,
-        remove_data_doc_fn: Callable,
-        query_docs_fn: Callable,
-        index_docs_fn: Callable,
-        bulk_docs_fn: Callable,
+        # ASYNC
+        add_data_doc_async_fn: Callable,
+        get_data_doc_async_fn: Callable,
+        list_data_docs_async_fn: Callable,
+        update_data_doc_async_fn: Callable,
+        remove_data_doc_async_fn: Callable,
+        query_docs_async_fn: Callable,
+        index_docs_async_fn: Callable,
+        bulk_docs_async_fn: Callable,
+        # SYNC
+        add_data_doc_sync_fn: Callable,
+        get_data_doc_sync_fn: Callable,
+        list_data_docs_sync_fn: Callable,
+        update_data_doc_sync_fn: Callable,
+        remove_data_doc_sync_fn: Callable,
+        query_docs_sync_fn: Callable,
+        index_docs_sync_fn: Callable,
+        bulk_docs_sync_fn: Callable,
     ):
-        self._add_data_doc = add_data_doc_fn
-        self._get_data_doc = get_data_doc_fn
-        self._list_data_docs = list_data_docs_fn
-        self._update_data_doc = update_data_doc_fn
-        self._remove_data_doc = remove_data_doc_fn
-        self._query_docs = query_docs_fn
-        self._index_docs = index_docs_fn
-        self._bulk_docs = bulk_docs_fn
+        # ASYNC
+        self._add_data_async_doc = add_data_doc_async_fn
+        self._get_data_async_doc = get_data_doc_async_fn
+        self._list_data_async_docs = list_data_docs_async_fn
+        self._update_data_async_doc = update_data_doc_async_fn
+        self._remove_data_async_doc = remove_data_doc_async_fn
+        self._query_async_docs = query_docs_async_fn
+        self._index_async_docs = index_docs_async_fn
+        self._bulk_async_docs = bulk_docs_async_fn
 
+        # SYNC
+        self._add_data_sync_doc = add_data_doc_sync_fn
+        self._get_data_sync_doc = get_data_doc_sync_fn
+        self._list_data_sync_docs = list_data_docs_sync_fn
+        self._update_data_sync_doc = update_data_doc_sync_fn
+        self._remove_data_sync_doc = remove_data_doc_sync_fn
+        self._query_sync_docs = query_docs_sync_fn
+        self._index_sync_docs = index_docs_sync_fn
+        self._bulk_sync_docs = bulk_docs_sync_fn
+
+    # ASYNC
+    def add_async(self, doc: Dict):
+        return self._add_data_async_doc(doc)
+
+    def get_async(self, id: str):
+        return self._get_data_async_doc(id)
+
+    def list_async(self, options: ListOptions):
+        return self._list_data_async_docs(options)
+
+    def update_async(self, id: str, doc: Dict):
+        return self._update_data_async_doc(id, doc)
+
+    def remove_async(self, id: str):
+        return self._remove_data_async_doc(id)
+
+    def query_async(self, selector: Dict, options: QueryOptions):
+        return self._query_async_docs(selector, options)
+
+    def index_async(self, name: str, fields: List[str]):
+        return self._index_async_docs(name, fields)
+
+    def bulk_async(self, docs: List[Dict]):
+        return self._bulk_async_docs(docs)
+
+    # SYNC
     def add(self, doc: Dict):
-        return self._add_data_doc(doc)
+        return self._add_data_sync_doc(doc)
 
     def get(self, id: str):
-        return self._get_data_doc(id)
+        return self._get_data_sync_doc(id)
 
     def list(self, options: ListOptions):
-        return self._list_data_docs(options)
+        return self._list_data_sync_docs(options)
 
     def update(self, id: str, doc: Dict):
-        return self._update_data_doc(id, doc)
+        return self._update_data_sync_doc(id, doc)
 
     def remove(self, id: str):
-        return self._remove_data_doc(id)
+        return self._remove_data_sync_doc(id)
 
     def query(self, selector: Dict, options: QueryOptions):
-        return self._query_docs(selector, options)
+        return self._query_sync_docs(selector, options)
 
     def index(self, name: str, fields: List[str]):
-        return self._index_docs(name, fields)
+        return self._index_sync_docs(name, fields)
 
     def bulk(self, docs: List[Dict]):
-        return self._bulk_docs(docs)
+        return self._bulk_sync_docs(docs)
 
 
 class HyperStorage:
     def __init__(
-        self, upload_fn: Callable, download_fn: Callable, remove_fn: Callable
+        self,
+        # ASYNC
+        upload_async_fn: Callable,
+        download_async_fn: Callable,
+        remove_async_fn: Callable,
+        # SYNC
+        upload_sync_fn: Callable,
+        download_sync_fn: Callable,
+        remove_sync_fn: Callable,
     ):
-        self._upload_fn = upload_fn
-        self._download_fn = download_fn
-        self._remove_fn = remove_fn
+        # ASYNC
+        self._upload_async_fn = upload_async_fn
+        self._download_async_fn = download_async_fn
+        self._remove_async_fn = remove_async_fn
+        # SYNC
+        self._upload_sync_fn = upload_sync_fn
+        self._download_sync_fn = download_sync_fn
+        self._remove_sync_fn = remove_sync_fn
 
+    # ASYNC
+    def upload_async(self, name: str, data: io.BufferedReader):
+        return self._upload_async_fn(name, data)
+
+    def download_async(self, name: str):
+        return self._download_async_fn(name)
+
+    def remove_async(self, name: str):
+        return self._remove_async_fn(name)
+
+    # SYNC
     def upload(self, name: str, data: io.BufferedReader):
-        return self._upload_fn(name, data)
+        return self._upload_sync_fn(name, data)
 
     def download(self, name: str):
-        return self._download_fn(name)
+        return self._download_sync_fn(name)
 
     def remove(self, name: str):
-        return self._remove_fn(name)
+        return self._remove_sync_fn(name)
 
 
 class HyperQueue:
     def __init__(
         self,
-        enqueue_fn: Callable,
-        list_job_errors_fn: Callable,
-        list_job_queued_fn: Callable,
+        enqueue_async_fn: Callable,
+        list_job_errors_async_fn: Callable,
+        list_job_queued_async_fn: Callable,
     ):
-        self._enqueue_fn = enqueue_fn
-        self._list_errors_fn = list_job_errors_fn
-        self._list_queued_fn = list_job_queued_fn
+        self._enqueue_async_fn = enqueue_async_fn
+        self._list_errors_async_fn = list_job_errors_async_fn
+        self._list_queued_async_fn = list_job_queued_async_fn
 
-    def enqueue(self, job: Dict):
-        return self._enqueue_fn(job)
+    def enqueue_async(self, job: Dict):
+        return self._enqueue_async_fn(job)
 
-    def errors(self):
-        return self._list_errors_fn()
+    def errors_async(self):
+        return self._list_errors_async_fn()
 
-    def queued(self):
-        return self._list_queued_fn()
+    def queued_async(self):
+        return self._list_queued_async_fn()
 
 
 class HyperSearch:
     def __init__(
         self,
-        add_search_doc_fn: Callable,
-        remove_search_doc_fn: Callable,
-        get_search_doc_fn: Callable,
-        update_search_doc_fn: Callable,
-        load_search_fn: Callable,
-        query_search_fn: Callable,
+        # ASYNC
+        add_search_doc_async_fn: Callable,
+        remove_search_doc_async_fn: Callable,
+        get_search_doc_async_fn: Callable,
+        update_search_doc_async_fn: Callable,
+        load_search_async_fn: Callable,
+        query_search_async_fn: Callable,
+        # SYNC
+        add_search_doc_sync_fn: Callable,
+        remove_search_doc_sync_fn: Callable,
+        get_search_doc_sync_fn: Callable,
+        update_search_doc_sync_fn: Callable,
+        load_search_sync_fn: Callable,
+        query_search_sync_fn: Callable,
     ):
-        self._add_search_doc = add_search_doc_fn
-        self._remove_search_doc = remove_search_doc_fn
-        self._get_search_doc = get_search_doc_fn
-        self._update_search_doc = update_search_doc_fn
-        self._load_search = load_search_fn
-        self._query_search = query_search_fn
+        # ASYNC
+        self._add_search_async_doc = add_search_doc_async_fn
+        self._remove_search_async_doc = remove_search_doc_async_fn
+        self._get_search_async_doc = get_search_doc_async_fn
+        self._update_search_async_doc = update_search_doc_async_fn
+        self._load_search_async = load_search_async_fn
+        self._query_search_async = query_search_async_fn
 
+        # SYNC
+        self._add_search_sync_doc = add_search_doc_sync_fn
+        self._remove_search_sync_doc = remove_search_doc_sync_fn
+        self._get_search_sync_doc = get_search_doc_sync_fn
+        self._update_search_sync_doc = update_search_doc_sync_fn
+        self._load_search_sync = load_search_sync_fn
+        self._query_search_sync = query_search_sync_fn
+
+    # ASYNC
+    def add_async(self, key: str, doc: Dict):
+        return self._add_search_async_doc(key, doc)
+
+    def remove_async(self, key: str):
+        return self._remove_search_async_doc(key)
+
+    def get_async(self, key: str):
+        return self._get_search_async_doc(key)
+
+    def update_async(self, key: str, doc: Dict):
+        return self._update_search_async_doc(key, doc)
+
+    def load_async(self, docs: List[Dict]):
+        return self._load_search_async(docs)
+
+    def query_async(self, query: str, options: Optional[SearchQueryOptions]):
+        return self._query_search_async(query, options)
+
+    # SYNC
     def add(self, key: str, doc: Dict):
-        return self._add_search_doc(key, doc)
+        return self._add_search_sync_doc(key, doc)
 
     def remove(self, key: str):
-        return self._remove_search_doc(key)
+        return self._remove_search_sync_doc(key)
 
     def get(self, key: str):
-        return self._get_search_doc(key)
+        return self._get_search_sync_doc(key)
 
     def update(self, key: str, doc: Dict):
-        return self._update_search_doc(key, doc)
+        return self._update_search_sync_doc(key, doc)
 
     def load(self, docs: List[Dict]):
-        return self._load_search(docs)
+        return self._load_search_sync(docs)
 
     def query(self, query: str, options: Optional[SearchQueryOptions]):
-        return self._query_search(query, options)
+        return self._query_search_sync(query, options)
 
 
 class HyperInfo:
-    def __init__(self, services_fn: Callable):
+    def __init__(self, services_async_fn: Callable, services_fn: Callable):
+        self._services_async_fn = services_async_fn
         self._services_fn = services_fn
+
+    def services_async(self):
+        return self._services_async_fn()
 
     def services(
         self,

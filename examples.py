@@ -21,7 +21,6 @@ async def data_add():
     }
 
     result = await hyper.data.add(movie)
-
     print("hyper.data.add result --> ", result)
     # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
 
@@ -30,6 +29,7 @@ async def data_delete():
 
     id: str = "movie-4000"
     result = await hyper.data.remove(id)
+
     print("hyper.data.remove result --> ", result)
     # hyper.data.remove result -->  {'id': 'movie-4000', 'ok': True, 'status': 200}
 

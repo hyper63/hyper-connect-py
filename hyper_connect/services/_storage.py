@@ -9,13 +9,21 @@ from hyper_connect.utils import create_hyper_request_params
 
 
 @promisify
+def upload_async(
+    name: str,
+    data: io.BufferedReader,
+    connection_string: str,
+    domain: str = "default",
+):
+    return upload(name, data, connection_string, domain)
+
+
 def upload(
     name: str,
     data: io.BufferedReader,
     connection_string: str,
     domain: str = "default",
 ):
-
     m = MultipartEncoder(fields={"file": (name, data, "text/plain")})
 
     hyperRequest: HyperRequest = {
@@ -39,6 +47,14 @@ def upload(
 
 
 @promisify
+def download_async(
+    name: str,
+    connection_string: str,
+    domain: str = "default",
+):
+    return download(name, connection_string, domain)
+
+
 def download(
     name: str,
     connection_string: str,
@@ -63,6 +79,14 @@ def download(
 
 
 @promisify
+def remove_storage_async(
+    name: str,
+    connection_string: str,
+    domain: str = "default",
+):
+    return remove_storage(name, connection_string, domain)
+
+
 def remove_storage(
     name: str,
     connection_string: str,

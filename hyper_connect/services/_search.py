@@ -14,6 +14,13 @@ from hyper_connect.utils import create_hyper_request_params
 
 
 @promisify
+def add_search_async(
+    key: str, doc: Dict, connection_string: str, domain: str = "default"
+):
+    result = add_search(key, doc, connection_string, domain)
+    return result
+
+
 def add_search(
     key: str, doc: Dict, connection_string: str, domain: str = "default"
 ):
@@ -38,6 +45,12 @@ def add_search(
 
 
 @promisify
+def get_search_async(
+    key: str, connection_string: str, domain: str = "default"
+):
+    return get_search(key, connection_string, domain)
+
+
 def get_search(key: str, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
@@ -59,6 +72,12 @@ def get_search(key: str, connection_string: str, domain: str = "default"):
 
 
 @promisify
+def update_search_async(
+    key: str, doc: Dict, connection_string: str, domain: str = "default"
+):
+    return update_search(key, doc, connection_string, domain)
+
+
 def update_search(
     key: str, doc: Dict, connection_string: str, domain: str = "default"
 ):
@@ -82,6 +101,12 @@ def update_search(
 
 
 @promisify
+def remove_search_async(
+    key: str, connection_string: str, domain: str = "default"
+):
+    return remove_search(key, connection_string, domain)
+
+
 def remove_search(key: str, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
@@ -103,6 +128,15 @@ def remove_search(key: str, connection_string: str, domain: str = "default"):
 
 
 @promisify
+def post_query_search_async(
+    query: str,
+    options: Optional[SearchQueryOptions],
+    connection_string: str,
+    domain: str = "default",
+):
+    return post_query_search(query, options, connection_string, domain)
+
+
 def post_query_search(
     query: str,
     options: Optional[SearchQueryOptions],
@@ -141,6 +175,14 @@ def post_query_search(
 
 
 @promisify
+def load_search_async(
+    docs: List[Dict],
+    connection_string: str,
+    domain: str = "default",
+):
+    return load_search(docs, connection_string, domain)
+
+
 def load_search(
     docs: List[Dict],
     connection_string: str,

@@ -10,6 +10,16 @@ from hyper_connect.utils import create_hyper_request_params
 
 
 @promisify
+def add_cache_async(
+    key: str,
+    value: Dict,
+    ttl: Optional[str],
+    connection_string: str,
+    domain: str = "default",
+):
+    return add_cache(key, value, ttl, connection_string, domain)
+
+
 def add_cache(
     key: str,
     value: Dict,
@@ -38,10 +48,15 @@ def add_cache(
     headers = hyperRequestParams["options"]["headers"]
     body = hyperRequestParams["options"]["body"]
 
-    return requests.post(url, headers=headers, data=json.dumps(body))
+    result = requests.post(url, headers=headers, data=json.dumps(body))
+    return result
 
 
 @promisify
+def get_cache_async(key: str, connection_string: str, domain: str = "default"):
+    return get_cache(key, connection_string, domain)
+
+
 def get_cache(key: str, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
@@ -63,6 +78,12 @@ def get_cache(key: str, connection_string: str, domain: str = "default"):
 
 
 @promisify
+def remove_cache_async(
+    key: str, connection_string: str, domain: str = "default"
+):
+    return remove_cache(key, connection_string, domain)
+
+
 def remove_cache(key: str, connection_string: str, domain: str = "default"):
 
     hyperRequest: HyperRequest = {
@@ -84,6 +105,16 @@ def remove_cache(key: str, connection_string: str, domain: str = "default"):
 
 
 @promisify
+def set_cache_async(
+    key: str,
+    value: Dict,
+    ttl: Optional[str],
+    connection_string: str,
+    domain: str = "default",
+):
+    return set_cache(key, value, ttl, connection_string, domain)
+
+
 def set_cache(
     key: str,
     value: Dict,
@@ -120,6 +151,14 @@ def set_cache(
 
 
 @promisify
+def post_cache_query_async(
+    pattern: Optional[str],
+    connection_string: str,
+    domain: str = "default",
+):
+    return post_cache_query(pattern, connection_string, domain)
+
+
 def post_cache_query(
     pattern: Optional[str],
     connection_string: str,

@@ -6,31 +6,54 @@ from typeguard import typechecked
 # from ._cache import addCacheDoc
 from hyper_connect.services import (
     add_cache,
+    add_cache_async,
     add_data,
+    add_data_async,
     add_search,
+    add_search_async,
     download,
+    download_async,
     get_cache,
+    get_cache_async,
     get_data,
+    get_data_async,
     get_data_list,
+    get_data_list_async,
     get_search,
+    get_search_async,
     load_search,
+    load_search_async,
     post_bulk,
+    post_bulk_async,
     post_cache_query,
+    post_cache_query_async,
     post_index,
+    post_index_async,
     post_query,
+    post_query_async,
     post_query_search,
+    post_query_search_async,
     queue_enqueue,
     queue_errors,
     queue_queued,
     remove_cache,
+    remove_cache_async,
     remove_data,
+    remove_data_async,
     remove_search,
+    remove_search_async,
     remove_storage,
+    remove_storage_async,
     services,
+    services_async,
     set_cache,
+    set_cache_async,
     update_data,
+    update_data_async,
     update_search,
+    update_search_async,
     upload,
+    upload_async,
 )
 from hyper_connect.types import (
     Hyper,
@@ -44,171 +67,341 @@ from hyper_connect.types import (
     QueryOptions,
     SearchQueryOptions,
 )
-from hyper_connect.utils import handle_response
+from hyper_connect.utils import handle_response, handle_response_sync
 
 
 @typechecked
 def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
 
-    # //////////////////////
-    #      HyperData
-    # //////////////////////
+    # /////////////////////////
+    #      BEGIN HyperData
+    # /////////////////////////
 
-    def add_data_doc(doc: Dict):
-        return add_data(doc, CONNECTION_STRING, domain).then(handle_response)
+    # /////////////////////////
+    #          ASYNC
+    # /////////////////////////
 
-    def get_data_doc(id: str):
-        return get_data(id, CONNECTION_STRING, domain).then(handle_response)
-
-    def list_data_docs(options: ListOptions):
-        return get_data_list(options, CONNECTION_STRING, domain).then(
+    def add_data_doc_async(doc: Dict):
+        return add_data_async(doc, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def update_data_doc(id: str, doc: Dict):
-        return update_data(id, doc, CONNECTION_STRING, domain).then(
+    def get_data_doc_async(id: str):
+        return get_data_async(id, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def remove_data_doc(id: str):
-        return remove_data(id, CONNECTION_STRING, domain).then(handle_response)
-
-    def query_docs(selector: Dict, options: QueryOptions):
-        return post_query(selector, options, CONNECTION_STRING, domain).then(
+    def list_data_docs_async(options: ListOptions):
+        return get_data_list_async(options, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def index_docs(name: str, fields: List[str]):
-        return post_index(name, fields, CONNECTION_STRING, domain).then(
+    def update_data_doc_async(id: str, doc: Dict):
+        return update_data_async(id, doc, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def bulk_docs(docs: List[Dict]):
-        return post_bulk(docs, CONNECTION_STRING, domain).then(handle_response)
+    def remove_data_doc_async(id: str):
+        return remove_data_async(id, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    def query_docs_async(selector: Dict, options: QueryOptions):
+        return post_query_async(
+            selector, options, CONNECTION_STRING, domain
+        ).then(handle_response)
+
+    def index_docs_async(name: str, fields: List[str]):
+        return post_index_async(name, fields, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    def bulk_docs_async(docs: List[Dict]):
+        return post_bulk_async(docs, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    # ////////////////////////////
+    #           SYNC
+    # ////////////////////////////
+
+    def add_data_doc_sync(doc: Dict):
+        response = add_data(doc, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def get_data_doc_sync(id: str):
+        response = get_data(id, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def list_data_docs_sync(options: ListOptions):
+        response = get_data_list(options, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def update_data_doc_sync(id: str, doc: Dict):
+        response = update_data(id, doc, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def remove_data_doc_sync(id: str):
+        response = remove_data(id, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def query_docs_sync(selector: Dict, options: QueryOptions):
+        response = post_query(selector, options, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def index_docs_sync(name: str, fields: List[str]):
+        response = post_index(name, fields, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    def bulk_docs_sync(docs: List[Dict]):
+        response = post_bulk(docs, CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
 
     hyper_data: HyperData = HyperData(
-        add_data_doc_fn=add_data_doc,
-        get_data_doc_fn=get_data_doc,
-        list_data_docs_fn=list_data_docs,
-        update_data_doc_fn=update_data_doc,
-        remove_data_doc_fn=remove_data_doc,
-        query_docs_fn=query_docs,
-        index_docs_fn=index_docs,
-        bulk_docs_fn=bulk_docs,
+        # Async
+        add_data_doc_async_fn=add_data_doc_async,
+        get_data_doc_async_fn=get_data_doc_async,
+        list_data_docs_async_fn=list_data_docs_async,
+        update_data_doc_async_fn=update_data_doc_async,
+        remove_data_doc_async_fn=remove_data_doc_async,
+        query_docs_async_fn=query_docs_async,
+        index_docs_async_fn=index_docs_async,
+        bulk_docs_async_fn=bulk_docs_async,
+        # Sync
+        add_data_doc_sync_fn=add_data_doc_sync,
+        get_data_doc_sync_fn=get_data_doc_sync,
+        list_data_docs_sync_fn=list_data_docs_sync,
+        update_data_doc_sync_fn=update_data_doc_sync,
+        remove_data_doc_sync_fn=remove_data_doc_sync,
+        query_docs_sync_fn=query_docs_sync,
+        index_docs_sync_fn=index_docs_sync,
+        bulk_docs_sync_fn=bulk_docs_sync,
     )
+    # /////////////////////////
+    #      END HyperData
+    # /////////////////////////
 
-    # //////////////////////
-    #      HyperCache
-    # //////////////////////
+    # ////////////////////////////
+    #     BEGIN HyperCache
+    # ////////////////////////////
 
-    def add_cache_doc(key: str, value: Any, ttl: Optional[str]):
-        return add_cache(key, value, ttl, CONNECTION_STRING, domain).then(
+    # ////////////////////////////
+    #          ASYNC
+    # ////////////////////////////
+
+    def add_cache_doc_async(key: str, value: Any, ttl: Optional[str]):
+        return add_cache_async(
+            key, value, ttl, CONNECTION_STRING, domain
+        ).then(handle_response)
+
+    def get_cache_doc_async(key: str):
+        return get_cache_async(key, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def get_cache_doc(key: str):
-        return get_cache(key, CONNECTION_STRING, domain).then(handle_response)
+    def set_cache_doc_async(key: str, value: Any, ttl: Optional[str]):
+        return set_cache_async(
+            key, value, ttl, CONNECTION_STRING, domain
+        ).then(handle_response)
 
-    def set_cache_doc(key: str, value: Any, ttl: Optional[str]):
-        return set_cache(key, value, ttl, CONNECTION_STRING, domain).then(
+    def remove_cache_doc_async(key: str):
+        return remove_cache_async(key, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def remove_cache_doc(key: str):
-        return remove_cache(key, CONNECTION_STRING, domain).then(
+    def post_cache_query_doc_async(pattern: str):
+        return post_cache_query_async(pattern, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def post_cache_query_doc(pattern: str):
-        return post_cache_query(pattern, CONNECTION_STRING, domain).then(
-            handle_response
-        )
+    # ////////////////////////////
+    #            SYNC
+    # ////////////////////////////
+    def add_cache_doc_sync(key: str, value: Any, ttl: Optional[str]):
+        response = add_cache(key, value, ttl, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def get_cache_doc_sync(key: str):
+        response = get_cache(key, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def set_cache_doc_sync(key: str, value: Any, ttl: Optional[str]):
+        response = set_cache(key, value, ttl, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def remove_cache_doc_sync(key: str):
+        response = remove_cache(key, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def post_cache_query_doc_sync(pattern: str):
+        response = post_cache_query(pattern, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
 
     hyper_cache: HyperCache = HyperCache(
-        add_cache_fn=add_cache_doc,
-        get_cache_fn=get_cache_doc,
-        set_cache_fn=set_cache_doc,
-        remove_cache_fn=remove_cache_doc,
-        post_cache_query_fn=post_cache_query_doc,
+        # Async
+        add_cache_async_fn=add_cache_doc_async,
+        get_cache_async_fn=get_cache_doc_async,
+        set_cache_async_fn=set_cache_doc_async,
+        remove_cache_async_fn=remove_cache_doc_async,
+        post_cache_query_async_fn=post_cache_query_doc_async,
+        # Sync
+        add_cache_sync_fn=add_cache_doc_sync,
+        get_cache_sync_fn=get_cache_doc_sync,
+        set_cache_sync_fn=set_cache_doc_sync,
+        remove_cache_sync_fn=remove_cache_doc_sync,
+        post_cache_query_sync_fn=post_cache_query_doc_sync,
     )
+    # ////////////////////////////
+    #     END HyperCache
+    # ////////////////////////////
 
-    # //////////////////////
-    #      HyperSearch
-    # //////////////////////
+    # ////////////////////////////
+    #      BEGIN HyperSearch
+    # ////////////////////////////
 
-    def add_search_doc(key: str, doc: Dict):
-        return add_search(key, doc, CONNECTION_STRING, domain).then(
+    # ////////////////////////////
+    #          ASYNC
+    # ////////////////////////////
+
+    def add_search_doc_async(key: str, doc: Dict):
+        return add_search_async(key, doc, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def remove_search_doc(key: str):
-        return remove_search(key, CONNECTION_STRING, domain).then(
+    def remove_search_doc_async(key: str):
+        return remove_search_async(key, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def get_search_doc(key: str):
-        return get_search(key, CONNECTION_STRING, domain).then(handle_response)
-
-    def update_search_doc(key: str, doc: Dict):
-        return update_search(key, doc, CONNECTION_STRING, domain).then(
+    def get_search_doc_async(key: str):
+        return get_search_async(key, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def load_search_docs(docs: List[Dict]):
-        return load_search(docs, CONNECTION_STRING, domain).then(
+    def update_search_doc_async(key: str, doc: Dict):
+        return update_search_async(key, doc, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def post_query_search_docs(query: str, options: SearchQueryOptions):
-        return post_query_search(
+    def load_search_docs_async(docs: List[Dict]):
+        return load_search_async(docs, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    def post_query_search_docs_async(query: str, options: SearchQueryOptions):
+        return post_query_search_async(
             query, options, CONNECTION_STRING, domain
         ).then(handle_response)
 
+    # ////////////////////////////
+    #          SYNC
+    # ////////////////////////////
+    def add_search_doc_sync(key: str, doc: Dict):
+        response = add_search(key, doc, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def remove_search_doc_sync(key: str):
+        response = remove_search(key, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def get_search_doc_sync(key: str):
+        response = get_search(key, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def update_search_doc_sync(key: str, doc: Dict):
+        response = update_search(key, doc, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def load_search_docs_sync(docs: List[Dict]):
+        response = load_search(docs, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def post_query_search_docs_sync(query: str, options: SearchQueryOptions):
+        response = post_query_search(query, options, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
     hyper_search: HyperSearch = HyperSearch(
-        add_search_doc_fn=add_search_doc,
-        remove_search_doc_fn=remove_search_doc,
-        get_search_doc_fn=get_search_doc,
-        update_search_doc_fn=update_search_doc,
-        load_search_fn=load_search_docs,
-        query_search_fn=post_query_search_docs,
+        # Async
+        add_search_doc_async_fn=add_search_doc_async,
+        remove_search_doc_async_fn=remove_search_doc_async,
+        get_search_doc_async_fn=get_search_doc_async,
+        update_search_doc_async_fn=update_search_doc_async,
+        load_search_async_fn=load_search_docs_async,
+        query_search_async_fn=post_query_search_docs_async,
+        # Sync
+        add_search_doc_sync_fn=add_search_doc_sync,
+        remove_search_doc_sync_fn=remove_search_doc_sync,
+        get_search_doc_sync_fn=get_search_doc_sync,
+        update_search_doc_sync_fn=update_search_doc_sync,
+        load_search_sync_fn=load_search_docs_sync,
+        query_search_sync_fn=post_query_search_docs_sync,
     )
 
-    # //////////////////////
-    #      HyperStorage
-    # //////////////////////
+    # ////////////////////////////
+    #      END HyperSearch
+    # ////////////////////////////
 
-    def upload_doc(name: str, data: io.BufferedReader):
-        return upload(name, data, CONNECTION_STRING, domain).then(
+    # ///////////////////////////
+    #      BEGIN HyperStorage
+    # ///////////////////////////
+
+    # ////////////////////////////
+    #          ASYNC
+    # ////////////////////////////
+
+    def upload_doc_async(name: str, data: io.BufferedReader):
+        return upload_async(name, data, CONNECTION_STRING, domain).then(
             handle_response
         )
 
-    def download_doc(name: str):
+    def download_doc_async(name: str):
+        return download_async(name, CONNECTION_STRING, domain)
+
+    def remove_storage_doc_async(name: str):
+        return remove_storage_async(name, CONNECTION_STRING, domain).then(
+            handle_response
+        )
+
+    # ////////////////////////////
+    #            SYNC
+    # ////////////////////////////
+
+    def upload_doc_sync(name: str, data: io.BufferedReader):
+        response = upload(name, data, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
+
+    def download_doc_sync(name: str):
         return download(name, CONNECTION_STRING, domain)
 
-    def remove_storage_doc(name: str):
-        return remove_storage(name, CONNECTION_STRING, domain).then(
-            handle_response
-        )
+    def remove_storage_doc_sync(name: str):
+        response = remove_storage(name, CONNECTION_STRING, domain)
+        return handle_response_sync(response)
 
     hyper_storage: HyperStorage = HyperStorage(
-        upload_fn=upload_doc,
-        download_fn=download_doc,
-        remove_fn=remove_storage_doc,
+        # Async
+        upload_async_fn=upload_doc_async,
+        download_async_fn=download_doc_async,
+        remove_async_fn=remove_storage_doc_async,
+        # Sync
+        upload_sync_fn=upload_doc_sync,
+        download_sync_fn=download_doc_sync,
+        remove_sync_fn=remove_storage_doc_sync,
     )
+    # ///////////////////////////
+    #      END HyperStorage
+    # ///////////////////////////
 
-    # //////////////////////
-    #      HyperInfo
-    # //////////////////////
-
-    def get_services():
-        return services(CONNECTION_STRING, domain).then(handle_response)
-
-    hyper_info: HyperInfo = HyperInfo(services_fn=get_services)
-
-    # //////////////////////
-    #      HyperQueue
-    # //////////////////////
-
+    # /////////////////////////
+    #      BEGIN HyperQueue
+    # /////////////////////////
     def enqueue_job(job: Dict):
         return queue_enqueue(job, CONNECTION_STRING, domain).then(
             handle_response
@@ -221,10 +414,33 @@ def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:
         return queue_queued(CONNECTION_STRING, domain).then(handle_response)
 
     hyper_queue: HyperQueue = HyperQueue(
-        enqueue_fn=enqueue_job,
-        list_job_errors_fn=list_job_errors,
-        list_job_queued_fn=list_job_queued,
+        enqueue_async_fn=enqueue_job,
+        list_job_errors_async_fn=list_job_errors,
+        list_job_queued_async_fn=list_job_queued,
     )
+    # /////////////////////////
+    #      END HyperQueue
+    # /////////////////////////
+
+    # /////////////////////////
+    #      BEGIN HyperInfo
+    # /////////////////////////
+
+    def get_services_async():
+        return services_async(CONNECTION_STRING, domain).then(handle_response)
+
+    def get_services_sync():
+        response = services(CONNECTION_STRING, domain)
+        result = handle_response_sync(response)
+        return result
+
+    hyper_info: HyperInfo = HyperInfo(
+        services_async_fn=get_services_async, services_fn=get_services_sync
+    )
+
+    # /////////////////////////
+    #      END HyperInfo
+    # /////////////////////////
 
     hyper: Hyper = Hyper(
         data=hyper_data,
