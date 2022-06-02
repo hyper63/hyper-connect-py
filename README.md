@@ -1,8 +1,11 @@
-<h1 align="center">⚡️ hyper_connect ⚡️</h1>
+<h1 align="center">🐍 hyper_connect 🐍</h1>
 <p align="center">
-hyper_connect is a python package for <a href="https://docs.hyper.io">hyper</a>
+<code>hyper_connect</code> is the python SDK package for <a href="https://hyper.io">hyper</a>.
 </p>
 <p align="center">
+Offical hyper <a href="https://docs.hyper.io">documentation</a>.
+</p>
+
 
 ## Install
 
@@ -12,11 +15,14 @@ The following command will install the latest version of a module and its depend
 pip install hyper_connect
 ```
 
-## Getting Started
+## Overview
 
-`hyper_connect` wraps your hyper app's REST API, generating a short-lived JWT using a [connection string](https://docs.hyper.io/app-keys) from one of your hyper app's app keys.
+`hyper_connect` wraps a hyper app's REST API, generating a short-lived JWT using a [connection string](https://docs.hyper.io/app-keys) from one of your hyper app's app keys.
 
-Once you've created an environment variable named `HYPER` with a connection string, you're ready to make a call to the `connect` function which returns a `Hyper` object.
+`hyper_connect` supports both synchronous and asynchronous calls.
+
+Once you've created an environment variable named `HYPER` with the value of a connection string, you're ready to make a call to the `connect` function which returns a `Hyper` object:
+
 
 ```py
 from hyper_connect import connect
@@ -29,190 +35,16 @@ config = dotenv_values("./.env")
 connection_string: str = str(config["HYPER"])
 hyper: Hyper = connect(connection_string)
 
-async def data_add():
-
-        movie: Dict = {
-            "_id": "movie-4000",
-            "type": "movie",
-            "title": "Back to the Future",
-            "year": "1985",
-        }
-
-        result = await hyper.data.add(movie)
-
-        print('hyper.data.add result --> ', result)
-        # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
-```
-
-## Examples
-
-### How to add a document to a hyper data service?
-
-```py
-from typing import Dict
-from hyper_connect import connect
-from hyper_connect.types import Hyper
-from dotenv import dotenv_values
-
-config = dotenv_values("./.env")
-
-connection_string: str = str(config["HYPER"])
-hyper: Hyper = connect(connection_string)
-
-async def data_add():
-
-        movie: Dict = {
-            "_id": "movie-4000",
-            "type": "movie",
-            "title": "Back to the Future",
-            "year": "1985",
-        }
-
-        result = await hyper.data.add(movie)
-
-        print('hyper.data.add result --> ', result)
-        # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
-```
-### How do I remove a doc from the data service?
-
-```py
-id: str = "movie-4000"
-result = await hyper.data.remove(id)
-print('hyper.data.remove result --> ', result)
-# hyper.data.remove result -->  {'id': 'movie-4000', 'ok': True, 'status': 200}
-```
-
-### How do I get a doc from the data service?
-
-```py
-id: str = "book-000200"
-result = await hyper.data.get(id)
-print("hyper.data.get result --> ", result)
-
-# hyper.data.get result -->  {'_id': 'book-000200', 'type': 'book', 'name': 'Tales of the South Pacific', 'author': 'James A. Michener', 'published': '1947', 'status': 200}
-```
-
-### What if a doc isn't found?
-
-```py
-id: str = "movie-105"
-result = await hyper.data.get(id)
-print("hyper.data.get result --> ", result)
-
-# hyper.data.get result -->  {'ok': False, 'status': 404, 'msg': 'doc not found'}
-```
-
-### How do I update a doc within the data service?
-
-```py
-book: Dict = {
-        "_id": "book-000100",
-        "type": "book",
-        "name": "The Lorax 100",
-        "author": "Dr. Suess",
-        "published": "1969",
-    }
-
-result = await hyper.data.update("book-000100", book)
-print("hyper.data.update result --> ", result)
-# hyper.data.update result -->  {'ok': True, 'id': 'book-000100', 'status': 200}
-```
-
-### How do I get a range of documents from the data service?
-
-```py
-from hyper_connect.types import Hyper, ListOptions
-
-options: ListOptions = {
-        "startkey": "book-000105",
-        "limit": None,
-        "endkey": "book-000106",
-        "keys": None,
-        "descending": None,
-    }
-
-result = await hyper.data.list(options)
-print("hyper.data.list result --> ", result)
-# hyper.data.list result -->  {'docs': [{...}, {...}], 'ok': True, 'status': 200}
-```
-
-### How do I retrieve a specific set of docs from the data service?
-
-```py
-options: ListOptions = {
-        "startkey": None,
-        "limit": None,
-        "endkey": None,
-        "keys": ["book-000105", "book-000106"],
-        "descending": None,
-    }
-
-result = await hyper.data.list(options)
-print("hyper.data.list result --> ", result)
-# hyper.data.update result -->  {'docs': [{...}, {...}], 'ok': True, 'status': 200}
-
-```
-
-
-### How do I query for just books?
-
-This example uses a `selector` to filter book documents.  An array of `fields` allows you to select which fields to return.  Use `limit` to restrict the number of documents returned.  This is helpful for pagination use cases.
-
-```py
-from hyper_connect.types import Hyper, QueryOptions
-
-selector = {"type": "book"}
-
-options: QueryOptions = {
-    "fields": ["_id", "name", "published"],
-    "sort": None,
-    "limit": 3,
-    "useIndex": None,
+movie: Dict = {
+    "_id": "movie-4000",
+    "type": "movie",
+    "title": "Back to the Future",
+    "year": "1985",
 }
 
-result = await hyper.data.query(selector, options)
-print("hyper.data.query result --> ", result)
-
-# hyper.data.query result -->  {'docs': [{'_id': 'book-000010', 'name': 'The Lorax', 'published': '1959'}, {'_id': 'book-000020', 'name': 'The Lumberjack named Lorax the tree slayer', 'published': '1969'}, {'_id': 'book-000100', 'name': 'The Lorax 100', 'published': '1969'}], 'ok': True, 'status': 200}
-```
-
-
-here
-
-### How do I sort data from my data service?
-
-First create an index on the fields you wish to sort.  Then use the `QueryOptions` with the `sort` key to sort.
-
-```py
-index_result = await hyper.data.index(
-        "idx_author_published", ["author", "published"]
-)
-
-print('index_result --> ', index_result )
-
-selector = {"type": "book", "author": "James A. Michener"}
-
-options: QueryOptions = {
-    "fields": ["author", "published"],
-    "sort": [{"author": "DESC"}, {"published": "DESC"}],
-    "useIndex": "idx_author_published",
-}
-
-result = await hyper.data.query(selector, options)
-print("hyper.data.query result --> ", result)
-
-# index_result -->  {'ok': True, 'status': 201}
-
-# hyper.data.query result -->  {'docs': [{'author': 'James A. Michener', 'published': '1985'}, {'author': 'James A. Michener', 'published': '1959'}, {'author': 'James A. Michener', 'published': '1947'}], 'ok': True, 'status': 200}
-```
-
-
-
-### How to add a cache key/value pair to hyper cache?
-
-```js
-const result = await hyper.cache.add("key", { counter: 1 });
-console.log(result); // {ok: true}
+result = hyper.data.add(movie)
+print("hyper.data.add result --> ", result)
+# hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
 ```
 
 ## Documentation
@@ -252,6 +84,7 @@ of the action.
 | ------- | ------ | ------------------------------------------------- |
 | search  | add    | indexes a json document in the hyper search index |
 | search  | get    | retrieves a document from index                   |
+| search  | update | updates a document in the hyper search index      |
 | search  | remove | removes a document from the index                 |
 | search  | query  | searches index by text                            |
 | search  | load   | loads a batch of documents                        |
@@ -271,6 +104,305 @@ of the action.
 | queue   | enqueue | posts object to queue                                      |
 | queue   | errors  | gets list of errors occured with queue                     |
 | queue   | queued  | gets list of objects that are queued and ready to be sent. |
+
+
+## hyper vision 😎
+
+[hyper vision](https://docs.hyper.io/hyper-vision) is a UI dev tool to browse hyper cloud data, cache, search, etc. via an app key's connection string.  It is available at https://vision.hyper.io/.
+
+![hyper vision cache](./hyper-vision.png)
+
+## Examples
+
+
+
+
+## Async
+
+`hyper_connect` supports both synchronous and asynchronous calls.
+
+> Async can be a little tricky.  Here are a couple of good resources to help avoid the pitfalls 😵‍💫:
+> [How to Create an Async API Call with asyncio](https://www.youtube.com/watch?v=t0JXiljpNRo) and
+> [Common Mistakes Using Python3 asyncio](https://xinhuang.github.io/posts/2017-07-31-common-mistakes-using-python3-asyncio.html)
+
+
+- `hyper_connect` supports asynchronous and synchronous calls.
+- Async method names will end in `_async`.  For example:
+
+    ```py
+    result = await hyper.data.add_async(movie)
+    ```
+
+- You must use the `async` and `await` syntax:
+
+    ```py
+    async def data_add():
+
+        movie: Dict = {
+            "_id": "movie-4000",
+            "type": "movie",
+            "title": "Back to the Future",
+            "year": "1985",
+        }
+
+        result = await hyper.data.add_async(movie)
+        print("hyper.data.add result --> ", result)
+        # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
+    ```
+
+- To run your asyncronous function, use [`asyncio`](https://docs.python.org/3/library/asyncio.html) which is a library to write concurrent code using the async/await syntax:
+
+    ```py
+    from examples_async import data_add
+    import asyncio
+    asyncio.run(data_add())
+
+    # hyper.data.add result -->  {'id': 'movie-5000', 'ok': True, 'status': 201}
+    ```
+
+- Calls to asynchronous methods return JS style promises.  Compose your Hyper services to create complex flows:
+
+    ```py
+    async def data_cache_compose():
+        movie: Dict = {
+            "_id": "movie-5001",
+            "type": "movie",
+            "title": "Back to the Future 3",
+            "year": "1989",
+        }
+
+        result = await hyper.data.add_async(movie).then(
+            lambda _: hyper.cache.add_async(
+                key=movie["_id"], value=movie, ttl="1d"
+            )
+        )
+        print("hyper data and cache add result --> ", result)
+        # hyper data and cache add_async result -->  {'ok': True, 'status': 201}
+    ```
+
+
+## Async Examples
+
+**examples_async.py** contains examples you can run:
+
+ ```py
+    from examples_async import data_add
+    import asyncio
+    asyncio.run(data_add())
+
+    # hyper.data.add result -->  {'id': 'movie-5000', 'ok': True, 'status': 201}
+```
+### Data Service Async Examples
+
+### Add document asynchronously
+
+```py
+from typing import Dict
+from hyper_connect import connect
+from hyper_connect.types import Hyper
+from dotenv import dotenv_values
+
+config = dotenv_values("./.env")
+
+connection_string: str = str(config["HYPER"])
+hyper: Hyper = connect(connection_string)
+
+async def data_add():
+
+        movie: Dict = {
+            "_id": "movie-4000",
+            "type": "movie",
+            "title": "Back to the Future",
+            "year": "1985",
+        }
+
+        result = await hyper.data.add_async(movie)
+
+        print('hyper.data.add result --> ', result)
+        # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
+```
+
+### Remove doc asynchronously
+
+```py
+id: str = "movie-5001"
+result = await hyper.data.remove_async(id)
+
+print("hyper.data.remove_async result --> ", result)
+# hyper.data.remove_async result -->  {'id': 'movie-5001', 'ok': True, 'status': 200}
+```
+
+### Get doc asynchronously
+
+```py
+id: str = "movie-5000"
+result = await hyper.data.get_async(id)
+print("hyper.data.get_async result --> ", result)
+# hyper.data.get_async result -->  {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1987', 'status': 200}
+```
+
+### Doc not found
+
+```py
+id: str = "movie-105"
+result = await hyper.data.get_async(id)
+print("hyper.data.get_async result --> ", result)
+
+# hyper.data.get_async result -->  {'ok': False, 'status': 404, 'msg': 'doc not found'}
+```
+
+### Update doc asynchronously
+
+```py
+book: Dict = {
+    "_id": "book-000100",
+    "type": "book",
+    "name": "The Lorax 100",
+    "author": "Dr. Suess",
+    "published": "1969",
+}
+
+result = await hyper.data.update_async("book-000100", book)
+print("hyper.data.update_async result --> ", result)
+# hyper.data.update_async result -->  {'ok': True, 'id': 'book-000100', 'status': 200}
+```
+
+### List a range of docs
+
+```py
+from hyper_connect.types import Hyper, ListOptions
+
+options: ListOptions = {
+    "startkey": "book-000105",
+    "limit": None,
+    "endkey": "book-000106",
+    "keys": None,
+    "descending": None,
+}
+
+result = await hyper.data.list_async(options)
+print("hyper.data.list_async result --> ", result)
+# hyper.data.list_async result -->  {'docs': [{...}, {...}], 'ok': True, 'status': 200}
+```
+
+### List a set of docs
+
+```py
+options: ListOptions = {
+    "startkey": None,
+    "limit": None,
+    "endkey": None,
+    "keys": ["book-000105", "book-000106"],
+    "descending": None,
+}
+
+result = await hyper.data.list_async(options)
+print("hyper.data.list_async result --> ", result)
+# hyper.data.list_async result -->   {'docs': [{...}, {...}], 'ok': True, 'status': 200}
+```
+
+### Query a specific doc type
+
+This example uses a `selector` to filter book documents.  An array of `fields` allows you to select which fields to return.  Use `limit` to restrict the number of documents returned. `limit` is helpful for setting the page size in pagination use cases.
+
+```py
+from hyper_connect.types import Hyper, QueryOptions
+
+selector = {"type": "book"}
+
+options: QueryOptions = {
+    "fields": ["_id", "name", "published"],
+    "sort": None,
+    "limit": 3,
+    "useIndex": None,
+}
+
+result = await hyper.data.query(selector, options)
+print("hyper.data.query result --> ", result)
+
+# hyper.data.query_async result -->  {'docs': [{'_id': 'book-000010', 'name': 'The Lorax', 'published': '1959'}, {'_id': 'book-000020', 'name': 'The Lumberjack named Lorax the tree slayer', 'published': '1969'}, {'_id': 'book-000100', 'name': 'The Lorax 100', 'published': '1969'}], 'ok': True, 'status': 200}
+```
+
+### Index, query, and sort docs
+
+First create an index on the fields you wish to sort.  Then use the `QueryOptions` with the `sort` key to sort.
+
+```py
+index_result = await hyper.data.index_async(
+    "idx_author_published", ["author", "published"]
+)
+
+print("index_async result --> ", index_result)
+
+selector = {"type": "book", "author": "James A. Michener"}
+
+options: QueryOptions = {
+    "fields": ["author", "published"],
+    "sort": [{"author": "DESC"}, {"published": "DESC"}],
+    "useIndex": "idx_author_published",
+    "limit": None,
+}
+
+result = await hyper.data.query_async(selector, options)
+print("hyper.data.query_async result --> ", result)
+
+# index_async result -->  {'ok': True, 'status': 201}
+
+# hyper.data.query_async result -->  {'docs': [{'author': 'James A. Michener', 'published': '1985'}, {'author': 'James A. Michener', 'published': '1959'}, {'author': 'James A. Michener', 'published': '1947'}], 'ok': True, 'status': 200}
+```
+
+### Cache Service Async Examples
+
+> Dont Forget!  You can use [hyper vision](https://vision.hyper.io/) to browse hyper cloud data, cache, search, and queue.
+
+### Add a cache key/value pair
+
+```py
+movie: Dict = {
+    "_id": "movie-5000",
+    "type": "movie",
+    "title": "Back to the Future 2",
+    "year": "1987",
+}
+
+result = await hyper.cache.add_async(key="movie-5000", value=movie, ttl="1w")
+print("hyper.cache.add_async result --> ", result)
+# hyper.cache.add_async result -->  {'ok': True, 'status': 201}
+```
+
+### Remove from cache
+
+```py
+key= "movie-5000"
+result = await hyper.cache.remove_async(key)
+print("hyper.cache.remove_async result --> ", result)
+# hyper.cache.remove_async result -->  {'ok': True, 'status': 200}
+```
+
+### Update cache
+
+```py
+movie: Dict = {
+    "_id": "movie-5000",
+    "type": "movie",
+    "title": "Back to the Future 2",
+    "year": "1988",
+}
+
+result = await hyper.cache.set_async(key="movie-5000", value=movie, ttl="1w")
+print("hyper.cache.set_async result --> ", result)
+# hyper.cache.set_async result -->  {'ok': True, 'status': 200}
+```
+
+### Query cache
+
+```py
+result = await hyper.cache.query_async(pattern="movie-500*")
+print("hyper.cache.query_async result --> ", result)
+# hyper.cache.query_async result -->  {'docs': [{'key': 'movie-5001', 'value': {'_id': 'movie-5001', 'type': 'movie', 'title': 'Back to the Future 3', 'year': '1989'}}, {'key': 'movie-5000', 'value': {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1988'}}], 'ok': True, 'status': 200}
+```
+
+
 
 ---
 

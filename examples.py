@@ -20,7 +20,7 @@ async def data_add():
         "year": "1985",
     }
 
-    result = await hyper.data.add(movie)
+    result = await hyper.data.add_async(movie)
     print("hyper.data.add result --> ", result)
     # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
 
