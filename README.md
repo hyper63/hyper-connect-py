@@ -15,7 +15,7 @@ The following command will install the latest version of a module and its depend
 pip install hyper_connect
 ```
 
-## Overview
+## Usage
 
 `hyper_connect` wraps a hyper app's REST API, generating a short-lived JWT using a [connection string](https://docs.hyper.io/app-keys) from one of your hyper app's app keys.
 
@@ -674,20 +674,21 @@ print("hyper.cache.query_async result --> ", result)
 # hyper.cache.query_async result -->  {'docs': [{'key': 'movie-5001', 'value': {'_id': 'movie-5001', 'type': 'movie', 'title': 'Back to the Future 3', 'year': '1989'}}, {'key': 'movie-5000', 'value': {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1988'}}], 'ok': True, 'status': 200}
 ```
 
-
-
----
-
-### COMING SOON: Verify Signature
-
-hyper Queue allows you to create a target web hook endpoint to receive jobs, in
-order to secure that endpoint to only receive jobs from hyper, you can implement
-a secret, this secret using sha256 to encode a `nounce` timestamp and a
-signature of the job payload. We created a function on `hyper_connect` to make
-it easier to implement your own middleware to validate these incoming jobs in a
-secure way.
-
 ## Contributing
+
+Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
+
+See [Contributing](./CONTRIBUTING.md).
+
+## License
+
+`hyper_connect` was created by the hyper team. It is licensed under the terms of the Apache 2.0 license.
+
+See [Licence](./LICENCE).
+
+## Code of Conduct
+.
+See [Code of Conduct](./CONDUCT.md)
 
 ### Developer Setup
 
@@ -701,13 +702,15 @@ We prefer you use Gitpod.  Gitpod provides a fully initialized, perfectly set-up
 
 If you plan on running tests, you'll need to create an environment variable named `HYPER`.
 
-- Create a **.env** file in the project root.
-- Within **.env**, create an environment variable named `HYPER` with a value of your hyper app's [connection string](https://docs.hyper.io/app-keys#nq-connection-string).
-
-
 ```bash
 HYPER=cloud://your app key:your app secret--gI1MkcrUqFPMR@cloud.hyper.io/express-quickstart
 ```
+
+One way to add an environment variable is to use a **.env** file.  Feel free to provide environment variables in a way that makes sense to you.
+
+- Create a **.env** file in the project root.
+- Within **.env**, create an environment variable named `HYPER` with a value of your hyper app's [connection string](https://docs.hyper.io/app-keys#nq-connection-string).
+
 
 ## Linting
 
@@ -719,12 +722,12 @@ To run these checks, execute the `make lint` command.
 
 > Heads up! Integration tests assume a hyper app and services have been created.  See https://docs.hyper.io/applications for details on creating hyper applications and service.
 
-A storage service should have the following configuration:
+A storage service should have the following setup:
 
 ![Search Service Config](search-svc-config.png)
 
 Run the `make test` script to run the unit and integration tests.
 
-### License
+### COMING SOON: Verify Signature
 
-Apache 2.0
+hyper Queue allows you to create a target web hook endpoint to receive jobs, in order to secure that endpoint to only receive jobs from hyper, you can implement a secret, this secret using sha256 to encode a `nounce` timestamp and a signature of the job payload. We created a function on `hyper_connect` to make it easier to implement your own middleware to validate these incoming jobs in a secure way.
