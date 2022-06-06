@@ -47,13 +47,10 @@ print("hyper.data.add result --> ", result)
 # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
 ```
 
-## Documentation
+## Services and Actions
 
-hyper is a suite of service apis, with hyper connect you can specify the API you
-want to connect with and the action you want to perform.
-hyper.[service].[action] - with each service there are a different set of
-actions to call. This table breaks down the service and action with description
-of the action.
+hyper is a suite of service apis, with hyper connect you can specify the API you want to connect with and the action you want to perform.
+hyper.[service].[action] - with each service there are a different set of actions to call. This table breaks down the service and action with description of the action.
 
 ### data
 
@@ -112,9 +109,285 @@ of the action.
 
 ![hyper vision cache](./hyper-vision.png)
 
-## Examples
+
+## Sync
+
+`hyper_connect` supports both synchronous and asynchronous methods for each service type (data, cache, storage, etc.).  It's easy to distinguish between the two.  Synchronous method names will **not** end in `_async`.
+
+    ```py
+    result = hyper.data.add(movie)
+    ```
 
 
+While asynchronous methods end in `_async`:
+
+    ```py
+    result = await hyper.data.add_async(movie)
+    ```
+
+## Types and type checking
+
+Common types you'll encounter include `HYPER`, `ListOptions`, `QueryOptions`, and `SearchQueryOptions`.
+
+```py
+from hyper_connect import connect
+from hyper_connect.types import Hyper, ListOptions, QueryOptions, SearchQueryOptions
+```
+
+The SDK performs runtime type checking on the arguments passed into methods and functions, as well as, the return value.
+
+Passing incorrect types will cause a `TypeError` to be raised:
+
+
+```py
+def data_list_bad_keys_sync(self):
+    options: ListOptions = {
+        "startkey": None,
+        "limit": None,
+        "endkey": None,
+        "keys": 6,
+        "descending": None,
+    }
+
+    try:
+        result = hyper.data.list(options)
+    except TypeError as err:
+        print('data_list_bad_keys_sync TypeError', err)
+        # data_list_bad_keys_sync TypeError type of dict item "params" for argument "req_params" must be one of (hyper_connect.types._types.ListOptions, hyper_connect.types._types.QueryOptions, Dict[str, str], NoneType); got dict instead
+
+```
+
+### Data service sync examples
+
+### Add document
+
+```py
+movie: Dict = {
+    "_id": "movie-4000",
+    "type": "movie",
+    "title": "Back to the Future",
+    "year": "1985",
+}
+
+result = hyper.data.add_async(movie)
+print("hyper.data.add result --> ", result)
+# hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
+```
+
+### Remove doc
+
+```py
+id: str = "movie-4000"
+result = hyper.data.remove(id)
+
+print("hyper.data.remove result --> ", result)
+# hyper.data.remove result -->  {'id': 'movie-4000', 'ok': True, 'status': 200}
+```
+
+### Get doc
+
+```py
+id: str = "movie-105"
+result = hyper.data.get(id)
+print("hyper.data.get result --> ", result)
+```
+
+### Update doc
+
+```py
+book: Dict = {
+    "_id": "book-000100",
+    "type": "book",
+    "name": "The Lorax 100",
+    "author": "Dr. Suess",
+    "published": "1969",
+}
+
+result = hyper.data.update("book-000100", book)
+print("hyper.data.update result --> ", result)
+# hyper.data.update result -->  {'ok': True, 'id': 'book-000100', 'status': 200}
+```
+
+### List a range of docs
+
+```py
+options: ListOptions = {
+    "startkey": "book-000105",
+    "limit": None,
+    "endkey": "book-000106",
+    "keys": None,
+    "descending": None,
+}
+
+result = hyper.data.list(options)
+print("hyper.data.list result --> ", result)
+```
+
+### List a set of docs
+
+```py
+options: ListOptions = {
+    "startkey": None,
+    "limit": None,
+    "endkey": None,
+    "keys": ["book-000105", "book-000106"],
+    "descending": None,
+}
+
+result = hyper.data.list(options)
+print("hyper.data.list result --> ", result)
+```
+
+### Query a specific doc type
+
+```py
+selector = {"type": "book"}
+
+options: QueryOptions = {
+    "fields": ["_id", "name", "published"],
+    "sort": None,
+    "limit": 3,
+    "useIndex": None,
+}
+
+result = hyper.data.query(selector, options)
+print("hyper.data.query result --> ", result)
+```
+
+### Index, query, and sort docs
+
+```py
+index_result = hyper.data.index(
+    "idx_author_published", ["author", "published"]
+)
+
+print("index_result --> ", index_result)
+
+selector = {"type": "book", "author": "James A. Michener"}
+
+options: QueryOptions = {
+    "fields": ["author", "published"],
+    "sort": [{"author": "DESC"}, {"published": "DESC"}],
+    "useIndex": "idx_author_published",
+    "limit": None,
+}
+
+result = hyper.data.query(selector, options)
+print("hyper.data.query result --> ", result)
+```
+
+### Cache service sync examples
+
+### Add to cache
+
+```py
+movie: Dict = {
+    "_id": "movie-5000",
+    "type": "movie",
+    "title": "Back to the Future 2",
+    "year": "1987",
+}
+
+result = hyper.cache.add(
+    key="movie-5000", value=movie, ttl="1w"
+)
+print("hyper.cache.add result --> ", result)
+# hyper.cache.add result -->  {'ok': True, 'status': 201}
+```
+
+
+### Remove from cache
+
+```py
+key = "movie-5000"
+result = hyper.cache.remove(key)
+print("hyper.cache.remove result --> ", result)
+# hyper.cache.remove_async result -->  {'ok': True, 'status': 200}
+```
+
+### Update cache
+
+```py
+movie: Dict = {
+    "_id": "movie-5000",
+    "type": "movie",
+    "title": "Back to the Future 2",
+    "year": "1988",
+}
+
+result = hyper.cache.set(
+    key="movie-5000", value=movie, ttl="1w"
+)
+print("hyper.cache.set result --> ", result)
+# hyper.cache.set result -->  {'ok': True, 'status': 200}
+```
+
+### Query cache
+
+```py
+result = hyper.cache.query(pattern="movie-500*")
+print("hyper.cache.query result --> ", result)
+# hyper.cache.query result -->  {'docs': [{'key': 'movie-5001', 'value': {'_id': 'movie-5001', 'type': 'movie', 'title': 'Back to the Future 3', 'year': '1989'}}, {'key': 'movie-5000', 'value': {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1988'}}], 'ok': True, 'status': 200}
+
+hyper.search.update(key, doc)
+```
+
+### Search service sync examples
+
+### Add to search
+
+```py
+movie: Dict = {
+    "_id": "movie-5000",
+    "type": "movie",
+    "title": "Back to the Future 2",
+    "year": "1987",
+}
+
+result = hyper.search.add(key="movie-5000", doc=movie)
+print("hyper.search.add result --> ", result)
+# hyper.search.add result -->  {'ok': True, 'status': 201}
+```
+
+### Remove from search
+
+```py
+key = "movie-5000"
+result = hyper.search.remove(key)
+print("hyper.search.remove result --> ", result)
+# hyper.search.remove result -->  {'ok': True, 'status': 200}
+```
+
+### Update search
+
+```py
+movie: Dict = {
+    "_id": "movie-5000",
+    "type": "movie",
+    "title": "Back to the Future 2",
+    "year": "1988",
+}
+
+result = hyper.search.update(key="movie-5000", doc=movie)
+print("hyper.search.update result --> ", result)
+# hyper.search.update result -->  {'ok': True, 'status': 200}
+```
+
+### Query search
+
+```py
+query: str = "Future"
+
+options: SearchQueryOptions = {
+    "fields": ["_id", "title", "year"],
+    "filter": None,
+}
+result = hyper.search.query(query, options)
+
+print("hyper.search.query result --> ", result)
+# hyper.search.query result -->  {'matches': [{'type': 'movie', 'title': 'Back to the Future', 'year': '1985', '_id': 'movie-102'}], 'ok': True, 'status': 200}
+
+```
 
 
 ## Async
@@ -126,7 +399,6 @@ of the action.
 > [Common Mistakes Using Python3 asyncio](https://xinhuang.github.io/posts/2017-07-31-common-mistakes-using-python3-asyncio.html)
 
 
-- `hyper_connect` supports asynchronous and synchronous calls.
 - Async method names will end in `_async`.  For example:
 
     ```py
@@ -181,7 +453,7 @@ of the action.
     ```
 
 
-## Async Examples
+## Async examples
 
 **examples_async.py** contains examples you can run:
 
@@ -192,7 +464,7 @@ of the action.
 
     # hyper.data.add result -->  {'id': 'movie-5000', 'ok': True, 'status': 201}
 ```
-### Data Service Async Examples
+### Data service async examples
 
 ### Add document asynchronously
 
@@ -351,7 +623,7 @@ print("hyper.data.query_async result --> ", result)
 # hyper.data.query_async result -->  {'docs': [{'author': 'James A. Michener', 'published': '1985'}, {'author': 'James A. Michener', 'published': '1959'}, {'author': 'James A. Michener', 'published': '1947'}], 'ok': True, 'status': 200}
 ```
 
-### Cache Service Async Examples
+### Cache service async examples
 
 > Dont Forget!  You can use [hyper vision](https://vision.hyper.io/) to browse hyper cloud data, cache, search, and queue.
 
