@@ -2,6 +2,7 @@ import io
 from typing import (
     Any,
     Callable,
+    ClassVar,
     Dict,
     List,
     Literal,
@@ -17,7 +18,48 @@ Action = Literal["_query", "_bulk", "_index"]
 QueueStatus = Literal["ERROR", "READY"]
 
 
-class ListOptions(TypedDict):
+class OkResult:
+    ok: ClassVar[bool] = True
+    status: int
+
+
+class NotOkResult:
+    ok: ClassVar[bool] = False
+    status: int
+    msg: str
+
+
+class OkIdResult:
+    ok: ClassVar[bool] = True
+    status: int
+    id: str
+
+
+IdResult = Union[OkIdResult, NotOkResult]
+
+Result = Union[OkResult, NotOkResult]
+
+HyperGetResult = Union[Dict, NotOkResult]
+
+
+class HyperSearchQueryOKResult:
+    ok: ClassVar[bool] = True
+    status: int
+    matches: List[Dict]
+
+
+class HyperSearchLoadOKResult:
+    ok: ClassVar[bool] = True
+    status: int
+    results: List[Dict]
+
+
+HyperSearchQueryResult = Union[HyperSearchQueryOKResult, NotOkResult]
+
+HyperSearchLoadResult = Union[HyperSearchLoadOKResult, NotOkResult]
+
+
+class ListOptions(TypedDict, total=False):
     limit: Optional[int]
     startkey: Optional[str]
     endkey: Optional[str]
@@ -25,14 +67,14 @@ class ListOptions(TypedDict):
     descending: Optional[bool]
 
 
-class QueryOptions(TypedDict):
+class QueryOptions(TypedDict, total=False):
     fields: Optional[List[str]]
     sort: Optional[List[Dict[str, SortOptions]]]
     limit: Optional[int]
     useIndex: Optional[str]
 
 
-class SearchQueryOptions(TypedDict):
+class SearchQueryOptions(TypedDict, total=False):
     fields: Optional[List[str]]
     filter: Optional[Dict[str, str]]
 
@@ -317,6 +359,38 @@ class HyperQueue:
 
 
 class HyperSearch:
+    """
+    A class to represent a hyper application's search service.
+
+    ...
+    Methods
+    -------
+    add(key, doc):
+        Indexes a document to the search service.
+    remove(key):
+        Removes a document from the search service.
+    get(key):
+        Retrieves an indexed doc by id.
+    update(key, doc):
+        Updates a document to the search service.
+    load([...]):
+        Inserts search documents using an array of documents.
+    query(query, options)
+        Queries a search service.  options argument is optional.
+    add_async(key, doc):
+        Asynchronously indexes a document to the search service.
+    remove_async(key):
+        Asynchronously removes a document from the search service.
+    get_async(key):
+        Asynchronously retrieves an indexed doc by id.
+    update_async(key, doc):
+        Asynchronously updates a document to the search service.
+    load_async([...]):
+        Asynchronously inserts search documents using an array of documents.
+    query_async(query, options)
+        Asynchronously queries a search service.  options argument is optional.
+    """
+
     def __init__(
         self,
         # ASYNC
@@ -351,41 +425,61 @@ class HyperSearch:
         self._query_search_sync = query_search_sync_fn
 
     # ASYNC
-    def add_async(self, key: str, doc: Dict):
+    def add_async(self, key: str, doc: Dict) -> Result:
+        """
+        Asynchronously indexes a document to the search service.
+
+        If the argument 'additional' is passed, then it is appended after the main info.
+
+        Parameters
+        ----------
+        key : str
+            Search document's key
+        doc : Dict
+            Search document
+
+        Returns
+        -------
+        Promise of a OkResult or NotOkResult.
+        """
         return self._add_search_async_doc(key, doc)
 
-    def remove_async(self, key: str):
+    def remove_async(self, key: str) -> Result:
         return self._remove_search_async_doc(key)
 
-    def get_async(self, key: str):
+    def get_async(self, key: str) -> HyperGetResult:
         return self._get_search_async_doc(key)
 
-    def update_async(self, key: str, doc: Dict):
+    def update_async(self, key: str, doc: Dict) -> Result:
         return self._update_search_async_doc(key, doc)
 
-    def load_async(self, docs: List[Dict]):
+    def load_async(self, docs: List[Dict]) -> HyperSearchLoadResult:
         return self._load_search_async(docs)
 
-    def query_async(self, query: str, options: Optional[SearchQueryOptions]):
+    def query_async(
+        self, query: str, options: Optional[SearchQueryOptions]
+    ) -> HyperSearchQueryResult:
         return self._query_search_async(query, options)
 
     # SYNC
-    def add(self, key: str, doc: Dict):
+    def add(self, key: str, doc: Dict) -> Result:
         return self._add_search_sync_doc(key, doc)
 
-    def remove(self, key: str):
+    def remove(self, key: str) -> Result:
         return self._remove_search_sync_doc(key)
 
-    def get(self, key: str):
+    def get(self, key: str) -> HyperGetResult:
         return self._get_search_sync_doc(key)
 
-    def update(self, key: str, doc: Dict):
+    def update(self, key: str, doc: Dict) -> Result:
         return self._update_search_sync_doc(key, doc)
 
-    def load(self, docs: List[Dict]):
+    def load(self, docs: List[Dict]) -> HyperSearchLoadResult:
         return self._load_search_sync(docs)
 
-    def query(self, query: str, options: Optional[SearchQueryOptions]):
+    def query(
+        self, query: str, options: Optional[SearchQueryOptions]
+    ) -> HyperSearchQueryResult:
         return self._query_search_sync(query, options)
 
 
@@ -408,8 +502,29 @@ class WriteHyperError(Exception):
     pass
 
 
-# def __init__(self, data, cache, search, storage, queue, info ):
 class Hyper:
+    """
+    A class used to represent access to a hyper application's services, such as Data, Storage, Cache, Queue, and Search.
+    Returned by hyper_connect's connect function.
+
+    ...
+
+    Attributes
+    ----------
+    data : HyperData
+        The hyper app's Data service
+    cache : HyperCache
+        The hyper app's Cache service
+    search : HyperSearch
+        The hyper app's Search service
+    storage : HyperStorage
+        The hyper app's Storage service
+    queue : HyperQueue
+        The hyper app's Queue service
+    info: HyperInfo
+        The hyper app's Info service
+    """
+
     def __init__(
         self,
         data: HyperData,

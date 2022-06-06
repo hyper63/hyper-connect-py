@@ -72,6 +72,32 @@ from hyper_connect.types import (
 )
 from hyper_connect.utils import handle_response, handle_response_sync
 
+"""connects to a hyper cloud application
+
+The API is split into five sections: data, cache, search, storage, and queue
+
+Parameters
+----------
+CONNECTION_STRING : str
+    A hyper application represents an application within hyper cloud.
+    A hyper application contains app key pairs used to access its application services, such as Data, Storage, Cache, Queue, and Search.
+    Each app key consists of a Key, Secret, and associated Connection String.
+    A hyper cloud connection string consists of a key, secret, hyper cloud server, and hyper app name:
+    cloud://<key>:<secret>@cloud.hyper.io/<hyper application name>
+domain : str
+    The service name. The default is "default".
+
+Returns
+-------
+Hyper
+    A Hyper object used to access application services, such as Data, Storage, Cache, Queue, and Search.
+
+Examples
+--------
+>>> connection_string: str = str(config["HYPER"])
+>>> hyper: Hyper = connect(connection_string)
+"""
+
 
 @typechecked
 def connect(CONNECTION_STRING: str, domain: str = "default") -> Hyper:

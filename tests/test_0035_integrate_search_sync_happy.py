@@ -10,7 +10,14 @@ from promisio import Promise
 from ramda import head, is_empty, map, sum
 
 from hyper_connect import connect
-from hyper_connect.types import Hyper, SearchQueryOptions
+from hyper_connect.types import (
+    Hyper,
+    HyperGetResult,
+    HyperSearchLoadResult,
+    HyperSearchQueryResult,
+    Result,
+    SearchQueryOptions,
+)
 
 config = dotenv_values("./.env")
 
@@ -34,8 +41,8 @@ hyper: Hyper = connect(connection_string)
 class TestSearchIntegration_SYNC(unittest.TestCase):
     def test_search_add_sync(self):
 
-        remove_result = hyper.search.remove(key=movie1["_id"])
-        add_result = hyper.search.add(key=movie1["_id"], doc=movie1)
+        remove_result: Result = hyper.search.remove(key=movie1["_id"])
+        add_result: Result = hyper.search.add(key=movie1["_id"], doc=movie1)
 
         self.assertEqual(
             remove_result["ok"], True, "SYNC Removing data doc not ok."
@@ -45,7 +52,7 @@ class TestSearchIntegration_SYNC(unittest.TestCase):
         )
 
     def test_search_get_sync(self):
-        result = hyper.search.get(key="movie-100")
+        result: HyperGetResult = hyper.search.get(key="movie-100")
 
         doc = result["doc"]
 
@@ -56,7 +63,7 @@ class TestSearchIntegration_SYNC(unittest.TestCase):
         )
 
     def test_search_delete_sync(self):
-        result = hyper.search.remove(key="movie-101")
+        result: Result = hyper.search.remove(key="movie-101")
 
         self.assertEqual(
             result["ok"],
@@ -69,7 +76,7 @@ class TestSearchIntegration_SYNC(unittest.TestCase):
         options: SearchQueryOptions = {"fields": ["title"], "filter": None}
 
         query = "Chariots"
-        result = hyper.search.query(query, options)
+        result: HyperSearchQueryResult = hyper.search.query(query, options)
 
         self.assertEqual(
             result["ok"],
@@ -85,7 +92,7 @@ class TestSearchIntegration_SYNC(unittest.TestCase):
 
     def test_search_bulk_sync(self):
 
-        result = hyper.search.load(bulk_movie_docs)
+        result: HyperSearchLoadResult = hyper.search.load(bulk_movie_docs)
 
         self.assertEqual(
             result["ok"],

@@ -157,6 +157,24 @@ def data_list_bad_keys_sync(self):
 
 ```
 
+Some keys within `ListOptions`, `QueryOptions`, and `SearchQueryOptions` are optional.  For example both of the following typed Dictionaries are valid types:
+
+```py
+valid_data_list_options: ListOptions = {
+    "startkey": "book-000105",
+    "limit": None,
+    "endkey": "book-000106",
+    "keys": None,
+    "descending": None,
+}
+
+also_valid_options: ListOptions = {
+    "startkey": "book-000105",
+    "endkey": "book-000106"
+}
+```
+
+
 ### Data service sync examples
 
 ### Add document

@@ -10,7 +10,7 @@ from promisio import Promise
 from ramda import head, is_empty, map, sum
 
 from hyper_connect import connect
-from hyper_connect.types import Hyper, SearchQueryOptions
+from hyper_connect.types import Hyper, HyperGetResult, SearchQueryOptions
 
 config = dotenv_values("./.env")
 
@@ -61,7 +61,7 @@ class TestSearchIntegration_ASYNC(asynctest.TestCase):
         )
 
     async def test_search_get_async(self):
-        result = await hyper.search.get_async(key="movie-100")
+        result: HyperGetResult = await hyper.search.get_async(key="movie-100")
 
         doc = result["doc"]
 
@@ -72,7 +72,7 @@ class TestSearchIntegration_ASYNC(asynctest.TestCase):
         )
 
     async def test_search_delete_async(self):
-        result = await hyper.search.remove_async(key="movie-101")
+        result: Result = await hyper.search.remove_async(key="movie-101")
 
         self.assertEqual(
             result["ok"],
@@ -82,10 +82,12 @@ class TestSearchIntegration_ASYNC(asynctest.TestCase):
 
     async def test_search_query_async(self):
 
-        options: SearchQueryOptions = {"fields": ["title"], "filter": None}
+        options: SearchQueryOptions = {"fields": ["title"]}
 
         query = "Chariots"
-        result = await hyper.search.query_async(query, options)
+        result: HyperSearchQueryResult = await hyper.search.query_async(
+            query, options
+        )
 
         self.assertEqual(
             result["ok"],
@@ -101,7 +103,9 @@ class TestSearchIntegration_ASYNC(asynctest.TestCase):
 
     async def test_search_bulk_async(self):
 
-        result = await hyper.search.load_async(bulk_movie_docs)
+        result: HyperSearchLoadResult = await hyper.search.load_async(
+            bulk_movie_docs
+        )
 
         self.assertEqual(
             result["ok"],

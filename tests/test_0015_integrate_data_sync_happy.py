@@ -21,7 +21,7 @@ from ramda import (
 )
 
 from hyper_connect import connect
-from hyper_connect.types import Hyper, ListOptions
+from hyper_connect.types import Hyper, ListOptions, OkResult
 
 config = dotenv_values("./.env")
 
@@ -45,8 +45,8 @@ hyper: Hyper = connect(connection_string)
 class TestDataIntegration_SYNC(unittest.TestCase):
     def test_data_add_sync(self):
 
-        remove_result = hyper.data.remove(id=book1["_id"])
-        add_result = hyper.data.add(doc=book1)
+        remove_result: OkResult = hyper.data.remove(id=book1["_id"])
+        add_result: OkResult = hyper.data.add(doc=book1)
 
         self.assertEqual(
             remove_result["ok"], True, "SYNC Removing data doc not ok."
@@ -60,16 +60,26 @@ class TestDataIntegration_SYNC(unittest.TestCase):
         self.assertEqual(book1["_id"], result["_id"], "Getting doc not ok.")
 
     def test_data_update_sync(self):
-        result = hyper.data.update(book1["_id"], book1)
+        result: OkResult = hyper.data.update(book1["_id"], book1)
         self.assertEqual(result["ok"], True, "Update doc not ok.")
 
-    def test_data_list_startkey_endkey_sync(self):
+    def test_data_list_startkey_endkey_all_list_option_keys_sync(self):
         options: ListOptions = {
             "startkey": "book-000105",
             "limit": None,
             "endkey": "book-000106",
             "keys": None,
             "descending": None,
+        }
+
+        result = hyper.data.list(options)
+        self.assertEqual(result["ok"], True, "List result not ok.")
+        self.assertEqual(len(result["docs"]), 2, "Length should be 2")
+
+    def test_data_list_startkey_endkey_some_list_option_keyssync(self):
+        options: ListOptions = {
+            "startkey": "book-000105",
+            "endkey": "book-000106",
         }
 
         result = hyper.data.list(options)
