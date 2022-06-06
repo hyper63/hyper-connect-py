@@ -152,8 +152,8 @@ def data_list_bad_keys_sync(self):
     try:
         result = hyper.data.list(options)
     except TypeError as err:
-        print('data_list_bad_keys_sync TypeError', err)
-        # data_list_bad_keys_sync TypeError type of dict item "params" for argument "req_params" must be one of (hyper_connect.types._types.ListOptions, hyper_connect.types._types.QueryOptions, Dict[str, str], NoneType); got dict instead
+        print('data_list_bad_keys_sync TypeError -> ', err)
+        # data_list_bad_keys_sync TypeError -> type of dict item "params" for argument "req_params" must be one of (hyper_connect.types._types.ListOptions, hyper_connect.types._types.QueryOptions, Dict[str, str], NoneType); got dict instead
 
 ```
 
