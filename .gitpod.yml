@@ -4,20 +4,13 @@ tasks:
       python3 -m venv /workspace/hyper-connect-py/venv
       gp sync-done kitty
       clear
-  - name: venv activate
+  - name: venv
     before: |
       gp sync-await kitty
       source venv/bin/activate
       gp sync-done meow
-  - name: install poetry
-    before: |
-      gp sync-await meow
       curl -sSL https://install.python-poetry.org | python3 -
-      gp sync-done purr
-  - name: install dependencies with poetry
-      gp sync-await purr
       poetry install
-      clear
       pre-commit install
       bash .git/hooks/pre-commit
       echo 'Heres your virtual environment named venv.  Install deps here.'
