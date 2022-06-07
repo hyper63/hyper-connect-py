@@ -368,6 +368,15 @@ print("hyper.search.add result --> ", result)
 # hyper.search.add result -->  {'ok': True, 'status': 201}
 ```
 
+### Get from search
+
+```py
+result: HyperGetResult = hyper.search.get(key="movie-5000")
+print("hyper.search.get result --> ", result)
+# hyper.search.get result -->  {'key': 'movie-5000', 'doc': {'type': 'movie', 'title': 'Back to the Future 2', 'year': '1988', '_id': 'movie-5000'}, 'ok': True, 'status': 200}
+
+```
+
 ### Remove from search
 
 ```py

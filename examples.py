@@ -3,7 +3,12 @@ from typing import Dict
 from dotenv import dotenv_values
 
 from hyper_connect import connect
-from hyper_connect.types import Hyper, ListOptions, QueryOptions
+from hyper_connect.types import (
+    Hyper,
+    HyperGetResult,
+    ListOptions,
+    QueryOptions,
+)
 
 config = dotenv_values("./.env")
 
@@ -192,7 +197,13 @@ def add_search():
     # hyper.search.add result -->  {'ok': True, 'status': 201}
 
 
-def remove():
+def get_search():
+    result: HyperGetResult = hyper.search.get(key="movie-5000")
+    print("hyper.search.get result --> ", result)
+    # hyper.search.get result -->  {'key': 'movie-5000', 'doc': {'type': 'movie', 'title': 'Back to the Future 2', 'year': '1988', '_id': 'movie-5000'}, 'ok': True, 'status': 200}
+
+
+def remove_search():
     key = "movie-5000"
     result = hyper.search.remove(key)
     print("hyper.search.remove result --> ", result)

@@ -520,6 +520,7 @@ class HyperSearch:
     def get_async(self, key: str) -> HyperGetResult:
         """
         Asynchronously gets a document from the search service.
+        Example: https://github.com/hyper63/hyper-connect-py#get-document-from-search
 
         Parameters
         ----------
@@ -624,6 +625,19 @@ class HyperSearch:
         return self._remove_search_sync_doc(key)
 
     def get(self, key: str) -> HyperGetResult:
+        """
+        Gets a document from the search service.
+        Example:
+
+        Parameters
+        ----------
+        key : str
+            Search document's key
+
+        Returns
+        -------
+        Promise of a HyperGetResult.
+        """
         return self._get_search_sync_doc(key)
 
     def update(self, key: str, doc: Dict) -> Result:
