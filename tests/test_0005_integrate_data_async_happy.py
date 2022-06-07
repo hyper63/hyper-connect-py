@@ -21,7 +21,14 @@ from ramda import (
 )
 
 from hyper_connect import connect
-from hyper_connect.types import Hyper, ListOptions
+from hyper_connect.types import (
+    Hyper,
+    HyperDocsResult,
+    HyperGetResult,
+    IdResult,
+    ListOptions,
+    OkResult,
+)
 
 config = dotenv_values("./.env")
 
@@ -67,11 +74,11 @@ class TestDataIntegration_ASYNC(asynctest.TestCase):
         self.assertEqual(countFulfilled, len(book_docs), "Adding docs not ok.")
 
     async def test_data_get_async(self):
-        result = await hyper.data.get_async(book1["_id"])
+        result: HyperGetResult = await hyper.data.get_async(book1["_id"])
         self.assertEqual(book1["_id"], result["_id"], "Getting doc not ok.")
 
     async def test_data_update_async(self):
-        result = await hyper.data.update_async(book1["_id"], book1)
+        result: IdResult = await hyper.data.update_async(book1["_id"], book1)
         self.assertEqual(result["ok"], True, "Update doc not ok.")
 
     async def test_data_list_startkey_endkey_async(self):
@@ -83,7 +90,7 @@ class TestDataIntegration_ASYNC(asynctest.TestCase):
             "descending": None,
         }
 
-        result = await hyper.data.list_async(options)
+        result: HyperDocsResult = await hyper.data.list_async(options)
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
@@ -96,7 +103,7 @@ class TestDataIntegration_ASYNC(asynctest.TestCase):
             "descending": None,
         }
 
-        result = await hyper.data.list_async(options)
+        result: HyperDocsResult = await hyper.data.list_async(options)
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
@@ -109,7 +116,7 @@ class TestDataIntegration_ASYNC(asynctest.TestCase):
             "descending": None,
         }
 
-        result = await hyper.data.list_async(options)
+        result: HyperDocsResult = await hyper.data.list_async(options)
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
@@ -122,7 +129,7 @@ class TestDataIntegration_ASYNC(asynctest.TestCase):
             "descending": None,
         }
 
-        result = await hyper.data.list_async(options)
+        result: HyperDocsResult = await hyper.data.list_async(options)
 
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 4, "Length should be 4")
@@ -138,7 +145,9 @@ class TestDataIntegration_ASYNC(asynctest.TestCase):
             "useIndex": None,
         }
 
-        result = await hyper.data.query_async(selector, options)
+        result: HyperDocsResult = await hyper.data.query_async(
+            selector, options
+        )
 
         self.assertEqual(result["ok"], True, "Query result not ok.")
         self.assertEqual(len(result["docs"]), 1, "Length should be 1")
@@ -154,7 +163,9 @@ class TestDataIntegration_ASYNC(asynctest.TestCase):
             "useIndex": None,
         }
 
-        result = await hyper.data.query_async(selector, options)
+        result: HyperDocsResult = await hyper.data.query_async(
+            selector, options
+        )
 
         self.assertEqual(result["ok"], True, "Query result not ok.")
         self.assertEqual(len(result["docs"]), 3, "Length should be 3")
@@ -174,7 +185,7 @@ class TestDataIntegration_ASYNC(asynctest.TestCase):
             "useIndex": "idx_author_published",
         }
 
-        index_result = await hyper.data.index_async(
+        index_result: OkResult = await hyper.data.index_async(
             "idx_author_published", ["author", "published"]
         )
 
@@ -202,7 +213,7 @@ class TestDataIntegration_ASYNC(asynctest.TestCase):
             lambda doc: assoc("_deleted", True, doc), book_bulk_docs
         )
 
-        result = await hyper.data.bulk_async(bulkDocs).then(
+        result: HyperDocsResult = await hyper.data.bulk_async(bulkDocs).then(
             lambda _: hyper.data.bulk_async(book_bulk_docs)
         )
 

@@ -35,11 +35,26 @@ class OkIdResult:
     id: str
 
 
+class OkDocsResult:
+    ok: ClassVar[bool] = True
+    status: int
+    docs: List[Dict]
+
+
+class NotOkDocsResult:
+    ok: ClassVar[bool] = False
+    status: int
+    msg: str
+    docs: List[Dict]
+
+
 IdResult = Union[OkIdResult, NotOkResult]
 
 Result = Union[OkResult, NotOkResult]
 
 HyperGetResult = Union[Dict, NotOkResult]
+
+HyperDocsResult = Union[OkDocsResult, NotOkDocsResult]
 
 
 class HyperSearchQueryOKResult:
@@ -182,6 +197,46 @@ class HyperCache:
 
 
 class HyperData:
+    """
+    A class to represent a hyper application's data service.
+
+    ...
+    Methods
+    -------
+    add(doc):
+        Adds a document.
+    remove(id):
+        Removes a document.
+    get(id):
+        Retrieves a document.
+    update(id, doc):
+        Updates a document.
+    bulk(docs):
+        Inserts documents.
+    query(selector, options)
+        Queries documents.
+    list(options)
+        Lists documents.
+    index(name, fields)
+        Creates an index to speed data retrieval.
+    add_async(doc):
+        Asynchronously adds a document to the data service.
+    remove_async(id):
+        Asynchronously removes a document from the data service.
+    get_async(id):
+        Asynchronously retrieves a doc from the data service.
+    update_async(id, doc):
+        Asynchronously updates a document to the data service.
+    bulk_async(docs):
+        Asynchronously inserts documents.
+    query_async(selector, options)
+        Asynchronously queries a data service.
+    list_async(options)
+        Asynchronously lists documents.
+    index_async(name, fields)
+        Asynchronously creates an index to speed data retrieval.
+    """
+
     def __init__(
         self,
         # ASYNC
@@ -224,53 +279,55 @@ class HyperData:
         self._bulk_sync_docs = bulk_docs_sync_fn
 
     # ASYNC
-    def add_async(self, doc: Dict):
+    def add_async(self, doc: Dict) -> IdResult:
         return self._add_data_async_doc(doc)
 
-    def get_async(self, id: str):
+    def get_async(self, id: str) -> HyperGetResult:
         return self._get_data_async_doc(id)
 
-    def list_async(self, options: ListOptions):
+    def list_async(self, options: ListOptions) -> HyperDocsResult:
         return self._list_data_async_docs(options)
 
-    def update_async(self, id: str, doc: Dict):
+    def update_async(self, id: str, doc: Dict) -> IdResult:
         return self._update_data_async_doc(id, doc)
 
-    def remove_async(self, id: str):
+    def remove_async(self, id: str) -> IdResult:
         return self._remove_data_async_doc(id)
 
-    def query_async(self, selector: Dict, options: QueryOptions):
+    def query_async(
+        self, selector: Dict, options: QueryOptions
+    ) -> HyperDocsResult:
         return self._query_async_docs(selector, options)
 
-    def index_async(self, name: str, fields: List[str]):
+    def index_async(self, name: str, fields: List[str]) -> Result:
         return self._index_async_docs(name, fields)
 
-    def bulk_async(self, docs: List[Dict]):
+    def bulk_async(self, docs: List[Dict]) -> HyperDocsResult:
         return self._bulk_async_docs(docs)
 
     # SYNC
-    def add(self, doc: Dict):
+    def add(self, doc: Dict) -> IdResult:
         return self._add_data_sync_doc(doc)
 
-    def get(self, id: str):
+    def get(self, id: str) -> HyperGetResult:
         return self._get_data_sync_doc(id)
 
-    def list(self, options: ListOptions):
+    def list(self, options: ListOptions) -> HyperDocsResult:
         return self._list_data_sync_docs(options)
 
-    def update(self, id: str, doc: Dict):
+    def update(self, id: str, doc: Dict) -> IdResult:
         return self._update_data_sync_doc(id, doc)
 
-    def remove(self, id: str):
+    def remove(self, id: str) -> IdResult:
         return self._remove_data_sync_doc(id)
 
-    def query(self, selector: Dict, options: QueryOptions):
+    def query(self, selector: Dict, options: QueryOptions) -> HyperDocsResult:
         return self._query_sync_docs(selector, options)
 
-    def index(self, name: str, fields: List[str]):
+    def index(self, name: str, fields: List[str]) -> Result:
         return self._index_sync_docs(name, fields)
 
-    def bulk(self, docs: List[Dict]):
+    def bulk(self, docs: List[Dict]) -> HyperDocsResult:
         return self._bulk_sync_docs(docs)
 
 
@@ -429,7 +486,52 @@ class HyperSearch:
         """
         Asynchronously indexes a document to the search service.
 
-        If the argument 'additional' is passed, then it is appended after the main info.
+        Parameters
+        ----------
+        key : str
+            Search document's key
+        doc : Dict
+            Search document
+
+        Returns
+        -------
+        Promise of a Result (OkResult or NotOkResult).
+        """
+        return self._add_search_async_doc(key, doc)
+
+    def remove_async(self, key: str) -> Result:
+        """
+        Asynchronously removes a document from the search service.
+
+        Parameters
+        ----------
+        key : str
+            Search document's key
+
+        Returns
+        -------
+        Promise of a Result (OkResult or NotOkResult).
+        """
+        return self._remove_search_async_doc(key)
+
+    def get_async(self, key: str) -> HyperGetResult:
+        """
+        Asynchronously gets a document from the search service.
+
+        Parameters
+        ----------
+        key : str
+            Search document's key
+
+        Returns
+        -------
+        Promise of a HyperGetResult.
+        """
+        return self._get_search_async_doc(key)
+
+    def update_async(self, key: str, doc: Dict) -> Result:
+        """
+        Asynchronously updates a document to the search service.
 
         Parameters
         ----------
@@ -440,25 +542,43 @@ class HyperSearch:
 
         Returns
         -------
-        Promise of a OkResult or NotOkResult.
+        Promise of a Result (OkResult or NotOkResult).
         """
-        return self._add_search_async_doc(key, doc)
-
-    def remove_async(self, key: str) -> Result:
-        return self._remove_search_async_doc(key)
-
-    def get_async(self, key: str) -> HyperGetResult:
-        return self._get_search_async_doc(key)
-
-    def update_async(self, key: str, doc: Dict) -> Result:
         return self._update_search_async_doc(key, doc)
 
     def load_async(self, docs: List[Dict]) -> HyperSearchLoadResult:
+        """
+        Asynchronously index multiple documents in one batch call to the server.
+
+        Parameters
+        ----------
+        docs : List[Dict]
+            A list of documents to bulk load.  The _id property is required for each document.
+
+        Returns
+        -------
+        Promise of a HyperSearchLoadResult.
+        """
         return self._load_search_async(docs)
 
     def query_async(
         self, query: str, options: Optional[SearchQueryOptions]
     ) -> HyperSearchQueryResult:
+        """
+        Asynchronously query the search index by including a query the value of your search string. You can optionally include a options of type SearchQueryOptions  that contains a fields property containing a list of fields you would like to target the search against and a filter property which is an Dict of key/value pairs to filter the search results
+
+        Parameters
+        ----------
+        query : str
+            The text you would like to search for matches
+        options : SearchQueryOptions, optional
+            fields: A list of fields you would like to target the search against. Each string in the array should match a property in the Fields to store list in the indexed document.  See https://docs.hyper.io/adding-a-search-service.
+            filter: key/value pairs that should reduce the results based on the result of the filter. Each key should match a property in the Fields to store list that you provided when you created the search index.
+
+        Returns
+        -------
+        Promise of a HyperSearchQueryResult (HyperSearchQueryOKResult or NotOkResult).
+        """
         return self._query_search_async(query, options)
 
     # SYNC
@@ -475,11 +595,38 @@ class HyperSearch:
         return self._update_search_sync_doc(key, doc)
 
     def load(self, docs: List[Dict]) -> HyperSearchLoadResult:
+        """
+        Asynchronously index multiple documents in one batch call to the server.
+
+        Parameters
+        ----------
+        docs : List[Dict]
+            A list of documents to bulk load.  The _id property is required for each document.
+
+        Returns
+        -------
+        Promise of a HyperSearchLoadResult.
+        """
         return self._load_search_sync(docs)
 
     def query(
         self, query: str, options: Optional[SearchQueryOptions]
     ) -> HyperSearchQueryResult:
+        """
+        Query the search index by including a query the value of your search string. You can optionally include a options of type SearchQueryOptions  that contains a fields property containing a list of fields you would like to target the search against and a filter property which is an Dict of key/value pairs to filter the search results
+
+        Parameters
+        ----------
+        query : str
+            The text you would like to search for matches
+        options : SearchQueryOptions, optional
+            fields: A list of fields you would like to target the search against. Each string in the array should match a property in the Fields to store list in the indexed document.  See https://docs.hyper.io/adding-a-search-service.
+            filter: key/value pairs that should reduce the results based on the result of the filter. Each key should match a property in the Fields to store list that you provided when you created the search index.
+
+        Returns
+        -------
+        Promise of a HyperSearchQueryResult (HyperSearchQueryOKResult or NotOkResult).
+        """
         return self._query_search_sync(query, options)
 
 

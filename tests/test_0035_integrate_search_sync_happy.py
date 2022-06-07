@@ -6,8 +6,7 @@ from typing import Dict, List
 
 from artifacts import movie_bulk_doc_artifacts, movie_doc_artifacts
 from dotenv import dotenv_values
-from promisio import Promise
-from ramda import head, is_empty, map, sum
+from ramda import head, is_empty
 
 from hyper_connect import connect
 from hyper_connect.types import (

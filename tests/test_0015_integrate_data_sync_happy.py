@@ -21,7 +21,13 @@ from ramda import (
 )
 
 from hyper_connect import connect
-from hyper_connect.types import Hyper, ListOptions, OkResult
+from hyper_connect.types import (
+    Hyper,
+    HyperDocsResult,
+    HyperGetResult,
+    ListOptions,
+    OkResult,
+)
 
 config = dotenv_values("./.env")
 
@@ -56,7 +62,7 @@ class TestDataIntegration_SYNC(unittest.TestCase):
         )
 
     def test_data_get_sync(self):
-        result = hyper.data.get(book1["_id"])
+        result: HyperGetResult = hyper.data.get(book1["_id"])
         self.assertEqual(book1["_id"], result["_id"], "Getting doc not ok.")
 
     def test_data_update_sync(self):
@@ -72,7 +78,7 @@ class TestDataIntegration_SYNC(unittest.TestCase):
             "descending": None,
         }
 
-        result = hyper.data.list(options)
+        result: HyperDocsResult = hyper.data.list(options)
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
@@ -82,7 +88,7 @@ class TestDataIntegration_SYNC(unittest.TestCase):
             "endkey": "book-000106",
         }
 
-        result = hyper.data.list(options)
+        result: HyperDocsResult = hyper.data.list(options)
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
@@ -95,7 +101,7 @@ class TestDataIntegration_SYNC(unittest.TestCase):
             "descending": None,
         }
 
-        result = hyper.data.list(options)
+        result: HyperDocsResult = hyper.data.list(options)
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
@@ -108,7 +114,7 @@ class TestDataIntegration_SYNC(unittest.TestCase):
             "descending": None,
         }
 
-        result = hyper.data.list(options)
+        result: HyperDocsResult = hyper.data.list(options)
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 2, "Length should be 2")
 
@@ -121,7 +127,7 @@ class TestDataIntegration_SYNC(unittest.TestCase):
             "descending": None,
         }
 
-        result = hyper.data.list(options)
+        result: HyperDocsResult = hyper.data.list(options)
 
         self.assertEqual(result["ok"], True, "List result not ok.")
         self.assertEqual(len(result["docs"]), 4, "Length should be 4")
@@ -137,7 +143,7 @@ class TestDataIntegration_SYNC(unittest.TestCase):
             "useIndex": None,
         }
 
-        result = hyper.data.query(selector, options)
+        result: HyperDocsResult = hyper.data.query(selector, options)
 
         self.assertEqual(result["ok"], True, "Query result not ok.")
         self.assertEqual(len(result["docs"]), 1, "Length should be 1")
@@ -153,7 +159,7 @@ class TestDataIntegration_SYNC(unittest.TestCase):
             "useIndex": None,
         }
 
-        result = hyper.data.query(selector, options)
+        result: HyperDocsResult = hyper.data.query(selector, options)
 
         self.assertEqual(result["ok"], True, "Query result not ok.")
         self.assertEqual(len(result["docs"]), 3, "Length should be 3")
@@ -173,11 +179,11 @@ class TestDataIntegration_SYNC(unittest.TestCase):
             "useIndex": "idx_author_published",
         }
 
-        index_result = hyper.data.index(
+        index_result: OkResult = hyper.data.index(
             "idx_author_published", ["author", "published"]
         )
 
-        result = hyper.data.query(selector, options)
+        result: HyperDocsResult = hyper.data.query(selector, options)
 
         self.assertEqual(
             index_result["ok"], True, "index create result not ok."
@@ -201,8 +207,8 @@ class TestDataIntegration_SYNC(unittest.TestCase):
             lambda doc: assoc("_deleted", True, doc), book_bulk_docs
         )
 
-        bulk_result = hyper.data.bulk(bulkDocs)
-        book_bulk_result = hyper.data.bulk(book_bulk_docs)
+        bulk_result: HyperDocsResult = hyper.data.bulk(bulkDocs)
+        book_bulk_result: HyperDocsResult = hyper.data.bulk(book_bulk_docs)
 
         self.assertEqual(book_bulk_result["ok"], True, "Bulk result not ok.")
         self.assertEqual(

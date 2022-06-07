@@ -9,7 +9,7 @@ from dotenv import dotenv_values
 from ramda import head, is_empty
 
 from hyper_connect import connect
-from hyper_connect.types import Hyper, ListOptions
+from hyper_connect.types import Hyper, ListOptions, NotOkDocsResult
 
 config = dotenv_values("./.env")
 
@@ -39,7 +39,7 @@ class TestIntegration_ASYNC(asynctest.TestCase):
         }
 
         try:
-            result = await hyper.data.list_async(options)
+            result: NotOkDocsResult = await hyper.data.list_async(options)
         except TypeError:
             self.assertEqual(True, True, "Should raise TypeError")
 
@@ -53,7 +53,7 @@ class TestIntegration_ASYNC(asynctest.TestCase):
         }
 
         try:
-            result = await hyper.data.list_async(options)
+            result: NotOkDocsResult = await hyper.data.list_async(options)
         except TypeError as err:
             self.assertEqual(True, True, "Should raise TypeError")
 
@@ -67,7 +67,7 @@ class TestIntegration_ASYNC(asynctest.TestCase):
         }
 
         try:
-            result = await hyper.data.list_async(options)
+            result: NotOkDocsResult = await hyper.data.list_async(options)
         except TypeError:
             self.assertEqual(True, True, "Should raise TypeError")
 
@@ -82,7 +82,9 @@ class TestIntegration_ASYNC(asynctest.TestCase):
             "useIndex": None,
         }
 
-        result = await hyper.data.query_async(selector, options)
+        result: NotOkDocsResult = await hyper.data.query_async(
+            selector, options
+        )
 
         self.assertEqual(result["ok"], False, "query doc ok.")
         self.assertEqual(result["status"], 422, "status should be 422")
@@ -98,7 +100,9 @@ class TestIntegration_ASYNC(asynctest.TestCase):
             "useIndex": None,
         }
 
-        result = await hyper.data.query_async(selector, options)
+        result: NotOkDocsResult = await hyper.data.query_async(
+            selector, options
+        )
         self.assertEqual(result["ok"], False, "query doc ok.")
         self.assertEqual(result["status"], 422, "status should be 422")
 

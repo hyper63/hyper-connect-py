@@ -174,6 +174,7 @@ also_valid_options: ListOptions = {
 }
 ```
 
+## Sync examples
 
 ### Data service sync examples
 
@@ -405,6 +406,15 @@ result = hyper.search.query(query, options)
 print("hyper.search.query result --> ", result)
 # hyper.search.query result -->  {'matches': [{'type': 'movie', 'title': 'Back to the Future', 'year': '1985', '_id': 'movie-102'}], 'ok': True, 'status': 200}
 
+```
+
+
+### Bulk load into search
+
+```py
+result: HyperSearchLoadResult = hyper.search.load(
+            bulk_movie_docs
+        )
 ```
 
 
@@ -691,6 +701,17 @@ result = await hyper.cache.query_async(pattern="movie-500*")
 print("hyper.cache.query_async result --> ", result)
 # hyper.cache.query_async result -->  {'docs': [{'key': 'movie-5001', 'value': {'_id': 'movie-5001', 'type': 'movie', 'title': 'Back to the Future 3', 'year': '1989'}}, {'key': 'movie-5000', 'value': {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1988'}}], 'ok': True, 'status': 200}
 ```
+
+### Search service async examples
+
+### Bulk load into search
+
+```py
+result: HyperSearchLoadResult = await hyper.search.load_async(
+            bulk_movie_docs
+        )
+```
+
 
 ## Contributing
 

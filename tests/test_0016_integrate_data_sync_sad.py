@@ -55,7 +55,6 @@ class TestIntegration_SYNC_SAD(unittest.TestCase):
         try:
             result = hyper.data.list(options)
         except TypeError as err:
-            print("test_data_list_bad_keys_sync_sad TypeError", err)
             self.assertEqual(True, True, "Should raise TypeError")
 
     def test_data_list_bad_limit_sync(self):
