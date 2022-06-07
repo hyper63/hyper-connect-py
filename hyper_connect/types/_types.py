@@ -486,7 +486,7 @@ class HyperSearch:
         """
         Asynchronously adds a document to your search index. The document must have the fields specified by the mapping object when you created the index.
         You'll need a search service - https://docs.hyper.io/adding-a-search-service
-        Example:
+        Example: https://github.com/hyper63/hyper-connect-py#add-document-into-search
 
         Parameters
         ----------
@@ -504,6 +504,7 @@ class HyperSearch:
     def remove_async(self, key: str) -> Result:
         """
         Asynchronously removes a document from the search service.
+        Example: https://github.com/hyper63/hyper-connect-py#remove-document-from-search
 
         Parameters
         ----------
@@ -534,6 +535,7 @@ class HyperSearch:
     def update_async(self, key: str, doc: Dict) -> Result:
         """
         Asynchronously updates a document to the search service.
+        Example: https://github.com/hyper63/hyper-connect-py#update-document-in-search
 
         Parameters
         ----------
@@ -569,7 +571,7 @@ class HyperSearch:
     ) -> HyperSearchQueryResult:
         """
         Asynchronously query the search index by including a query the value of your search string. You can optionally include a options of type SearchQueryOptions  that contains a fields property containing a list of fields you would like to target the search against and a filter property which is an Dict of key/value pairs to filter the search results
-        Example:
+        Example: https://github.com/hyper63/hyper-connect-py#query-documents-in-search
 
         Parameters
         ----------
@@ -587,9 +589,38 @@ class HyperSearch:
 
     # SYNC
     def add(self, key: str, doc: Dict) -> Result:
+        """
+        Adds a document to your search index. The document must have the fields specified by the mapping object when you created the index.
+        You'll need a search service - https://docs.hyper.io/adding-a-search-service
+        Example: https://github.com/hyper63/hyper-connect-py#add-to-search
+
+        Parameters
+        ----------
+        key : str
+            Unique identifier for the search index
+        doc : Dict
+            Document that will be added to the index
+
+        Returns
+        -------
+        Promise of a Result (OkResult or NotOkResult).
+        """
         return self._add_search_sync_doc(key, doc)
 
     def remove(self, key: str) -> Result:
+        """
+        Removes a document from the search service.
+        Example: https://github.com/hyper63/hyper-connect-py#remove-from-search
+
+        Parameters
+        ----------
+        key : str
+            Search document's key
+
+        Returns
+        -------
+        Promise of a Result (OkResult or NotOkResult).
+        """
         return self._remove_search_sync_doc(key)
 
     def get(self, key: str) -> HyperGetResult:
