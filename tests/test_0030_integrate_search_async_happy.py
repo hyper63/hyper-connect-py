@@ -10,7 +10,12 @@ from promisio import Promise
 from ramda import head, is_empty, map, sum
 
 from hyper_connect import connect
-from hyper_connect.types import Hyper, HyperGetResult, SearchQueryOptions
+from hyper_connect.types import (
+    Hyper,
+    HyperGetResult,
+    HyperSearchLoadResult,
+    SearchQueryOptions,
+)
 
 config = dotenv_values("./.env")
 

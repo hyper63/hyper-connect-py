@@ -484,14 +484,16 @@ class HyperSearch:
     # ASYNC
     def add_async(self, key: str, doc: Dict) -> Result:
         """
-        Asynchronously indexes a document to the search service.
+        Asynchronously adds a document to your search index. The document must have the fields specified by the mapping object when you created the index.
+        You'll need a search service - https://docs.hyper.io/adding-a-search-service
+        Example:
 
         Parameters
         ----------
         key : str
-            Search document's key
+            Unique identifier for the search index
         doc : Dict
-            Search document
+            Document that will be added to the index
 
         Returns
         -------
@@ -549,6 +551,7 @@ class HyperSearch:
     def load_async(self, docs: List[Dict]) -> HyperSearchLoadResult:
         """
         Asynchronously index multiple documents in one batch call to the server.
+        Example: https://github.com/hyper63/hyper-connect-py#bulk-load-into-search-1
 
         Parameters
         ----------
@@ -566,6 +569,7 @@ class HyperSearch:
     ) -> HyperSearchQueryResult:
         """
         Asynchronously query the search index by including a query the value of your search string. You can optionally include a options of type SearchQueryOptions  that contains a fields property containing a list of fields you would like to target the search against and a filter property which is an Dict of key/value pairs to filter the search results
+        Example:
 
         Parameters
         ----------

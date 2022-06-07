@@ -216,10 +216,7 @@ async def add_search():
 
 
 async def remove_search():
-    key = "movie-5000"
-    result = await hyper.search.remove_async(key)
-    print("hyper.search.remove_async result --> ", result)
-    # hyper.search.remove_async result -->  {'ok': True, 'status': 200}
+    xc
 
 
 async def update_search():

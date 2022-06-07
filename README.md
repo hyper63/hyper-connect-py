@@ -704,12 +704,77 @@ print("hyper.cache.query_async result --> ", result)
 
 ### Search service async examples
 
+### Add document into search
+
+```py
+async def add_search():
+    movie: Dict = {
+        "_id": "movie-5000",
+        "type": "movie",
+        "title": "Back to the Future 2",
+        "year": "1987",
+    }
+
+    result = await hyper.search.add_async(key="movie-5000", doc=movie)
+    print("hyper.search.add_async result --> ", result)
+    # hyper.search.add_async result -->  {'ok': True, 'status': 201}
+```
+
+### Remove document from search
+
+```py
+async def remove_search():
+    key = "movie-5000"
+    result = await hyper.search.remove_async(key)
+    print("hyper.search.remove_async result --> ", result)
+    # hyper.search.remove_async result -->  {'ok': True, 'status': 200}
+```
+
+### Update document in search
+
+```py
+async def update_search():
+    movie: Dict = {
+        "_id": "movie-5000",
+        "type": "movie",
+        "title": "Back to the Future 2",
+        "year": "1988",
+    }
+
+    result = await hyper.search.update_async(key="movie-5000", doc=movie)
+    print("hyper.search.update_async result --> ", result)
+    # hyper.search.update_async result -->  {'ok': True, 'status': 200}
+```
+
+### Query documents in search
+
+```py
+async def query_search():
+
+    query: str = "Future"
+
+    options: SearchQueryOptions = {
+        "fields": ["_id", "title", "year"],
+        "filter": None,
+    }
+    result = await hyper.search.query_async(query, options)
+
+    print("hyper.search.query_async result --> ", result)
+    # hyper.search.query_async result -->  {'matches': [{'type': 'movie', 'title': 'Back to the Future', 'year': '1985', '_id': 'movie-102'}], 'ok': True, 'status': 200}
+
+```
+
+
 ### Bulk load into search
 
 ```py
-result: HyperSearchLoadResult = await hyper.search.load_async(
-            bulk_movie_docs
-        )
+
+bulk_movie_docs: List[Dict] = movie_bulk_doc_artifacts()
+
+async def test_search_bulk_async(self):
+    result: HyperSearchLoadResult = await hyper.search.load_async(
+        bulk_movie_docs
+    )
 ```
 
 
