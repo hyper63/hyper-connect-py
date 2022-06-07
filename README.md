@@ -176,6 +176,8 @@ also_valid_options: ListOptions = {
 
 ## Sync examples
 
+[examples.py](./examples.py) contains some simple synchronous examples.  This repository's **tests* folder also contains some illustrative integration tests.
+
 ### Data service sync examples
 
 ### Add document
@@ -506,7 +508,9 @@ print(" hyper.search.load result -> ", result)
 
 ## Async examples
 
-**examples_async.py** contains examples you can run:
+[examples_async.py](./examples_async.py) contains some simple synchronous examples.  This repository's **tests* folder also contains some illustrative async integration tests.
+
+Here's an example of running the `data_add` async function using `asyncio`:
 
  ```py
     from examples_async import data_add

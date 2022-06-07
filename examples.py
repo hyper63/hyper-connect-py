@@ -32,7 +32,7 @@ def data_add():
         "year": "1985",
     }
 
-    result = hyper.data.add_async(movie)
+    result = hyper.data.add(movie)
     print("hyper.data.add result --> ", result)
     # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
 
@@ -156,7 +156,7 @@ def remove_cache():
     key = "movie-5000"
     result = hyper.cache.remove(key)
     print("hyper.cache.remove result --> ", result)
-    # hyper.cache.remove_async result -->  {'ok': True, 'status': 200}
+    # hyper.cache.remove result -->  {'ok': True, 'status': 200}
 
 
 def update_cache():
