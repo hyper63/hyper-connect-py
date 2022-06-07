@@ -681,6 +681,7 @@ class HyperSearch:
         Asynchronously index multiple documents in one batch call to the server.
         Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
         Adding a search service/index: https://docs.hyper.io/adding-a-search-service
+        Example: https://github.com/hyper63/hyper-connect-py#bulk-load-into-search
 
         Parameters
         ----------
