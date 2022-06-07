@@ -421,9 +421,23 @@ print("hyper.search.query result --> ", result)
 ### Bulk load into search
 
 ```py
-result: HyperSearchLoadResult = hyper.search.load(
-            bulk_movie_docs
-        )
+bulk_movie_docs: List[Dict] = [
+    {
+        "_id": "movie-104",
+        "type": "movie",
+        "title": "Full Metal Jacket",
+        "year": "1987",
+    },
+    {
+        "_id": "movie-105",
+        "type": "movie",
+        "title": "Predator",
+        "year": "1987",
+    },
+]
+
+result: HyperSearchLoadResult = hyper.search.load(docs=bulk_movie_docs)
+print(" hyper.search.load result -> ", result)
 ```
 
 
@@ -787,13 +801,24 @@ async def query_search():
 ### Bulk load into search
 
 ```py
+async def load_search():
+    bulk_movie_docs: List[Dict] = [
+        {
+            "_id": "movie-104",
+            "type": "movie",
+            "title": "Full Metal Jacket",
+            "year": "1987",
+        },
+        {
+            "_id": "movie-105",
+            "type": "movie",
+            "title": "Predator",
+            "year": "1987",
+        },
+    ]
 
-bulk_movie_docs: List[Dict] = movie_bulk_doc_artifacts()
-
-async def test_search_bulk_async(self):
-    result: HyperSearchLoadResult = await hyper.search.load_async(
-        bulk_movie_docs
-    )
+    result: HyperSearchLoadResult = await hyper.search.load_async(docs=bulk_movie_docs)
+    print(" hyper.search.load_async result -> ", result)
 ```
 
 

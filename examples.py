@@ -6,6 +6,7 @@ from hyper_connect import connect
 from hyper_connect.types import (
     Hyper,
     HyperGetResult,
+    HyperSearchLoadResult,
     ListOptions,
     QueryOptions,
 )
@@ -235,3 +236,23 @@ def query_search():
 
     print("hyper.search.query result --> ", result)
     # hyper.search.query result -->  {'matches': [{'type': 'movie', 'title': 'Back to the Future', 'year': '1985', '_id': 'movie-102'}], 'ok': True, 'status': 200}
+
+
+def load_search():
+    bulk_movie_docs: List[Dict] = [
+        {
+            "_id": "movie-104",
+            "type": "movie",
+            "title": "Full Metal Jacket",
+            "year": "1987",
+        },
+        {
+            "_id": "movie-105",
+            "type": "movie",
+            "title": "Predator",
+            "year": "1987",
+        },
+    ]
+
+    result: HyperSearchLoadResult = hyper.search.load(docs=bulk_movie_docs)
+    print(" hyper.search.load result -> ", result)

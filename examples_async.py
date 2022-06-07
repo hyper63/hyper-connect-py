@@ -258,3 +258,25 @@ async def query_search():
 
     print("hyper.search.query_async result --> ", result)
     # hyper.search.query_async result -->  {'matches': [{'type': 'movie', 'title': 'Back to the Future', 'year': '1985', '_id': 'movie-102'}], 'ok': True, 'status': 200}
+
+
+async def load_search():
+    bulk_movie_docs: List[Dict] = [
+        {
+            "_id": "movie-104",
+            "type": "movie",
+            "title": "Full Metal Jacket",
+            "year": "1987",
+        },
+        {
+            "_id": "movie-105",
+            "type": "movie",
+            "title": "Predator",
+            "year": "1987",
+        },
+    ]
+
+    result: HyperSearchLoadResult = await hyper.search.load_async(
+        docs=bulk_movie_docs
+    )
+    print(" hyper.search.load_async result -> ", result)

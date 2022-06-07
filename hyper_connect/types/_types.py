@@ -485,7 +485,8 @@ class HyperSearch:
     def add_async(self, key: str, doc: Dict) -> Result:
         """
         Asynchronously adds a document to your search index. The document must have the fields specified by the mapping object when you created the index.
-        You'll need a search service - https://docs.hyper.io/adding-a-search-service
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+        Adding a search service/index: https://docs.hyper.io/adding-a-search-service
         Example: https://github.com/hyper63/hyper-connect-py#add-document-into-search
 
         Parameters
@@ -504,6 +505,8 @@ class HyperSearch:
     def remove_async(self, key: str) -> Result:
         """
         Asynchronously removes a document from the search service.
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+        Adding a search service/index: https://docs.hyper.io/adding-a-search-service
         Example: https://github.com/hyper63/hyper-connect-py#remove-document-from-search
 
         Parameters
@@ -520,6 +523,8 @@ class HyperSearch:
     def get_async(self, key: str) -> HyperGetResult:
         """
         Asynchronously gets a document from the search service.
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+        Adding a search service/index: https://docs.hyper.io/adding-a-search-service
         Example: https://github.com/hyper63/hyper-connect-py#get-document-from-search
 
         Parameters
@@ -536,6 +541,8 @@ class HyperSearch:
     def update_async(self, key: str, doc: Dict) -> Result:
         """
         Asynchronously updates a document to the search service.
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+        Adding a search service/index: https://docs.hyper.io/adding-a-search-service
         Example: https://github.com/hyper63/hyper-connect-py#update-document-in-search
 
         Parameters
@@ -553,17 +560,19 @@ class HyperSearch:
 
     def load_async(self, docs: List[Dict]) -> HyperSearchLoadResult:
         """
-        Asynchronously index multiple documents in one batch call to the server.
-        Example: https://github.com/hyper63/hyper-connect-py#bulk-load-into-search-1
+         Asynchronously index multiple documents in one batch call to the server.
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+         Adding a search service/index: https://docs.hyper.io/adding-a-search-service
+         Example: https://github.com/hyper63/hyper-connect-py#bulk-load-into-search-1
 
-        Parameters
-        ----------
-        docs : List[Dict]
-            A list of documents to bulk load.  The _id property is required for each document.
+         Parameters
+         ----------
+         docs : List[Dict]
+             A list of documents to bulk load.  The _id property is required for each document.
 
-        Returns
-        -------
-        Promise of a HyperSearchLoadResult.
+         Returns
+         -------
+         Promise of a HyperSearchLoadResult.
         """
         return self._load_search_async(docs)
 
@@ -572,6 +581,8 @@ class HyperSearch:
     ) -> HyperSearchQueryResult:
         """
         Asynchronously query the search index by including a query the value of your search string. You can optionally include a options of type SearchQueryOptions  that contains a fields property containing a list of fields you would like to target the search against and a filter property which is an Dict of key/value pairs to filter the search results
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+        Adding a search service/index: https://docs.hyper.io/adding-a-search-service
         Example: https://github.com/hyper63/hyper-connect-py#query-documents-in-search
 
         Parameters
@@ -592,7 +603,8 @@ class HyperSearch:
     def add(self, key: str, doc: Dict) -> Result:
         """
         Adds a document to your search index. The document must have the fields specified by the mapping object when you created the index.
-        You'll need a search service - https://docs.hyper.io/adding-a-search-service
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+        Adding a search service/index: https://docs.hyper.io/adding-a-search-service
         Example: https://github.com/hyper63/hyper-connect-py#add-to-search
 
         Parameters
@@ -611,6 +623,8 @@ class HyperSearch:
     def remove(self, key: str) -> Result:
         """
         Removes a document from the search service.
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+        Adding a search service/index: https://docs.hyper.io/adding-a-search-service
         Example: https://github.com/hyper63/hyper-connect-py#remove-from-search
 
         Parameters
@@ -627,7 +641,9 @@ class HyperSearch:
     def get(self, key: str) -> HyperGetResult:
         """
         Gets a document from the search service.
-        Example:
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+        Adding a search service/index: https://docs.hyper.io/adding-a-search-service
+        Example: https://github.com/hyper63/hyper-connect-py#get-from-search
 
         Parameters
         ----------
@@ -641,11 +657,30 @@ class HyperSearch:
         return self._get_search_sync_doc(key)
 
     def update(self, key: str, doc: Dict) -> Result:
+        """
+        updates a document to the search service.
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+        Adding a search service/index: https://docs.hyper.io/adding-a-search-service
+        Example: https://github.com/hyper63/hyper-connect-py#update-search
+
+        Parameters
+        ----------
+        key : str
+            Search document's key
+        doc : Dict
+            Search document
+
+        Returns
+        -------
+        Promise of a Result (OkResult or NotOkResult).
+        """
         return self._update_search_sync_doc(key, doc)
 
     def load(self, docs: List[Dict]) -> HyperSearchLoadResult:
         """
         Asynchronously index multiple documents in one batch call to the server.
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+        Adding a search service/index: https://docs.hyper.io/adding-a-search-service
 
         Parameters
         ----------
@@ -663,6 +698,8 @@ class HyperSearch:
     ) -> HyperSearchQueryResult:
         """
         Query the search index by including a query the value of your search string. You can optionally include a options of type SearchQueryOptions  that contains a fields property containing a list of fields you would like to target the search against and a filter property which is an Dict of key/value pairs to filter the search results
+        Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
+        Adding a search service/index: https://docs.hyper.io/adding-a-search-service
 
         Parameters
         ----------
