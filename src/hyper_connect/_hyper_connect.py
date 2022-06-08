@@ -3,7 +3,6 @@ from typing import Any, Dict, List, Optional
 
 from typeguard import typechecked
 
-# from ._cache import addCacheDoc
 from hyper_connect.services import (
     add_cache,
     add_cache_async,

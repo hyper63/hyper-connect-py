@@ -5,8 +5,12 @@ from dotenv import dotenv_values
 from hyper_connect import connect
 from hyper_connect.types import (
     Hyper,
+    HyperDocsResult,
     HyperGetResult,
+    IdResult,
     ListOptions,
+    QueryOptions,
+    Result,
     SearchQueryOptions,
 )
 
@@ -31,9 +35,10 @@ async def data_add():
         "year": "1987",
     }
 
-    result = await hyper.data.add_async(movie)
+    result: IdResult = await hyper.data.add_async(movie)
     print("hyper.data.add_async result --> ", result)
-    # hyper.data.add_async result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
+    # OKIdResult: hyper.data.add_async result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
+    # NotOkResult: hyper.data.add_async result -->  {'ok': False, 'status': 409, 'msg': 'document conflict'}
 
 
 async def data_cache_compose():
@@ -55,7 +60,7 @@ async def data_cache_compose():
 async def data_delete():
 
     id: str = "movie-5001"
-    result = await hyper.data.remove_async(id)
+    result: IdResult = await hyper.data.remove_async(id)
 
     print("hyper.data.remove_async result --> ", result)
     # hyper.data.remove_async result -->  {'id': 'movie-5001', 'ok': True, 'status': 200}
@@ -64,9 +69,9 @@ async def data_delete():
 async def data_get():
 
     id: str = "movie-5000"
-    result = await hyper.data.get_async(id)
-    print("hyper.data.get result --> ", result)
-    # hyper.data.get result -->  {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1987', 'status': 200}
+    result: HyperGetResult = await hyper.data.get_async(id)
+    print("hyper.data.get_async result --> ", result)
+    # hyper.data.get_async result -->  {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1987', 'status': 200}
 
 
 async def data_update():
@@ -79,8 +84,8 @@ async def data_update():
         "published": "1969",
     }
 
-    result = await hyper.data.update_async("book-000100", book)
-    print("hyper.data.update result --> ", result)
+    result: IdResult = await hyper.data.update_async("book-000100", book)
+    print("hyper.data.update_async result --> ", result)
     # hyper.data.update_async result -->  {'ok': True, 'id': 'book-000100', 'status': 200}
 
 
@@ -88,14 +93,12 @@ async def list_range():
 
     options: ListOptions = {
         "startkey": "book-000105",
-        "limit": None,
         "endkey": "book-000106",
-        "keys": None,
-        "descending": None,
     }
 
-    result = await hyper.data.list_async(options)
+    result: IdResult = await hyper.data.list_async(options)
     print("hyper.data.list_async result --> ", result)
+    # hyper.data.list_async result -->  {'docs': [{'_id': 'book-000105', 'type': 'book', 'name': 'The Lorax 105', 'author': 'Dr. Suess', 'published': '1969'}, {'_id': 'book-000106', 'type': 'book', 'name': 'The Lorax 106', 'author': 'Dr. Suess', 'published': '1969'}], 'ok': True, 'status': 200}
 
 
 async def list_keys():
@@ -123,17 +126,20 @@ async def query():
         "useIndex": None,
     }
 
-    result = await hyper.data.query_async(selector, options)
+    result: HyperDocsResult = await hyper.data.query_async(selector, options)
     print("hyper.data.query_async result --> ", result)
+    # hyper.data.query_async result -->  {'docs': [{'_id': 'book-000010', 'name': 'The Lorax', 'published': '1959'}, {'_id': 'book-000020', 'name': 'The Lumberjack named Lorax the tree slayer', 'published': '1969'}, {'_id': 'book-000100', 'name': 'The Lorax 100', 'published': '1969'}], 'ok': True, 'status': 200}
 
 
 async def query_index():
 
-    index_result = await hyper.data.index_async(
-        "idx_author_published", ["author", "published"]
-    )
+    name: str = "idx_author_published"
+    fields: List[str] = ["author", "published"]
+
+    index_result: Result = await hyper.data.index_async(name, fields)
 
     print("index_async result --> ", index_result)
+    # index_async result -->  {'ok': True, 'status': 201}
 
     selector = {"type": "book", "author": "James A. Michener"}
 
@@ -141,11 +147,50 @@ async def query_index():
         "fields": ["author", "published"],
         "sort": [{"author": "DESC"}, {"published": "DESC"}],
         "useIndex": "idx_author_published",
-        "limit": None,
     }
 
-    result = await hyper.data.query_async(selector, options)
+    result: HyperDocsResult = await hyper.data.query_async(selector, options)
     print("hyper.data.query_async result --> ", result)
+    # hyper.data.query_async result -->  {'docs': [{'author': 'James A. Michener', 'published': '1985'}, {'author': 'James A. Michener', 'published': '1959'}, {'author': 'James A. Michener', 'published': '1947'}], 'ok': True, 'status': 200}
+
+
+async def bulk():
+    docs: list[Dict] = [
+        {
+            "_id": "movie-6000",
+            "type": "movie",
+            "title": "Jeremiah Johnson",
+            "year": "1972",
+        },
+        {
+            "_id": "movie-6001",
+            "type": "movie",
+            "title": "Butch Cassidy and the Sundance Kid",
+            "year": "1969",
+        },
+        {
+            "_id": "movie-6002",
+            "type": "movie",
+            "title": "The Great Gatsby",
+            "year": "1974",
+        },
+        {
+            "_id": "movie-6003",
+            "type": "movie",
+            "title": "The Natural",
+            "year": "1984",
+        },
+        {
+            "_id": "movie-6004",
+            "type": "movie",
+            "title": "The Sting",
+            "year": "1973",
+        },
+    ]
+
+    result: HyperDocsResult = await hyper.data.bulk_async(docs)
+    print("hyper.data.bulk_async result --> ", result)
+    # hyper.data.bulk_async result -->  {'results': [{'ok': True, 'id': 'movie-6000'}, {'ok': True, 'id': 'movie-6001'}, {'ok': True, 'id': 'movie-6002'}, {'ok': True, 'id': 'movie-6003'}, {'ok': True, 'id': 'movie-6004'}], 'ok': True, 'status': 201}
 
 
 ############################

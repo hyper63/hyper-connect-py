@@ -526,18 +526,38 @@ class HyperData:
     # ASYNC
     def add_async(self, doc: Dict) -> IdResult:
         """
-        Asynchronously adds a document to the datastore.
+        Asynchronously adds a document to the hyper data service.
 
         Create your own unique _id in your document
         Use a field on each document to distinguish its type from other documents ie. type or docType.
 
         For more details, see REST API documentation:  https://docs.hyper.io/create-a-document#9n-post-appnamedataservicename
-        Example: https://github.com/hyper63/hyper-connect-py#add-document-asynchronously
+
+        Example:
+
+            movie: Dict = {
+                "_id": "movie-5000",
+                "type": "movie",
+                "title": "Back to the Future 2",
+                "year": "1987",
+            }
+
+            result: IdResult = await hyper.data.add_async(movie)
+            print("hyper.data.add_async result --> ", result)
+            # OKIdResult: hyper.data.add_async result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
+            # NotOkResult: hyper.data.add_async result -->  {'ok': False, 'status': 409, 'msg': 'document conflict'}
 
         Parameters
         ----------
         doc : Dict
-            Document that will be added to the index.
+            Document that will be added to the data service.
+            A document with one-to-many fields, an `_id` field is required.
+            No other fields that start with `_` are allowed.
+            Each field name must follow the following rules:
+            - must begin with a lowercase letter (`a-z`), unless it is the `_id` field.
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
 
         Returns
         -------
@@ -546,51 +566,553 @@ class HyperData:
         return self._add_data_async_doc(doc)
 
     def get_async(self, id: str) -> HyperGetResult:
+        """
+        Asynchronously retrieves a document from the hyper data service.
+
+        Example:
+
+            id: str = "movie-5000"
+            result: HyperGetResult = await hyper.data.get_async(id)
+            print("hyper.data.get_async result --> ", result)
+            # hyper.data.get_async result -->  {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1987', 'status': 200}
+
+
+        Parameters
+        ----------
+        id : str
+            unique document identifier
+
+        Returns
+        -------
+        Promise of a HyperGetResult (Dict, NotOkResult).
+        """
         return self._get_data_async_doc(id)
 
     def list_async(self, options: ListOptions) -> HyperDocsResult:
+        """
+        Asynchronously returns a list of documents from the hyper data service.
+
+        Example:
+
+            options: ListOptions = {
+                "startkey": "book-000105",
+                "endkey": "book-000106",
+            }
+
+            result: HyperDocsResult = await hyper.data.list_async(options)
+            print("hyper.data.list_async result --> ", result)
+            # hyper.data.list_async result -->  {'docs': [{'_id': 'book-000105', 'type': 'book', 'name': 'The Lorax 105', 'author': 'Dr. Suess', 'published': '1969'}, {'_id': 'book-000106', 'type': 'book', 'name': 'The Lorax 106', 'author': 'Dr. Suess', 'published': '1969'}], 'ok': True, 'status': 200}
+
+        Parameters
+        ----------
+        options : ListOptions
+            data list options
+
+        Returns
+        -------
+        Promise of a HyperDocsResult (OkDocsResult, NotOkDocsResult).
+        """
         return self._list_data_async_docs(options)
 
     def update_async(self, id: str, doc: Dict) -> IdResult:
+        """
+        Asynchronously updates an existing document in your data service.
+
+        change or add any property on the document except the _id property, it must stay the same.
+        If you need to change the _id, simply remove the existing document and create a new document with the new _id.
+
+        The update command only supports full document updates, not partial updates.
+
+        Example:
+
+            book: Dict = {
+                "_id": "book-000100",
+                "type": "book",
+                "name": "The Lorax 100",
+                "author": "Dr. Suess",
+                "published": "1969",
+            }
+
+            result: IdResult = await hyper.data.update_async("book-000100", book)
+            print("hyper.data.update_async result --> ", result)
+            # hyper.data.update_async result -->  {'ok': True, 'id': 'book-000100', 'status': 200}
+
+        Parameters
+        ----------
+        id : str
+            unique document identifier
+        doc: Dict
+            document with one-to-many fields, an `_id` field is required.
+            No other fields that start with `_` are allowed.
+            Each field name must follow the following rules:
+            - must begin with a lowercase letter (`a-z`), unless it is the `_id` field.
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
+
+        Returns
+        -------
+        Promise of a IdResult (OkIdResult, NotOkResult).
+        """
         return self._update_data_async_doc(id, doc)
 
     def remove_async(self, id: str) -> IdResult:
+        """
+        Asynchronously deletes a specified document in the datastore.
+
+        Example:
+
+            id: str = "movie-5001"
+            result: IdResult = await hyper.data.remove_async(id)
+
+            print("hyper.data.remove_async result --> ", result)
+            # hyper.data.remove_async result -->  {'id': 'movie-5001', 'ok': True, 'status': 200}
+
+        Parameters
+        ----------
+        id : str
+            unique document identifier
+
+        Returns
+        -------
+        Promise of a IdResult (OkIdResult, NotOkResult).
+        """
         return self._remove_data_async_doc(id)
 
     def query_async(
         self, selector: Dict, options: QueryOptions
     ) -> HyperDocsResult:
+        """
+        Asynchronously query documents in your datastore
+
+        Example: Return 3 books
+
+            selector = {"type": "book"}
+
+            options: QueryOptions = {
+                "fields": ["_id", "name", "published"],
+                "sort": None,
+                "limit": 3,
+                "useIndex": None,
+            }
+
+            result:HyperDocsResult = await hyper.data.query_async(selector, options)
+            print("hyper.data.query_async result --> ", result)
+            # hyper.data.query_async result -->  {'docs': [{'_id': 'book-000010', 'name': 'The Lorax', 'published': '1959'}, {'_id': 'book-000020', 'name': 'The Lumberjack named Lorax the tree slayer', 'published': '1969'}, {'_id': 'book-000100', 'name': 'The Lorax 100', 'published': '1969'}], 'ok': True, 'status': 200}
+
+
+        Parameters
+        ----------
+        selector : Dict
+            This is the filter clause of your query.
+            Indicates the criteria must be met in order for the document to be returned in the set of documents.
+            eg. `{ "type": "movie" }` indicates to return documents that have a `type` property with the value `movie`.
+
+        options: QueryOptions
+            data service query options
+
+        Returns
+        -------
+        Promise of a HyperDocsResult (OkDocsResult, NotOkDocsResult)
+        """
         return self._query_async_docs(selector, options)
 
     def index_async(self, name: str, fields: List[str]) -> Result:
+        """
+        Asynchronously creates an index within your datastore.
+        Indexes are used to provide fast search when querying a data service.
+        With this command, you can create a specific index that can be applied to your query command, for more efficient response times.
+
+        Example: Creates index, run query using index
+
+            name: str =  "idx_author_published"
+            fields: List[str] = ["author", "published"]
+
+            index_result: Result = await hyper.data.index_async(name, fields)
+
+            print("index_async result --> ", index_result)
+            # index_async result -->  {'ok': True, 'status': 201}
+
+            selector = {"type": "book", "author": "James A. Michener"}
+
+            options: QueryOptions = {
+                "fields": ["author", "published"],
+                "sort": [{"author": "DESC"}, {"published": "DESC"}],
+                "useIndex": "idx_author_published"
+            }
+
+            result: HyperDocsResult = await hyper.data.query_async(selector, options)
+            print("hyper.data.query_async result --> ", result)
+            # hyper.data.query_async result -->  {'docs': [{'author': 'James A. Michener', 'published': '1985'}, {'author': 'James A. Michener', 'published': '1959'}, {'author': 'James A. Michener', 'published': '1947'}], 'ok': True, 'status': 200}
+
+
+        Parameters
+        ----------
+        name : str
+            The index name
+
+        fields : List[str]
+            A list of field names from your documents within the datastore.
+
+        Returns
+        -------
+        Promise of a Result (OkResult, NotOkResult)
+        """
         return self._index_async_docs(name, fields)
 
     def bulk_async(self, docs: List[Dict]) -> HyperDocsResult:
+        """
+        Asynchronously submit a list of documents for batch loading into the datastore.
+        A bulk update can handle inserting, updating, and deleting documents.
+        An `_id` is required for each document.
+        Use the `_deleted: true` on a document to delete the document.
+        eg: `{ "_id": "1005", "type": "movie", "title": "Caddyshack", _deleted: true }`
+        When submitting bulk documents, the request payload size limit is 10MB.
+
+        Example: Bulk insert many docs in a single call.
+
+            docs: list[Dict] = [
+                {
+                    "_id": "movie-6000",
+                    "type": "movie",
+                    "title": "Jeremiah Johnson",
+                    "year": "1972",
+                },
+                {
+                    "_id": "movie-6001",
+                    "type": "movie",
+                    "title": "Butch Cassidy and the Sundance Kid",
+                    "year": "1969",
+                },
+                {
+                    "_id": "movie-6002",
+                    "type": "movie",
+                    "title": "The Great Gatsby",
+                    "year": "1974",
+                },
+                {
+                    "_id": "movie-6003",
+                    "type": "movie",
+                    "title": "The Natural",
+                    "year": "1984",
+                },
+                {
+                    "_id": "movie-6004",
+                    "type": "movie",
+                    "title": "The Sting",
+                    "year": "1973",
+                }
+            ]
+
+            result: HyperDocsResult = await hyper.data.bulk_async(docs)
+            print("hyper.data.bulk_async result --> ", result)
+            # hyper.data.bulk_async result -->  {'results': [{'ok': True, 'id': 'movie-6000'}, {'ok': True, 'id': 'movie-6001'}, {'ok': True, 'id': 'movie-6002'}, {'ok': True, 'id': 'movie-6003'}, {'ok': True, 'id': 'movie-6004'}], 'ok': True, 'status': 201}
+
+
+        Parameters
+        ----------
+        docs : List[Dict]
+            The list of docs
+
+        Returns
+        -------
+        Promise of a HyperDocsResult (OkDocsResult, NotOkDocsResult)
+        """
         return self._bulk_async_docs(docs)
 
     # SYNC
     def add(self, doc: Dict) -> IdResult:
+        """
+        Adds a document to the hyper data service.
+
+        Create your own unique _id in your document
+        Use a field on each document to distinguish its type from other documents ie. type or docType.
+
+        For more details, see REST API documentation:  https://docs.hyper.io/create-a-document#9n-post-appnamedataservicename
+
+        Example:
+
+            movie: Dict = {
+                "_id": "movie-5000",
+                "type": "movie",
+                "title": "Back to the Future 2",
+                "year": "1987",
+            }
+
+            result: IdResult = hyper.data.add(movie)
+            print("hyper.data.add result --> ", result)
+            # OKIdResult: hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
+            # NotOkResult: hyper.data.add result -->  {'ok': False, 'status': 409, 'msg': 'document conflict'}
+
+        Parameters
+        ----------
+        doc : Dict
+            Document that will be added to the data service.
+            A document with one-to-many fields, an `_id` field is required.
+            No other fields that start with `_` are allowed.
+            Each field name must follow the following rules:
+            - must begin with a lowercase letter (`a-z`), unless it is the `_id` field.
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
+
+        Returns
+        -------
+        IdResult (OkIdResult, NotOkResult).
+        """
         return self._add_data_sync_doc(doc)
 
     def get(self, id: str) -> HyperGetResult:
+        """
+        Retrieves a document from the hyper data service.
+
+        Example:
+
+            id: str = "movie-5000"
+            result: HyperGetResult = hyper.data.get(id)
+            print("hyper.data.get result --> ", result)
+            # hyper.data.get result -->  {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1987', 'status': 200}
+
+
+        Parameters
+        ----------
+        id : str
+            unique document identifier
+
+        Returns
+        -------
+        HyperGetResult (Dict, NotOkResult).
+        """
         return self._get_data_sync_doc(id)
 
     def list(self, options: ListOptions) -> HyperDocsResult:
+        """
+        Returns a list of documents from the hyper data service.
+
+        Example:
+
+            options: ListOptions = {
+                "startkey": "book-000105",
+                "endkey": "book-000106",
+            }
+
+            result: HyperDocsResult = hyper.data.list(options)
+            print("hyper.data.list result --> ", result)
+            # hyper.data.list result -->  {'docs': [{'_id': 'book-000105', 'type': 'book', 'name': 'The Lorax 105', 'author': 'Dr. Suess', 'published': '1969'}, {'_id': 'book-000106', 'type': 'book', 'name': 'The Lorax 106', 'author': 'Dr. Suess', 'published': '1969'}], 'ok': True, 'status': 200}
+
+        Parameters
+        ----------
+        options : ListOptions
+            data list options
+
+        Returns
+        -------
+        HyperDocsResult (OkDocsResult, NotOkDocsResult).
+        """
         return self._list_data_sync_docs(options)
 
     def update(self, id: str, doc: Dict) -> IdResult:
+        """
+        Updates an existing document in your data service.
+
+        change or add any property on the document except the _id property, it must stay the same.
+        If you need to change the _id, simply remove the existing document and create a new document with the new _id.
+
+        The update command only supports full document updates, not partial updates.
+
+        Example:
+
+            book: Dict = {
+                "_id": "book-000100",
+                "type": "book",
+                "name": "The Lorax 100",
+                "author": "Dr. Suess",
+                "published": "1969",
+            }
+
+            result: IdResult = hyper.data.update("book-000100", book)
+            print("hyper.data.update result --> ", result)
+            # hyper.data.update result -->  {'ok': True, 'id': 'book-000100', 'status': 200}
+
+        Parameters
+        ----------
+        id : str
+            unique document identifier
+        doc: Dict
+            document with one-to-many fields, an `_id` field is required.
+            No other fields that start with `_` are allowed.
+            Each field name must follow the following rules:
+            - must begin with a lowercase letter (`a-z`), unless it is the `_id` field.
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
+
+        Returns
+        -------
+        IdResult (OkIdResult, NotOkResult).
+        """
         return self._update_data_sync_doc(id, doc)
 
     def remove(self, id: str) -> IdResult:
+        """
+        Deletes a specified document in the datastore.
+
+        Example:
+
+            id: str = "movie-5001"
+            result: IdResult = hyper.data.remove(id)
+
+            print("hyper.data.remove result --> ", result)
+            # hyper.data.remove result -->  {'id': 'movie-5001', 'ok': True, 'status': 200}
+
+        Parameters
+        ----------
+        id : str
+            unique document identifier
+
+        Returns
+        -------
+        IdResult (OkIdResult, NotOkResult).
+        """
         return self._remove_data_sync_doc(id)
 
     def query(self, selector: Dict, options: QueryOptions) -> HyperDocsResult:
+        """
+        Query documents in your datastore
+
+        Example: Return 3 books
+
+            selector = {"type": "book"}
+
+            options: QueryOptions = {
+                "fields": ["_id", "name", "published"],
+                "sort": None,
+                "limit": 3,
+                "useIndex": None,
+            }
+
+            result:HyperDocsResult = hyper.data.query(selector, options)
+            print("hyper.data.query result --> ", result)
+            # hyper.data.query result -->  {'docs': [{'_id': 'book-000010', 'name': 'The Lorax', 'published': '1959'}, {'_id': 'book-000020', 'name': 'The Lumberjack named Lorax the tree slayer', 'published': '1969'}, {'_id': 'book-000100', 'name': 'The Lorax 100', 'published': '1969'}], 'ok': True, 'status': 200}
+
+
+        Parameters
+        ----------
+        selector : Dict
+            This is the filter clause of your query.
+            Indicates the criteria must be met in order for the document to be returned in the set of documents.
+            eg. `{ "type": "movie" }` indicates to return documents that have a `type` property with the value `movie`.
+
+        options: QueryOptions
+            data service query options
+
+        Returns
+        -------
+        HyperDocsResult (OkDocsResult, NotOkDocsResult)
+        """
         return self._query_sync_docs(selector, options)
 
     def index(self, name: str, fields: List[str]) -> Result:
+        """
+        Creates an index within your datastore.
+        Indexes are used to provide fast search when querying a data service.
+        With this command, you can create a specific index that can be applied to your query command, for more efficient response times.
+
+        Example: Creates index, run query using index
+
+            name: str =  "idx_author_published"
+            fields: List[str] = ["author", "published"]
+
+            index_result: Result = hyper.data.index(name, fields)
+
+            print("index result --> ", index_result)
+            # index result -->  {'ok': True, 'status': 201}
+
+            selector = {"type": "book", "author": "James A. Michener"}
+
+            options: QueryOptions = {
+                "fields": ["author", "published"],
+                "sort": [{"author": "DESC"}, {"published": "DESC"}],
+                "useIndex": "idx_author_published"
+            }
+
+            result: HyperDocsResult =  hyper.data.query(selector, options)
+            print("hyper.data.query result --> ", result)
+            # hyper.data.query result -->  {'docs': [{'author': 'James A. Michener', 'published': '1985'}, {'author': 'James A. Michener', 'published': '1959'}, {'author': 'James A. Michener', 'published': '1947'}], 'ok': True, 'status': 200}
+
+
+        Parameters
+        ----------
+        name : str
+            The index name
+
+        fields : List[str]
+            A list of field names from your documents within the datastore.
+
+        Returns
+        -------
+        Result (OkResult, NotOkResult)
+        """
         return self._index_sync_docs(name, fields)
 
     def bulk(self, docs: List[Dict]) -> HyperDocsResult:
+        """
+        Submit a list of documents for batch loading into the datastore.
+        A bulk update can handle inserting, updating, and deleting documents.
+        An `_id` is required for each document.
+        Use the `_deleted: true` on a document to delete the document.
+        eg: `{ "_id": "1005", "type": "movie", "title": "Caddyshack", _deleted: true }`
+        When submitting bulk documents, the request payload size limit is 10MB.
+
+        Example: Bulk insert many docs in a single call.
+
+            docs: list[Dict] = [
+                {
+                    "_id": "movie-6000",
+                    "type": "movie",
+                    "title": "Jeremiah Johnson",
+                    "year": "1972",
+                },
+                {
+                    "_id": "movie-6001",
+                    "type": "movie",
+                    "title": "Butch Cassidy and the Sundance Kid",
+                    "year": "1969",
+                },
+                {
+                    "_id": "movie-6002",
+                    "type": "movie",
+                    "title": "The Great Gatsby",
+                    "year": "1974",
+                },
+                {
+                    "_id": "movie-6003",
+                    "type": "movie",
+                    "title": "The Natural",
+                    "year": "1984",
+                },
+                {
+                    "_id": "movie-6004",
+                    "type": "movie",
+                    "title": "The Sting",
+                    "year": "1973",
+                }
+            ]
+
+            result: HyperDocsResult = hyper.data.bulk(docs)
+            print("hyper.data.bulk result --> ", result)
+            # hyper.data.bulk result -->  {'results': [{'ok': True, 'id': 'movie-6000'}, {'ok': True, 'id': 'movie-6001'}, {'ok': True, 'id': 'movie-6002'}, {'ok': True, 'id': 'movie-6003'}, {'ok': True, 'id': 'movie-6004'}], 'ok': True, 'status': 201}
+
+
+        Parameters
+        ----------
+        docs : List[Dict]
+            The list of docs
+
+        Returns
+        -------
+        HyperDocsResult (OkDocsResult, NotOkDocsResult)
+        """
         return self._bulk_sync_docs(docs)
 
 

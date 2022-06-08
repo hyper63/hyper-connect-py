@@ -482,15 +482,15 @@ print(" hyper.search.load result -> ", result)
     async def data_add():
 
         movie: Dict = {
-            "_id": "movie-4000",
+            "_id": "movie-5000",
             "type": "movie",
-            "title": "Back to the Future",
-            "year": "1985",
+            "title": "Back to the Future 2",
+            "year": "1987",
         }
 
-        result = await hyper.data.add_async(movie)
-        print("hyper.data.add result --> ", result)
-        # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
+        result: IdResult = await hyper.data.add_async(movie)
+        print("hyper.data.add_async result --> ", result)
+        # hyper.data.add_async result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
     ```
 
 - To run your asyncronous function, use [`asyncio`](https://docs.python.org/3/library/asyncio.html) which is a library to write concurrent code using the async/await syntax:
@@ -543,9 +543,13 @@ Here's an example of running the `data_add` async function using `asyncio`:
 
 ```py
 from typing import Dict
-from hyper_connect import connect
-from hyper_connect.types import Hyper
 from dotenv import dotenv_values
+
+from hyper_connect import connect
+from hyper_connect.types import (
+    Hyper,
+    IdResult
+)
 
 config = dotenv_values("./.env")
 
@@ -554,17 +558,18 @@ hyper: Hyper = connect(connection_string)
 
 async def data_add():
 
-        movie: Dict = {
-            "_id": "movie-4000",
-            "type": "movie",
-            "title": "Back to the Future",
-            "year": "1985",
-        }
+    movie: Dict = {
+        "_id": "movie-5000",
+        "type": "movie",
+        "title": "Back to the Future 2",
+        "year": "1987",
+    }
 
-        result = await hyper.data.add_async(movie)
+    result: IdResult = await hyper.data.add_async(movie)
+    print("hyper.data.add_async result --> ", result)
+    # OKIdResult: hyper.data.add_async result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
+    # NotOkResult: hyper.data.add_async result -->  {'ok': False, 'status': 409, 'msg': 'document conflict'}
 
-        print('hyper.data.add result --> ', result)
-        # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
 ```
 
 ### Remove doc asynchronously
