@@ -11,3 +11,5 @@ black:
 	python -m black .## Run ci part
 .PHONY: ci
     ci: lint test
+toc:
+	cat README.md | bash toc.sh 2 2

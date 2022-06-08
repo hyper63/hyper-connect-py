@@ -6,6 +6,24 @@
 Official hyper <a href="https://docs.hyper.io">documentation</a>.
 </p>
 
+- [Install](#install)
+- [Usage](#usage)
+- [Services and Actions](#services-and-actions)
+- [hyper vision 😎](#hyper-vision-😎)
+- [Types and type checking](#types-and-type-checking)
+- [Sync](#sync)
+- [Sync examples](#sync-examples)
+- [Async](#async)
+- [Async examples](#async-examples)
+- [Contributing](#contributing)
+- [License](#license)
+- [Code of Conduct](#code-of-conduct)
+- [Linting](#linting)
+- [Tests](#tests)
+- [Tag and Release](#tag-and-release)
+- [Build](#build)
+- [Publishing to TestPyPI](#publishing-to-testpypi)
+- [Publishing to PyPI](#publishing-to-pypi)
 
 ## Install
 
@@ -110,21 +128,6 @@ hyper.[service].[action] - with each service there are a different set of action
 ![hyper vision cache](./hyper-vision.png)
 
 
-## Sync
-
-`hyper_connect` supports both synchronous and asynchronous methods for each service type (data, cache, storage, etc.).  It's easy to distinguish between the two.  Synchronous method names will **not** end in `_async`.
-
-    ```py
-    result = hyper.data.add(movie)
-    ```
-
-
-While asynchronous methods end in `_async`:
-
-    ```py
-    result = await hyper.data.add_async(movie)
-    ```
-
 ## Types and type checking
 
 Common types you'll encounter include `HYPER`, `ListOptions`, `QueryOptions`, and `SearchQueryOptions`.
@@ -173,6 +176,21 @@ also_valid_options: ListOptions = {
     "endkey": "book-000106"
 }
 ```
+
+## Sync
+
+`hyper_connect` supports both synchronous and asynchronous methods for each service type (data, cache, storage, etc.).  It's easy to distinguish between the two.  Synchronous method names will **not** end in `_async`.
+
+    ```py
+    result = hyper.data.add(movie)
+    ```
+
+
+While asynchronous methods end in `_async`:
+
+    ```py
+    result = await hyper.data.add_async(movie)
+    ```
 
 ## Sync examples
 
