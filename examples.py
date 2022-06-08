@@ -7,8 +7,11 @@ from hyper_connect.types import (
     Hyper,
     HyperGetResult,
     HyperSearchLoadResult,
+    IdResult,
     ListOptions,
+    OkDocsResult,
     QueryOptions,
+    SearchQueryOptions,
 )
 
 config = dotenv_values("./.env")
@@ -32,7 +35,7 @@ def data_add():
         "year": "1985",
     }
 
-    result = hyper.data.add(movie)
+    result: IdResult = hyper.data.add(movie)
     print("hyper.data.add result --> ", result)
     # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
 
@@ -102,9 +105,7 @@ def query():
 
     options: QueryOptions = {
         "fields": ["_id", "name", "published"],
-        "sort": None,
         "limit": 3,
-        "useIndex": None,
     }
 
     result = hyper.data.query(selector, options)
@@ -125,7 +126,6 @@ def query_index():
         "fields": ["author", "published"],
         "sort": [{"author": "DESC"}, {"published": "DESC"}],
         "useIndex": "idx_author_published",
-        "limit": None,
     }
 
     result = hyper.data.query(selector, options)

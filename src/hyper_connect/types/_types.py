@@ -19,29 +19,110 @@ QueueStatus = Literal["ERROR", "READY"]
 
 
 class OkResult:
+    """
+    A class to represent a successful result.
+
+    ...
+
+    Attributes
+    ----------
+    ok : bool
+        Value will be True
+    status : int
+        HTTP status code.
+    """
+
     ok: ClassVar[bool] = True
     status: int
 
 
 class NotOkResult:
+    """
+    A class to represent an error.
+
+    ...
+
+    Attributes
+    ----------
+    ok : bool
+        Value will be False
+    status : int
+        HTTP status code.
+    msg : str
+        Error message.
+    """
+
     ok: ClassVar[bool] = False
     status: int
     msg: str
 
 
+{"id": "movie-4000", "ok": True, "status": 201}
+
+
 class OkIdResult:
+    """
+    A class to represent a successful result along with the id of the resource.
+    Example:  After adding a document to the hyper data service,
+    the result will look similar to:
+
+        {'id': 'movie-4000', 'ok': True, 'status': 201}
+    ...
+
+    Attributes
+    ----------
+    ok : bool
+        Value will be True
+    status : int
+        HTTP status code
+    id : int
+        resource identifier
+    """
+
     ok: ClassVar[bool] = True
     status: int
     id: str
 
 
 class OkDocsResult:
+    """
+    A class to represent a successful result along with the returned docs.
+
+    ...
+
+    Attributes
+    ----------
+    ok : bool
+        Value will be True
+    status : int
+        HTTP status code
+    docs : List[Dict]
+        list of documents
+    """
+
     ok: ClassVar[bool] = True
     status: int
     docs: List[Dict]
 
 
 class NotOkDocsResult:
+    """
+    A class to represent a unsuccessful result along with an empty list of documents.
+
+    ...
+
+    Attributes
+    ----------
+    ok : bool
+        Value will be False
+    status : int
+        HTTP status code
+    msg : str
+        Error message
+    docs : List[Dict]
+        empty list of documents
+    """
+
     ok: ClassVar[bool] = False
     status: int
     msg: str
@@ -58,12 +139,42 @@ HyperDocsResult = Union[OkDocsResult, NotOkDocsResult]
 
 
 class HyperSearchQueryOKResult:
+    """
+    A class to represent a successful search query result along with the returned docs.
+
+    ...
+
+    Attributes
+    ----------
+    ok : bool
+        Value will be True
+    status : int
+        HTTP status code
+    matches : List[Dict]
+        list of matched documents
+    """
+
     ok: ClassVar[bool] = True
     status: int
     matches: List[Dict]
 
 
 class HyperSearchLoadOKResult:
+    """
+    A class to represent a successful search bulk load result along with the returned docs.
+
+    ...
+
+    Attributes
+    ----------
+    ok : bool
+        Value will be True
+    status : int
+        HTTP status code
+    results : List[Dict]
+        list of bulk load result documents
+    """
+
     ok: ClassVar[bool] = True
     status: int
     results: List[Dict]
@@ -75,6 +186,65 @@ HyperSearchLoadResult = Union[HyperSearchLoadOKResult, NotOkResult]
 
 
 class ListOptions(TypedDict, total=False):
+    """
+    data list options.
+
+    Some keys are optional and may set to None or simply omit the key.
+
+    Example: both of the following typed Dictionaries are valid:
+
+        valid_data_list_options: ListOptions = {
+            "startkey": "book-000105",
+            "limit": None,
+            "endkey": "book-000106",
+            "keys": None,
+            "descending": None,
+        }
+
+        also_valid_options: ListOptions = {
+            "startkey": "book-000105",
+            "endkey": "book-000106"
+        }
+
+    Example: List a range of docs:
+
+        options: ListOptions = {
+            "startkey": "book-000105",
+            "limit": None,
+            "endkey": "book-000106",
+            "keys": None,
+            "descending": None,
+        }
+
+        result = hyper.data.list(options)
+
+    Example: List a set of docs:
+
+        options: ListOptions = {
+            "startkey": None,
+            "limit": None,
+            "endkey": None,
+            "keys": ["book-000105", "book-000106"],
+            "descending": None,
+        }
+
+        result = hyper.data.list(options)
+    ...
+
+    Attributes
+    ----------
+    limit : int, optional
+        default: 1000  - limits the number of documents returned
+    startkey : str, optional
+        key matcher for document id's.  May use with endkey to return a range of documents.
+    endkey : str, optional
+        key matcher for document id's
+    keys: List[str], optional
+        a comma delimited list of key ids for returning documents. Ex: '"keys": ["book-000105", "book-000106"]'
+    descending: bool, optional
+        determines the order of the list sorted on the 'id' column
+    """
+
     limit: Optional[int]
     startkey: Optional[str]
     endkey: Optional[str]
@@ -83,6 +253,57 @@ class ListOptions(TypedDict, total=False):
 
 
 class QueryOptions(TypedDict, total=False):
+    """
+    data service query options for hyper.data.query().
+
+    Example: Fields and limit query options:
+
+        selector = {"type": "book"}
+
+        options: QueryOptions = {
+            "fields": ["_id", "name", "published"],
+            "limit": 3
+        }
+
+        result = hyper.data.query(selector, options)
+
+    Example: Creates an index with fields, sort, and useIndex query option:
+
+        index_result = hyper.data.index(
+            "idx_author_published", ["author", "published"]
+        )
+
+        print("index_result --> ", index_result)
+
+        selector = {"type": "book", "author": "James A. Michener"}
+
+        options: QueryOptions = {
+            "fields": ["author", "published"],
+            "sort": [{"author": "DESC"}, {"published": "DESC"}],
+            "useIndex": "idx_author_published"
+        }
+
+        result = hyper.data.query(selector, options)
+
+    ...
+
+    Attributes
+    ----------
+    fields : List[str], optional
+        A list of keys/properties to return from the query.
+        Valuable for large documents with many keys.
+        Similar to a SQL SELECT clause.
+    sort : List[Dict[str, SortOptions]], optional
+        The order you would like your results returned
+    limit : int, optional
+        limits the number of documents returned.
+    useIndex : str, optional
+        name of the index to use for this query.
+        Indexes are used to provide fast search when querying a data service.
+        See: https://docs.hyper.io/create-an-index and
+        the index and index_async methods on the hyper data service.
+    """
+
     fields: Optional[List[str]]
     sort: Optional[List[Dict[str, SortOptions]]]
     limit: Optional[int]
@@ -90,6 +311,26 @@ class QueryOptions(TypedDict, total=False):
 
 
 class SearchQueryOptions(TypedDict, total=False):
+    """
+    Options used when querying the search index
+
+        Example:
+
+        options: SearchQueryOptions = {"fields": ["title"], "filter": None}
+
+        query = "Chariots"
+        result: HyperSearchQueryResult = hyper.search.query(query, options)
+    ...
+
+    Attributes
+    ----------
+    fields : List[str], optional
+        a list of fields you would like to target the search against
+    filter : Dict[str, str], optional
+        key/value pairs to filter the search results
+
+    """
+
     fields: Optional[List[str]]
     filter: Optional[Dict[str, str]]
 
@@ -199,12 +440,16 @@ class HyperCache:
 class HyperData:
     """
     A class to represent a hyper application's data service.
+    A hyper data service is a document data store for storing documents.
+    Query, add, update, and delete these documents using the hyper REST API.
+    You can also create indexes to improve query performance.
+    See: https://docs.hyper.io/application-services#eo-data
 
     ...
     Methods
     -------
     add(doc):
-        Adds a document.
+        Adds a document to the data service.
     remove(id):
         Removes a document.
     get(id):
@@ -280,6 +525,24 @@ class HyperData:
 
     # ASYNC
     def add_async(self, doc: Dict) -> IdResult:
+        """
+        Asynchronously adds a document to the datastore.
+
+        Create your own unique _id in your document
+        Use a field on each document to distinguish its type from other documents ie. type or docType.
+
+        For more details, see REST API documentation:  https://docs.hyper.io/create-a-document#9n-post-appnamedataservicename
+        Example: https://github.com/hyper63/hyper-connect-py#add-document-asynchronously
+
+        Parameters
+        ----------
+        doc : Dict
+            Document that will be added to the index.
+
+        Returns
+        -------
+        Promise of a IdResult (OkIdResult, NotOkResult).
+        """
         return self._add_data_async_doc(doc)
 
     def get_async(self, id: str) -> HyperGetResult:
@@ -418,6 +681,10 @@ class HyperQueue:
 class HyperSearch:
     """
     A class to represent a hyper application's search service.
+    A hyper search service is a search index.
+    Index documents by adding them to your search service. Then query to perform a full text search.
+    You'll need to create a hyper app and a search service.
+    See https://docs.hyper.io/adding-a-search-service
 
     ...
     Methods
@@ -482,7 +749,7 @@ class HyperSearch:
         self._query_search_sync = query_search_sync_fn
 
     # ASYNC
-    def add_async(self, key: str, doc: Dict) -> Result:
+    def add_async(self, key: str, doc: Dict) -> IdResult:
         """
         Asynchronously adds a document to your search index. The document must have the fields specified by the mapping object when you created the index.
         Use the hyper cloud dashboard to create a search service/index.  https://dashboard.hyper.io/
