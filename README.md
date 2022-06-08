@@ -3,7 +3,7 @@
 <code>hyper-connect</code> is the python SDK package for <a href="https://hyper.io">hyper</a>.
 </p>
 <p align="center">
-Offical hyper <a href="https://docs.hyper.io">documentation</a>.
+Official hyper <a href="https://docs.hyper.io">documentation</a>.
 </p>
 
 
