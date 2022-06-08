@@ -1,6 +1,6 @@
-<h1 align="center">🐍 hyper_connect 🐍</h1>
+<h1 align="center">🐍 hyper-connect 🐍</h1>
 <p align="center">
-<code>hyper_connect</code> is the python SDK package for <a href="https://hyper.io">hyper</a>.
+<code>hyper-connect</code> is the python SDK package for <a href="https://hyper.io">hyper</a>.
 </p>
 <p align="center">
 Offical hyper <a href="https://docs.hyper.io">documentation</a>.
@@ -9,17 +9,17 @@ Offical hyper <a href="https://docs.hyper.io">documentation</a>.
 
 ## Install
 
-The following command will install the latest version of a module and its dependencies from the Python Packaging Index:
+The following command will install the latest version of the `hyper-connect` module and its dependencies from the Python Packaging Index (PyPI):
 
 ```
-pip install hyper_connect
+pip install hyper-connect
 ```
 
 ## Usage
 
-`hyper_connect` wraps a hyper app's REST API, generating a short-lived JWT using a [connection string](https://docs.hyper.io/app-keys) from one of your hyper app's app keys.
+`hyper-connect` wraps a hyper app's REST API, generating a short-lived JWT using a [connection string](https://docs.hyper.io/app-keys) from one of your hyper app's app keys.
 
-`hyper_connect` supports both synchronous and asynchronous calls.
+`hyper-connect` supports both synchronous and asynchronous calls.
 
 Once you've created an environment variable named `HYPER` with the value of a connection string, you're ready to make a call to the `connect` function which returns a `Hyper` object:
 
@@ -879,6 +879,68 @@ A storage service should have the following setup:
 ![Search Service Config](search-svc-config.png)
 
 Run the `make test` script to run the unit and integration tests.
+
+## Tag and Release
+
+Bump the semver value within **pyproject.toml**.  Create tag and push tag:
+
+```bash
+$ git tag v0.0.3
+$ git push --tags
+```
+
+Now if you go to the repository on GitHub and navigate to the “Releases” tab, you should see the new tag.
+
+Create a release from the tag in GitHub.
+
+> See https://py-pkgs.org/03-how-to-package-a-python#tagging-a-package-release-with-version-control
+
+## Build
+
+We can easily create an sdist and wheel of a package with poetry using the command `poetry build`.  Both files are created in a directory named **dist/**.  Those two new files are the sdist and wheel for our package.
+
+```bash
+$ poetry build
+```
+
+> See https://py-pkgs.org/03-how-to-package-a-python#building-your-package
+
+## Publishing to TestPyPI
+
+Do a “dry run” and check that everything works as expected by submitting to TestPyPi first.  `poetry` has a `publish` command, which we can use to do this, however the default behavior is to publish to PyPI. So we need to add TestPyPI to the list of repositories `poetry` knows about using the following command:
+
+```bash
+$ poetry config repositories.test-pypi https://test.pypi.org/legacy/
+```
+
+To publish to TestPyPI we can use poetry publish (you will be prompted for your username and password for TestPyPI).
+
+```bash
+$ poetry publish -r test-pypi
+```
+
+Now we should be able to visit our package on TestPyPI: https://test.pypi.org/project/hyper-connect/
+
+We can try installing our package using pip from the command line with the following command:
+
+```bash
+$ pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple hyper-connect
+```
+
+> See https://py-pkgs.org/03-how-to-package-a-python#publishing-to-testpypi
+
+
+## Publishing to PyPI
+
+If you were able to upload your package to TestPyPI and install it without error, you’re ready to publish your package to PyPI. You can publish to PyPI using the `poetry publish` command without any arguments:
+
+```bash
+$ poetry publish
+```
+
+Your package will then be available on PyPI (e.g., https://pypi.org/project/pycounts/) and can be installed by anyone using pip:
+
+> See https://py-pkgs.org/03-how-to-package-a-python#publishing-to-pypi
 
 ### COMING SOON: Verify Signature
 
