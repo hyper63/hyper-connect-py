@@ -13,7 +13,16 @@ tasks:
       poetry install
       pre-commit install
       bash .git/hooks/pre-commit
-      echo 'Heres your virtual environment named venv.  Install deps here.'
+      echo '**************************************************************************'
+      echo '***                                                                    ***'
+      echo '***  Integration tests and examples depend on hyper app and services.  ***'
+      echo '***              https://docs.hyper.io/applications                    ***'
+      echo '***                https://docs.hyper.io/app-keys                      ***'
+      echo '***      Be sure you have an environment variable named HYPER.         ***'
+      echo '***      Set the HYPER value to a hyper app connection string.         ***'
+      echo '***              See the REAMDME.md for more details                   ***'
+      echo '***                                                                    ***'
+      echo '**************************************************************************'
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
 ports:
   - port: 3000
