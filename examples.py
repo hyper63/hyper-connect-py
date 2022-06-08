@@ -5,12 +5,13 @@ from dotenv import dotenv_values
 from hyper_connect import connect
 from hyper_connect.types import (
     Hyper,
+    HyperDocsResult,
     HyperGetResult,
-    HyperSearchLoadResult,
     IdResult,
     ListOptions,
-    OkDocsResult,
+    OkIdResult,
     QueryOptions,
+    Result,
     SearchQueryOptions,
 )
 
@@ -29,31 +30,33 @@ hyper: Hyper = connect(connection_string)
 def data_add():
 
     movie: Dict = {
-        "_id": "movie-4000",
+        "_id": "movie-5000",
         "type": "movie",
-        "title": "Back to the Future",
-        "year": "1985",
+        "title": "Back to the Future 2",
+        "year": "1987",
     }
 
     result: IdResult = hyper.data.add(movie)
     print("hyper.data.add result --> ", result)
-    # hyper.data.add result -->  {'id': 'movie-4000', 'ok': True, 'status': 201}
+    # OKIdResult: hyper.data.add result -->  {'_id': 'movie-4000', 'ok': True, 'status': 201}
+    # NotOkResult: hyper.data.add result -->  {'ok': False, 'status': 409, 'msg': 'document conflict'}
 
 
 def data_delete():
 
-    id: str = "movie-4000"
-    result = hyper.data.remove(id)
+    id: str = "movie-5001"
+    result: IdResult = hyper.data.remove(id)
 
     print("hyper.data.remove result --> ", result)
-    # hyper.data.remove result -->  {'id': 'movie-4000', 'ok': True, 'status': 200}
+    # hyper.data.remove result -->  {'_id': 'movie-5001', 'ok': True, 'status': 200}
 
 
 def data_get():
 
-    id: str = "movie-105"
-    result = hyper.data.get(id)
+    id: str = "movie-5000"
+    result: HyperGetResult = hyper.data.get(id)
     print("hyper.data.get result --> ", result)
+    # hyper.data.get result -->  {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1987', 'status': 200}
 
 
 def data_update():
@@ -66,23 +69,21 @@ def data_update():
         "published": "1969",
     }
 
-    result = hyper.data.update("book-000100", book)
+    result: IdResult = hyper.data.update("book-000100", book)
     print("hyper.data.update result --> ", result)
-    # hyper.data.update result -->  {'ok': True, 'id': 'book-000100', 'status': 200}
+    # hyper.data.update result -->  {'ok': True, '_id': 'book-000100', 'status': 200}
 
 
 def list_range():
 
     options: ListOptions = {
         "startkey": "book-000105",
-        "limit": None,
         "endkey": "book-000106",
-        "keys": None,
-        "descending": None,
     }
 
-    result = hyper.data.list(options)
+    result: IdResult = hyper.data.list(options)
     print("hyper.data.list result --> ", result)
+    # hyper.data.list result -->  {'docs': [{'_id': 'book-000105', 'type': 'book', 'name': 'The Lorax 105', 'author': 'Dr. Suess', 'published': '1969'}, {'_id': 'book-000106', 'type': 'book', 'name': 'The Lorax 106', 'author': 'Dr. Suess', 'published': '1969'}], 'ok': True, 'status': 200}
 
 
 def list_keys():
@@ -105,31 +106,76 @@ def query():
 
     options: QueryOptions = {
         "fields": ["_id", "name", "published"],
+        "sort": None,
         "limit": 3,
+        "useIndex": None,
     }
 
-    result = hyper.data.query(selector, options)
+    result: HyperDocsResult = hyper.data.query(selector, options)
     print("hyper.data.query result --> ", result)
+    # hyper.data.query result -->  {'docs': [{'_id': 'book-000010', 'name': 'The Lorax', 'published': '1959'}, {'_id': 'book-000020', 'name': 'The Lumberjack named Lorax the tree slayer', 'published': '1969'}, {'_id': 'book-000100', 'name': 'The Lorax 100', 'published': '1969'}], 'ok': True, 'status': 200}
 
 
 def query_index():
 
-    index_result = hyper.data.index(
-        "idx_author_published", ["author", "published"]
-    )
+    name: str = "_idxauthorpublished"
+    fields: List[str] = ["author", "published"]
 
-    print("index_result --> ", index_result)
+    indexresult: Result = hyper.data.index(name, fields)
+
+    print("index result --> ", indexresult)
+    # index result -->  {'ok': True, 'status': 201}
 
     selector = {"type": "book", "author": "James A. Michener"}
 
     options: QueryOptions = {
         "fields": ["author", "published"],
         "sort": [{"author": "DESC"}, {"published": "DESC"}],
-        "useIndex": "idx_author_published",
+        "useIndex": "_idxauthorpublished",
     }
 
-    result = hyper.data.query(selector, options)
+    result: HyperDocsResult = hyper.data.query(selector, options)
     print("hyper.data.query result --> ", result)
+    # hyper.data.query result -->  {'docs': [{'author': 'James A. Michener', 'published': '1985'}, {'author': 'James A. Michener', 'published': '1959'}, {'author': 'James A. Michener', 'published': '1947'}], 'ok': True, 'status': 200}
+
+
+def bulk():
+    docs: list[Dict] = [
+        {
+            "_id": "movie-6000",
+            "type": "movie",
+            "title": "Jeremiah Johnson",
+            "year": "1972",
+        },
+        {
+            "_id": "movie-6001",
+            "type": "movie",
+            "title": "Butch Cass_idy and the Sundance K_id",
+            "year": "1969",
+        },
+        {
+            "_id": "movie-6002",
+            "type": "movie",
+            "title": "The Great Gatsby",
+            "year": "1974",
+        },
+        {
+            "_id": "movie-6003",
+            "type": "movie",
+            "title": "The Natural",
+            "year": "1984",
+        },
+        {
+            "_id": "movie-6004",
+            "type": "movie",
+            "title": "The Sting",
+            "year": "1973",
+        },
+    ]
+
+    result: HyperDocsResult = hyper.data.bulk(docs)
+    print("hyper.data.bulk result --> ", result)
+    # hyper.data.bulk result -->  {'results': [{'ok': True, '_id': 'movie-6000'}, {'ok': True, '_id': 'movie-6001'}, {'ok': True, '_id': 'movie-6002'}, {'ok': True, '_id': 'movie-6003'}, {'ok': True, '_id': 'movie-6004'}], 'ok': True, 'status': 201}
 
 
 ############################
@@ -176,6 +222,8 @@ def query_cache():
     result = hyper.cache.query(pattern="movie-500*")
     print("hyper.cache.query result --> ", result)
     # hyper.cache.query result -->  {'docs': [{'key': 'movie-5001', 'value': {'_id': 'movie-5001', 'type': 'movie', 'title': 'Back to the Future 3', 'year': '1989'}}, {'key': 'movie-5000', 'value': {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1988'}}], 'ok': True, 'status': 200}
+
+    hyper.search.update(key, doc)
 
 
 ############################
@@ -239,7 +287,7 @@ def query_search():
 
 
 def load_search():
-    bulk_movie_docs: List[Dict] = [
+    bulkmoviedocs: List[Dict] = [
         {
             "_id": "movie-104",
             "type": "movie",
@@ -254,5 +302,5 @@ def load_search():
         },
     ]
 
-    result: HyperSearchLoadResult = hyper.search.load(docs=bulk_movie_docs)
+    result: HyperSearchLoadResult = hyper.search.load(docs=bulkmoviedocs)
     print(" hyper.search.load result -> ", result)

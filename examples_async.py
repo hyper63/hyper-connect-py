@@ -9,6 +9,7 @@ from hyper_connect.types import (
     HyperGetResult,
     IdResult,
     ListOptions,
+    OKIdResult,
     QueryOptions,
     Result,
     SearchQueryOptions,
