@@ -9,7 +9,7 @@ from hyper_connect.types import (
     HyperGetResult,
     IdResult,
     ListOptions,
-    OKIdResult,
+    OkIdResult,
     QueryOptions,
     Result,
     SearchQueryOptions,
@@ -209,11 +209,37 @@ async def add_cache():
         "year": "1987",
     }
 
-    result = await hyper.cache.add_async(
-        key="movie-5000", value=movie, ttl="1w"
+    result: Result = await hyper.cache.add_async(
+        key="movie-5000", value=movie, ttl="24h"
     )
     print("hyper.cache.add_async result --> ", result)
-    # hyper.cache.add_async result -->  {'ok': True, 'status': 201}
+    # OkResult - hyper.cache.add result -->  {'ok': True, 'status': 201}
+    # NotOkResult - hyper.cache.add result -->  {'ok': False, 'status': 409, 'msg': 'Document Conflict'}
+
+
+async def add_cache_thing():
+    thing: Dict = {"likes": 100}
+
+    result: Result = await hyper.cache.add_async(
+        key="thing-1", value=thing, ttl="1m"
+    )
+    print("hyper.cache.add_async result --> ", result)
+    # OkResult - hyper.cache.add result -->  {'ok': True, 'status': 201}
+    # NotOkResult - hyper.cache.add result -->  {'ok': False, 'status': 409, 'msg': 'Document Conflict'}
+
+
+async def get_cache():
+    key = "movie-5000"
+    result: HyperGetResult = await hyper.cache.get_async(key)
+    print("hyper.cache.get_async result --> ", result)
+    # hyper.cache.get_async result -->  {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1987', 'status': 200}
+
+
+async def get_cache_thing():
+    key: str = "thing-1"
+    result: HyperGetResult = await hyper.cache.get_async(key)
+    print("hyper.cache.get_async result --> ", result)
+    # hyper.cache.get_async result -->  {'likes': 100, 'status': 200}
 
 
 async def remove_cache():
@@ -239,11 +265,11 @@ async def update_cache():
 
 
 async def query_cache():
-    result = await hyper.cache.query_async(pattern="movie-500*")
+    result: HyperDocsResult = await hyper.cache.query_async(
+        pattern="movie-500*"
+    )
     print("hyper.cache.query_async result --> ", result)
     # hyper.cache.query_async result -->  {'docs': [{'key': 'movie-5001', 'value': {'_id': 'movie-5001', 'type': 'movie', 'title': 'Back to the Future 3', 'year': '1989'}}, {'key': 'movie-5000', 'value': {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1988'}}], 'ok': True, 'status': 200}
-
-    hyper.search.update(key, doc)
 
 
 ############################

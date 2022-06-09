@@ -375,6 +375,59 @@ class WriteHyperDataError(Exception):
 
 
 class HyperCache:
+    """
+    The cache service improves the performance of your applications by allowing you to retrieve information from fast,
+    managed, in-memory data stores, instead of relying entirely on slower disk-based databases.
+    A hyper Cache service is a key-value store.
+    The key is a unique string and the value is a document.
+    This service keeps caching simple giving you a pattern matcher query to return a filtered set of values, or you can retrieve directly by key.
+    See: https://docs.hyper.io/cache-api
+
+    ...
+    Methods
+    -------
+    add(key, value, ttl):
+        Creates a cached key, value pair in the cache service.
+    remove(key):
+        Deletes the key/value pair from the cache service.
+    get(key):
+        Returns a specific value cached for the specified key.
+    set(key, value, ttl):
+        Updates a document in the cache service.
+    query(selector, options)
+        Query using a comparion pattern.
+        When applied the pattern will be used to match all the keys
+        in the cache and only return the ones that match the pattern.
+        Using the * wildcard, you can define patterns like "movie*" that
+        match all the key values that either start with the provided pattern,
+        end with the pattern, or is in-between the pattern.
+        Examples:
+            - starts with "movie*"
+            - ends with "*-1984"
+            - in-bewteen "movie*1984"
+
+
+    add_async(key, value, ttl):
+        Asynchronously creates a cached key, value pair in the cache service.
+    remove_async(key):
+        Asynchronously deletes the key/value pair from the cache service.
+    get_async(key):
+        Asynchronously returns a specific value cached for the specified key.
+    set_async(key, value, ttl):
+        Asynchronously updates a document in the cache service.
+    query_async(selector, options)
+        Asynchronously query using a comparion pattern.
+        When applied the pattern will be used to match all the keys
+        in the cache and only return the ones that match the pattern.
+        Using the * wildcard, you can define patterns like "movie*" that
+        match all the key values that either start with the provided pattern,
+        end with the pattern, or is in-between the pattern.
+        Examples:
+            - starts with "movie*"
+            - ends with "*-1984"
+            - in-bewteen "movie*1984"
+    """
+
     def __init__(
         self,
         # ASYNC
@@ -405,35 +458,352 @@ class HyperCache:
         self._post_cache_query_sync = post_cache_query_sync_fn
 
     # ASYNC
-    def add_async(self, key: str, value: Any, ttl: Optional[str]):
+    def add_async(self, key: str, value: Dict, ttl: Optional[str]) -> Result:
+        """
+        Asynchronously creates a cached key, value pair in the cache service.
+        ou can also specify the time to live property on this request which
+        will specify how long you wish the document to be in the cache.
+
+        Example:
+
+            movie: Dict = {
+                "_id": "movie-5000",
+                "type": "movie",
+                "title": "Back to the Future 2",
+                "year": "1987",
+            }
+
+            result: Result = await hyper.cache.add_async(
+                key="movie-5000", value=movie, ttl="24h"
+            )
+
+            print("hyper.cache.add_async result --> ", result)
+            # OkResult - hyper.cache.add result -->  {'ok': True, 'status': 201}
+            # NotOkResult - hyper.cache.add result -->  {'ok': False, 'status': 409, 'msg': 'Document Conflict'}
+
+        Parameters
+        ----------
+        key : str
+            - must begin with lowercase letter (`a-z`)
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
+
+        value: Dict
+            The dictionary you wish to cache.
+        ttl: str, optional
+            instructs cache on how long the key/pair should remain in the cache
+                 - `s` seconds. eg: 20s = 20 seconds
+                - `m` minutes. eg: 10m = 10 minutes
+                - `h` hours. ex: 12h = 12 hours
+                - `d` days. ex: 14d = 14 days
+                - `w` weeks. ex: 1w = 1 week
+
+        Returns
+        -------
+        Promise of a Result.
+        """
         return self._add_cache_async(key, value, ttl)
 
-    def get_async(self, key: str):
+    def get_async(self, key: str) -> HyperGetResult:
+        """
+        Asynchronously returns a specific value cached for the specified key.
+
+        Example:
+            key = "movie-5000"
+            result: HyperGetResult = await hyper.cache.get_async(key)
+            print("hyper.cache.get_async result --> ", result)
+            # hyper.cache.get_async result -->  {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1987', 'status': 200}
+
+
+        Parameters
+        ----------
+        key : str
+            - must begin with lowercase letter (`a-z`)
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
+
+        Returns
+        -------
+        Promise of a HyperGetResult.
+        """
         return self._get_cache_async(key)
 
-    def set_async(self, key: str, value: Any, ttl: Optional[str]):
+    def set_async(self, key: str, value: Dict, ttl: Optional[str]) -> Result:
+        """
+        Asynchronously updates a document in the cache store.
+        By updating the document you can modify the values of the document,
+        as well as modify/extend the time to live or ttl.
+
+        Example:
+
+            movie: Dict = {
+                "_id": "movie-5000",
+                "type": "movie",
+                "title": "Back to the Future 2",
+                "year": "1988",
+            }
+
+            result = await hyper.cache.set_async(
+                key="movie-5000", value=movie, ttl="1w"
+            )
+            print("hyper.cache.set_async result --> ", result)
+            # hyper.cache.set_async result -->  {'ok': True, 'status': 200}
+
+
+        Parameters
+        ----------
+        key : str
+            - must begin with lowercase letter (`a-z`)
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
+
+        value: Dict
+            The dictionary you wish to update within the cache.
+        ttl: str, optional
+            instructs cache on how long the key/pair should remain in the cache
+                - `s` seconds. eg: 20s = 20 seconds
+                - `m` minutes. eg: 10m = 10 minutes
+                - `h` hours. ex: 12h = 12 hours
+                - `d` days. ex: 14d = 14 days
+                - `w` weeks. ex: 1w = 1 week
+
+        Returns
+        -------
+        Promise of a Result.
+        """
+
         return self._set_cache_async(key, value, ttl)
 
-    def remove_async(self, key: str):
+    def remove_async(self, key: str) -> Result:
+        """
+        Asynchronously deletes the key/value pair from the cache store.
+
+        Example:
+
+            key = "movie-5000"
+            result = await hyper.cache.remove_async(key)
+            print("hyper.cache.remove_async result --> ", result)
+             # hyper.cache.remove_async result -->  {'ok': True, 'status': 200}
+
+
+        Parameters
+        ----------
+        key : str
+            - must begin with lowercase letter (`a-z`)
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
+
+        Returns
+        -------
+        Promise of a Result.
+        """
         return self._remove_cache_async(key)
 
-    def query_async(self, pattern: str):
+    def query_async(self, pattern: str) -> HyperDocsResult:
+        """
+        Asynchronously query using a comparion pattern.
+        When applied the pattern will be used to match all the keys
+        in the cache and only return the ones that match the pattern.
+        Using the * wildcard, you can define patterns like "movie*" that
+        match all the key values that either start with the provided pattern,
+        end with the pattern, or is in-between the pattern.
+        Examples:
+            - starts with "movie*"
+            - ends with "*-1984"
+            - in-bewteen "movie*1984"
+
+        Example:
+            result : HyperDocsResult = await hyper.cache.query_async(pattern="movie-500*")
+            print("hyper.cache.query_async result --> ", result)
+             # hyper.cache.query_async result -->  {'docs': [{'key': 'movie-5001', 'value': {'_id': 'movie-5001', 'type': 'movie', 'title': 'Back to the Future 3', 'year': '1989'}}, {'key': 'movie-5000', 'value': {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1988'}}], 'ok': True, 'status': 200}
+
+        Parameters
+        ----------
+        pattern : str
+
+
+        Returns
+        -------
+        Promise of a HyperDocsResult.
+        """
         return self._post_cache_query_async(pattern)
 
     # SYNC
-    def add(self, key: str, value: Any, ttl: Optional[str]):
+    def add(self, key: str, value: Dict, ttl: Optional[str]) -> Result:
+        """
+        Creates a cached key, value pair in the cache service.
+        ou can also specify the time to live property on this request which
+        will specify how long you wish the document to be in the cache.
+
+        Example:
+
+            movie: Dict = {
+                "_id": "movie-5000",
+                "type": "movie",
+                "title": "Back to the Future 2",
+                "year": "1987",
+            }
+
+            result = hyper.cache.add(
+                key="movie-5000", value=movie, ttl="24h"
+            )
+
+            print("hyper.cache.add_async result --> ", result)
+            # OkResult - hyper.cache.add result -->  {'ok': True, 'status': 201}
+            # NotOkResult - hyper.cache.add result -->  {'ok': False, 'status': 409, 'msg': 'Document Conflict'}
+
+        Parameters
+        ----------
+        key : str
+            - must begin with lowercase letter (`a-z`)
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
+
+        value: Dict
+            The value you wish to cache.
+        ttl: str, optional
+            instructs cache on how long the key/pair should remain in the cache
+                - `s` seconds. eg: 20s = 20 seconds
+                - `m` minutes. eg: 10m = 10 minutes
+                - `h` hours. ex: 12h = 12 hours
+                - `d` days. ex: 14d = 14 days
+                - `w` weeks. ex: 1w = 1 week
+
+
+        Returns
+        -------
+        Result.
+        """
         return self._add_cache_sync(key, value, ttl)
 
-    def get(self, key: str):
+    def get(self, key: str) -> HyperGetResult:
+        """
+        Returns a specific value cached for the specified key.
+
+        Example:
+            key = "movie-5000"
+            result: HyperGetResult = hyper.cache.get(key)
+            print("hyper.cache.get result --> ", result)
+            # hyper.cache.get result -->  {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1987', 'status': 200}
+
+
+        Parameters
+        ----------
+        key : str
+            - must begin with lowercase letter (`a-z`)
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
+
+        Returns
+        -------
+        HyperGetResult
+        """
         return self._get_cache_sync(key)
 
-    def set(self, key: str, value: Any, ttl: Optional[str]):
+    def set(self, key: str, value: Dict, ttl: Optional[str]) -> Result:
+        """
+        updates a document in the cache store.
+        By updating the document you can modify the values of the document,
+        as well as modify/extend the time to live or ttl.
+
+        Example:
+
+            movie: Dict = {
+                "_id": "movie-5000",
+                "type": "movie",
+                "title": "Back to the Future 2",
+                "year": "1988",
+            }
+
+            result = hyper.cache.set(
+                key="movie-5000", value=movie, ttl="1w"
+            )
+            print("hyper.cache.set result --> ", result)
+            # hyper.cache.set result -->  {'ok': True, 'status': 200}
+
+        Parameters
+        ----------
+        key : str
+            - must begin with lowercase letter (`a-z`)
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
+
+        value: Dict
+            The dictionary you wish to update within the cache.
+        ttl: str, optional
+            instructs cache on how long the key/pair should remain in the cache
+                - `s` seconds. eg: 20s = 20 seconds
+                - `m` minutes. eg: 10m = 10 minutes
+                - `h` hours. ex: 12h = 12 hours
+                - `d` days. ex: 14d = 14 days
+                - `w` weeks. ex: 1w = 1 week
+
+        Returns
+        -------
+        Result.
+        """
         return self._set_cache_sync(key, value, ttl)
 
-    def remove(self, key: str):
+    def remove(self, key: str) -> Result:
+        """
+        Deletes the key/value pair from the cache store.
+
+        Example:
+
+            key = "movie-5000"
+            result = hyper.cache.remove(key)
+            print("hyper.cache.remove_async result --> ", result)
+             # hyper.cache.remove_async result -->  {'ok': True, 'status': 200}
+
+
+        Parameters
+        ----------
+        key : str
+            - must begin with lowercase letter (`a-z`)
+            - must be lowercase letters (`a-z`)
+            - digits (`0-9`)
+            - any of these characters `_ $ + -`
+
+        Returns
+        -------
+        Result.
+        """
         return self._remove_cache_sync(key)
 
-    def query(self, pattern: str):
+    def query(self, pattern: str) -> HyperDocsResult:
+        """
+        query using a comparion pattern.
+        When applied the pattern will be used to match all the keys
+        in the cache and only return the ones that match the pattern.
+        Using the * wildcard, you can define patterns like "movie*" that
+        match all the key values that either start with the provided pattern,
+        end with the pattern, or is in-between the pattern.
+        Examples:
+            - starts with "movie*"
+            - ends with "*-1984"
+            - in-bewteen "movie*1984"
+
+        Example:
+            result : HyperDocsResult = hyper.cache.query(pattern="movie-500*")
+            print("hyper.cache.query result --> ", result)
+            # hyper.cache.query result -->  {'docs': [{'key': 'movie-5001', 'value': {'_id': 'movie-5001', 'type': 'movie', 'title': 'Back to the Future 3', 'year': '1989'}}, {'key': 'movie-5000', 'value': {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1988'}}], 'ok': True, 'status': 200}
+
+        Parameters
+        ----------
+        pattern : str
+
+
+        Returns
+        -------
+        HyperDocsResult.
+        """
         return self._post_cache_query_sync(pattern)
 
 
@@ -443,7 +813,7 @@ class HyperData:
     A hyper data service is a document data store for storing documents.
     Query, add, update, and delete these documents using the hyper REST API.
     You can also create indexes to improve query performance.
-    See: https://docs.hyper.io/application-services#eo-data
+    See: https://docs.hyper.io/data-api
 
     ...
     Methods

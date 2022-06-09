@@ -195,7 +195,15 @@ def add_cache():
 
     result = hyper.cache.add(key="movie-5000", value=movie, ttl="1w")
     print("hyper.cache.add result --> ", result)
-    # hyper.cache.add result -->  {'ok': True, 'status': 201}
+    # OkResult - hyper.cache.add result -->  {'ok': True, 'status': 201}
+    # NotOkResult - hyper.cache.add result -->  {'ok': False, 'status': 409, 'msg': 'Document Conflict'}
+
+
+def get_cache():
+    key = "movie-5000"
+    result: HyperGetResult = hyper.cache.get_async(key)
+    print("hyper.cache.get_async result --> ", result)
+    # hyper.cache.get_async result -->  {'_id': 'movie-5000', 'type': 'movie', 'title': 'Back to the Future 2', 'year': '1987', 'status': 200}
 
 
 def remove_cache():
