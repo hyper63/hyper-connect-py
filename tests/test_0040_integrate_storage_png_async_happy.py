@@ -50,6 +50,12 @@ class TestStorageIntegrationPNG_ASYNC(asynctest.TestCase):
 
         # end download
 
+        print("br_remix_png_download_result ->", br_remix_png_download_result)
+        # br_remix_png_download_result -> <Response [200]>
+        print(type(br_remix_png_download_result).__name__)
+        # Response
+        print(br_remix_png_download_result.status_code)
+        # 200
         self.assertEqual(
             br_remix_png_download_result.status_code,
             200,

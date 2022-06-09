@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hyper_connect"
-version = "0.0.9"
+version = "0.0.10"
 description = "python SDK package for hyper"
 authors = ["Trip Ottinger"]
 license = "Apache 2.0"

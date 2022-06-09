@@ -1,5 +1,8 @@
+import os
+import sys
 from typing import Dict
 
+import requests
 from dotenv import dotenv_values
 
 from hyper_connect import connect
@@ -352,3 +355,58 @@ async def load_search():
         docs=bulk_movie_docs
     )
     print(" hyper.search.load_async result -> ", result)
+
+
+###############################
+#
+#   STORAGE SERVICE EXAMPLES
+#
+###############################
+
+
+async def storage_upload():
+
+    # begin upload remix.png image file
+    br_remix_png: io.BufferedReader = open(
+        os.path.join(sys.path[0], "remix.png"), "rb"
+    )
+    br_remix_png_upload_result: Result = await hyper.storage.upload_async(
+        name="remix", data=br_remix_png
+    )
+
+    br_remix_png.close()
+    # end upload
+
+    print("br_remix_png_upload_result ->", br_remix_png_upload_result)
+    # br_remix_png_upload_result -> {'ok': True, 'status': 201}
+
+
+async def storage_download():
+
+    br_remix_png_download_result: requests.Response = (
+        await hyper.storage.download_async(name="remix")
+    )
+
+    # begin download of remix.png image file as remix_downloaded.png
+    path = os.path.join(sys.path[0], "remix_downloaded.png")
+
+    with open(path, "wb") as fd:
+        for chunk in br_remix_png_download_result.iter_content(chunk_size=128):
+            fd.write(chunk)
+
+    # end download
+
+    print("br_remix_png_download_result ->", br_remix_png_download_result)
+    # br_remix_png_download_result -> <Response [200]>
+
+    print(br_remix_png_download_result.status_code)
+    # 200
+
+
+async def storage_delete():
+    remove_result: Result = await hyper.storage.remove_async(
+        name="remix-notfound"
+    )
+
+    print("remove_result ->", remove_result)
+    # {'ok': True, 'status': 201}

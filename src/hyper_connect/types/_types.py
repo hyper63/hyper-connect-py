@@ -11,6 +11,8 @@ from typing import (
     Union,
 )
 
+import requests
+
 SortOptions = Literal["DESC", "ASC"]
 ServiceType = Literal["data", "cache", "storage", "search", "queue", "info"]
 Method = Literal["GET", "POST", "PUT", "DELETE", "PATCH"]
@@ -1487,6 +1489,28 @@ class HyperData:
 
 
 class HyperStorage:
+    """
+    A hyper storage service is a object storage bucket used to store unstructured data like images, videos, and files.
+    Upload, download and remove files.
+    See: https://docs.hyper.io/storage-api
+
+    ...
+    Methods
+    -------
+    upload(name, data):
+        Adds unstructured data such as a text file, image, or video to a storage service bucket using FormData.
+    download(name)
+        Retrieves an object from a storage service bucket.
+    remove(name: str)
+        Deletes the object from the storage service bucket.
+    upload_async(name, data):
+        Asynchronously adds unstructured data such as a text file, image, or video to a storage service bucket using FormData.
+    download_async(name)
+        Asynchronously retrieves an object from a storage service bucket.
+    remove_async(name: str)
+        Asynchronously deletes the object from the storage service bucket.
+    """
+
     def __init__(
         self,
         # ASYNC
@@ -1508,23 +1532,182 @@ class HyperStorage:
         self._remove_sync_fn = remove_sync_fn
 
     # ASYNC
-    def upload_async(self, name: str, data: io.BufferedReader):
+    def upload_async(self, name: str, data: io.BufferedReader) -> Result:
+        """
+        Asynchronously adds unstructured data such as a text file, image, or video to a storage service bucket using FormData.
+
+        Example:
+            # begin upload remix.png image file
+            br_remix_png: io.BufferedReader = open(
+                os.path.join(sys.path[0], "remix.png"), "rb"
+            )
+            br_remix_png_upload_result: Result = (
+                await hyper.storage.upload_async(name="remix", data=br_remix_png)
+            )
+
+            br_remix_png.close()
+            # end upload
+
+            print("br_remix_png_upload_result ->", br_remix_png_upload_result)
+            # br_remix_png_upload_result -> {'ok': True, 'status': 201}
+
+
+        Parameters
+        ----------
+        name : str
+            A name that uniquely identifies the object in the storage bucket.
+            Typically the file name. Ex: "avatar.png"
+        data: io.BufferedReader
+            A buffered reader using a readable raw IO object such as a text file, image, or video.
+
+        Returns
+        -------
+        Promise of a Result (OkResult, NotOkResult)
+        """
         return self._upload_async_fn(name, data)
 
-    def download_async(self, name: str):
+    def download_async(self, name: str) -> requests.Response:
+        """
+        Asynchronously retrieves an object from a storage service bucket.
+
+        Example:
+            br_remix_png_download_result: requests.Response = (
+                await hyper.storage.download_async(name="remix")
+            )
+
+            # begin download of remix.png image file as remix_downloaded.png
+            path = os.path.join(sys.path[0], "remix_downloaded.png")
+
+            with open(path, "wb") as fd:
+                for chunk in br_remix_png_download_result.iter_content(chunk_size=128):
+                    fd.write(chunk)
+
+            # end download
+
+            print("br_remix_png_download_result ->", br_remix_png_download_result)
+            # br_remix_png_download_result -> <Response [200]>
+
+            print(br_remix_png_download_result.status_code)
+            # 200
+
+        Parameters
+        ----------
+        name : str
+            A name that uniquely identifies the object in the storage bucket.
+            Typically the file name. Ex: "avatar.png"
+
+        Returns
+        -------
+        Promise of a Response See https://requests.readthedocs.io/en/latest/api/#requests.Response
+        """
+        #
         return self._download_async_fn(name)
 
-    def remove_async(self, name: str):
+    def remove_async(self, name: str) -> requests.Response:
+        """
+        Asynchronously deletes the object from the storage service bucket.
+
+        Example:
+            remove_result: Result = await hyper.storage.remove_async(name="remix-notfound")
+
+        Parameters
+        ----------
+        name : str
+            A name that uniquely identifies the object in the storage bucket.
+            Typically the file name. Ex: "avatar.png"
+
+        Returns
+        -------
+        Promise of a Result (OkResult, NotOkResult)
+        """
+
         return self._remove_async_fn(name)
 
     # SYNC
     def upload(self, name: str, data: io.BufferedReader):
+        """
+         Adds unstructured data such as a text file, image, or video to a storage service bucket using FormData.
+
+        Example:
+            # begin upload remix.png image file
+            br_remix_png: io.BufferedReader = open(
+                os.path.join(sys.path[0], "remix.png"), "rb"
+            )
+            br_remix_png_upload_result: Result = hyper.storage.upload_async(name="remix", data=br_remix_png)
+
+            br_remix_png.close()
+            # end upload
+
+            print("br_remix_png_upload_result ->", br_remix_png_upload_result)
+            # br_remix_png_upload_result -> {'ok': True, 'status': 201}
+
+
+        Parameters
+        ----------
+        name : str
+            A name that uniquely identifies the object in the storage bucket.
+            Typically the file name. Ex: "avatar.png"
+        data: io.BufferedReader
+            A buffered reader using a readable raw IO object such as a text file, image, or video.
+
+        Returns
+        -------
+        Result (OkResult, NotOkResult)
+        """
         return self._upload_sync_fn(name, data)
 
     def download(self, name: str):
+        """
+        Retrieves an object from a storage service bucket.
+
+        Example:
+            br_remix_png_download_result: requests.Response = hyper.storage.download_async(name="remix")
+
+
+            # begin download of remix.png image file as remix_downloaded.png
+            path = os.path.join(sys.path[0], "remix_downloaded.png")
+
+            with open(path, "wb") as fd:
+                for chunk in br_remix_png_download_result.iter_content(chunk_size=128):
+                    fd.write(chunk)
+
+            # end download
+
+            print("br_remix_png_download_result ->", br_remix_png_download_result)
+            # br_remix_png_download_result -> <Response [200]>
+
+            print(br_remix_png_download_result.status_code)
+            # 200
+
+        Parameters
+        ----------
+        name : str
+            A name that uniquely identifies the object in the storage bucket.
+            Typically the file name. Ex: "avatar.png"
+
+        Returns
+        -------
+        Response See https://requests.readthedocs.io/en/latest/api/#requests.Response
+        """
         return self._download_sync_fn(name)
 
     def remove(self, name: str):
+        """
+        Deletes the object from the storage service bucket.
+
+        Example:
+            remove_result: Result = hyper.storage.remove_async(name="remix-notfound")
+
+        Parameters
+        ----------
+        name : str
+            A name that uniquely identifies the object in the storage bucket.
+            Typically the file name. Ex: "avatar.png"
+
+        Returns
+        -------
+        Result (OkResult, NotOkResult)
+        """
         return self._remove_sync_fn(name)
 
 
