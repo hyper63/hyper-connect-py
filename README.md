@@ -185,15 +185,15 @@ See **[examples.py](https://github.com/hyper63/hyper-connect-py/blob/main/exampl
 
 `hyper_connect` supports both synchronous and asynchronous methods for each service type (data, cache, storage, etc.).  It's easy to distinguish between the two.  Synchronous method names will **not** end in `_async`.
 
-    ```py
-    result = hyper.data.add(movie)
-    ```
+```py
+result = hyper.data.add(movie)
+```
 
 While asynchronous methods end in `_async`:
 
-    ```py
-    result = await hyper.data.add_async(movie)
-    ```
+```py
+result = await hyper.data.add_async(movie)
+```
 
 > Async can be a little tricky.  Here are a couple of good resources to help avoid the pitfalls 😵‍💫:
 > [How to Create an Async API Call with asyncio](https://www.youtube.com/watch?v=t0JXiljpNRo) and
@@ -264,7 +264,7 @@ See [Contributing](./CONTRIBUTING.md).
 See [Licence](./LICENCE).
 
 ## Code of Conduct
-.
+
 See [Code of Conduct](./CONDUCT.md)
 
 ### Developer Setup
@@ -297,7 +297,7 @@ To run these checks, execute the `make lint` command.
 
 ## Tests
 
-> Heads up! Integration tests assume a hyper app and services have been created.  See https://docs.hyper.io/applications for details on creating hyper applications and service.
+> Heads up! Integration tests assume a hyper app and services have been created.  See https://docs.hyper.io/applications for details on creating hyper applications and services.
 
 A storage service should have the following setup:
 
@@ -363,7 +363,7 @@ If you were able to upload your package to TestPyPI and install it without error
 $ poetry publish
 ```
 
-Your package will then be available on PyPI (e.g., https://pypi.org/project/pycounts/) and can be installed by anyone using pip:
+Your package will then be available on PyPI (https://pypi.org/project/hyper-connect/) and can be installed by anyone using pip:
 
 > See https://py-pkgs.org/03-how-to-package-a-python#publishing-to-pypi
 
